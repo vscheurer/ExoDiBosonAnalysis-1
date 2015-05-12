@@ -12,10 +12,11 @@ public:
    float csv ;
    float mass;
    float prunedMass;
+   float softdropMass;
    float tau1;
    float tau2;
    float tau3;
-   int   flavor; 
+   int   flavor;
    float rcn;
       
 private:

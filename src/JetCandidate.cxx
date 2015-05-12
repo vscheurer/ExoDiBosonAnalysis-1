@@ -6,10 +6,11 @@ JetCandidate::JetCandidate( TLorentzVector tlv )
    , csv(-99)
    , mass(-99)
    , prunedMass(-99)
+   , softdropMass(-99)   
    , tau1(-99)
    , tau2(-99)
    , tau3(-99)
-   , flavor(-99)
+   , flavor(-99)   
    , rcn(-99)
 {
 

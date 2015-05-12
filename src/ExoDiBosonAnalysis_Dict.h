@@ -34,21 +34,22 @@ extern void G__set_cpp_environmentExoDiBosonAnalysis_Dict();
 #include "include/BTagWeight.h"
 #include "include/EquationSolver.h"
 #include "include/ExoDiBosonAnalysis.h"
-#include "include/HLTWeight.h"
 #include "include/HiggsCandidate.h"
 #include "include/HistosManager.h"
+#include "include/HLTWeight.h"
 #include "include/InputData.h"
 #include "include/JetCandidate.h"
-#include "include/LHEWeight.h"
 #include "include/LeptonCandidate.h"
+#include "include/LHEWeight.h"
 #include "include/LumiWeight.h"
-#include "include/METCandidate.h"
 #include "include/MatchingTools.h"
+#include "include/METCandidate.h"
 #include "include/MuonCandidate.h"
 #include "include/NtupleManager.h"
 #include "include/PUWeight.h"
 #include "include/RecoCandidate.h"
 #include "include/Utilities.h"
+#include "include/VCandidate.h"
 #include <algorithm>
 namespace std { }
 using namespace std;
@@ -147,10 +148,10 @@ extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_ExoDiBosonAnalysis;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_maplEintcOTLorentzVectorcOlesslEintgRcOallocatorlEpairlEconstsPintcOTLorentzVectorgRsPgRsPgR;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_vectorlELeptonCandidatecOallocatorlELeptonCandidategRsPgR;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_reverse_iteratorlEvectorlELeptonCandidatecOallocatorlELeptonCandidategRsPgRcLcLiteratorgR;
-extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_vectorlEMETCandidatecOallocatorlEMETCandidategRsPgR;
-extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_reverse_iteratorlEvectorlEMETCandidatecOallocatorlEMETCandidategRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_vectorlEHiggsCandidatecOallocatorlEHiggsCandidategRsPgR;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_reverse_iteratorlEvectorlEHiggsCandidatecOallocatorlEHiggsCandidategRsPgRcLcLiteratorgR;
+extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_vectorlEMETCandidatecOallocatorlEMETCandidategRsPgR;
+extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_reverse_iteratorlEvectorlEMETCandidatecOallocatorlEMETCandidategRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_vectorlETLorentzVectorcOallocatorlETLorentzVectorgRsPgR;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_vectorlETLorentzVectorcOallocatorlETLorentzVectorgRsPgRcLcLiterator;
 extern G__linked_taginfo G__ExoDiBosonAnalysis_DictLN_reverse_iteratorlEvectorlETLorentzVectorcOallocatorlETLorentzVectorgRsPgRcLcLiteratorgR;
