@@ -73,7 +73,7 @@ namespace ROOT {
       ::ExoDiBosonAnalysis *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::ExoDiBosonAnalysis >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("ExoDiBosonAnalysis", ::ExoDiBosonAnalysis::Class_Version(), "include/ExoDiBosonAnalysis.h", 23,
+         instance("ExoDiBosonAnalysis", ::ExoDiBosonAnalysis::Class_Version(), "include/ExoDiBosonAnalysis.h", 24,
                   typeid(::ExoDiBosonAnalysis), DefineBehavior(ptr, ptr),
                   &::ExoDiBosonAnalysis::Dictionary, isa_proxy, 4,
                   sizeof(::ExoDiBosonAnalysis) );
@@ -502,7 +502,7 @@ namespace {
     static const char* includePaths[] = {
 "/shome/thaarres/EXOVVAnalysisRunII/SFrame-04-00-01",
 "./",
-"/cvmfs/cms.cern.ch/slc6_amd64_gcc491/lcg/root/6.02.00-odfocd3/include",
+"/cvmfs/cms.cern.ch/slc6_amd64_gcc491/lcg/root/6.02.00-odfocd5/include",
 "/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/",
 0
     };

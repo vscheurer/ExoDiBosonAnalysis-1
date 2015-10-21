@@ -4,6 +4,7 @@
 #include "core/include/SCycleBase.h"
 
 #include "TLorentzVector.h"
+#include <string>
 // #include <algorithm>
 
 #include "../ExoDiBosonAnalysis/include/InputData.h"
@@ -35,7 +36,6 @@ public:
   virtual void ExecuteEvent	( const SInputData&, Double_t )	throw( SError );
    
   void setGenCandidates          ( void );
-  bool selectChannel             ( void );
    
   void setWeight                 ( TString infile );
   void initWeight                ( void );
@@ -45,16 +45,13 @@ public:
   InputData& getData             ( void ){ return data_; }
   void setNtupleManager          ( NtupleManager* ntupleManager ){ theNtupleManager_ = ntupleManager; }
   void printCutFlow              ( void );
+  
 
-  void fillHistos                ( void );
-  void fillSFHistos              ( void );
-
-  double getMuonScale            ( double oldpt );
-  double getPrunedMassScale      ( double prunedmass );
-              
-  bool passedSelections          ( void );
+  void fillHistos                ( std::string Channel );
+       
   bool passedTTbarSelections     ( void );
-  bool passedDijetSelections 	 ( void );
+  bool passedDijetSelections     (  TString infile  );
+  bool passedFilters             ( void );
   bool passedTrigger             ( void );
 	
   bool findLeptonCandidate       ( void );     
@@ -63,19 +60,17 @@ public:
   bool findMETCandidate          ( void );
   bool findWCandidate            ( void );
   bool findHadronicWCandidate    ( void );
-  bool findJetCandidate          ( void );
-  void findExtraJets             ( void );
-  void findTopCandidate          ( void );
-  void findExoCandidate          ( void );   
+  void findAK4Jets             ( void ); 
   TLorentzVector getp4Nu         ( void );
   TLorentzVector getp4NuMethod2  ( void );
 
 
   bool findJetCandidates         ( void );
 
-  void doLeptonRecoEfficiency    ( void );
-  bool run4Synch                 ( void );
-  void doJetRecoEfficiency    	 ( void );
+  void doJetTriggerEfficiency    	 ( void );
+  void doJetTriggerEfficiency2    	 ( void );
+  void doGenTTReco               ( void );
+  void doGroomingStudies         (  TString infile  );
      
 private:
   ClassDef( ExoDiBosonAnalysis, 0 );  
@@ -84,10 +79,8 @@ private:
   NtupleManager* theNtupleManager_;
   InputData      data_            ;
   PUWeight       PUWeight_        ;
-  LHEWeight      LHEWeight_       ;
-  HLTWeight      HLTWeight_       ;
-  BTagWeight     BTagWeight_      ;
   LumiWeight     LumiWeight_      ;
+  TH1F*          hPUweights_      ;
 
   std::map<int,TLorentzVector>	genCandidates_	;
   std::vector<LeptonCandidate>	leptonCand_		;
@@ -101,6 +94,8 @@ private:
   std::vector<JetCandidate	>	Leptonicb_	;
   std::vector<JetCandidate	>	Hadronicb_	;
   std::vector<JetCandidate	>	HadronicJ_	;
+  
+  int jetINDX;
 
   // XML configuration //
    
@@ -109,22 +104,21 @@ private:
   std::string    OutputTreeName_  ;   
   bool           isSignal_        ;
   bool           runOnMC_         ;
-  bool           genFilter_       ;
-  std::string    Flavour_         ; 
+  bool           GenStudies_       ;
   std::string    Channel_         ; 
   bool           Trigger_         ;
-  bool           Synch_           ;
-	
+	bool           applyFilters_  ;
+   
   bool           UsePruned_     ;
-  bool           UseSD_         ;
 
   /* leptonic selections */
+  int foundAMu;
+  int foundAEle;
   double         leptPtCut_	   ;
   double         leptEtaCut_	   ;
   double         AleptPtCut_	   ;
   double         AleptEtaCut_	;
   double         METCut_  	   ;
-  double         WptCut_  	   ;
    
   /* jet selections */
   double         MjjCut_	   	;
@@ -137,46 +131,22 @@ private:
   double         Tau21High_	   	;
   double         Tau21HPLow_	   		;
   double         Tau21HPHigh_	   	;      
-  /* btag veto */
-  int            nAJetCut_	   ; // if it's -1 the cut is not applied
-  std::string    BtagVetoWP_      ;
 
-  /* top mass veto */
-  bool           TopMassCut_      ;
-  double         leptTopMassLow_  ;
-  double         leptTopMassHigh_ ;
-  double         hadrTopMassLow_  ;
-  double         hadrTopMassHigh_ ;
-   
   /* pruned mass */
   bool           VetoSR_          ;
   double         mPMLow_		   ;
   double         mPMHigh_	   ;
   double         mSDLow_		   ;
   double         mSDHigh_	   ; 
-  /* WH mass window */
-  double         WHMass_          ; // if it's -1 no window is applied otherwise put the mass of the resonance and the 15% window is automatically taken into account
-      
-  /* weights settings */            
-  std::string    LHEsample_       ;
+
   double         xSec_            ;
   double         genEvents_       ;
   double         Lumi_            ;
   std::string    PUProfileData_   ;
-  std::string    BTagEff4vetoData_  ;
-  std::string    BTagEff4fatjetData_;
-  std::string    BTagEff4subjetData_;
    
-  /* systematics */
-  bool           BtagSFSysUpVeto_  ;
-  bool           BtagSFSysDownVeto_;
-  int            ScaleMuonUpDown_  ;
-  int            ScalePrunedMass_  ;
 
   // END OF XML CONFIGURATION //
    
-  std::map<std::string,double>	bTagWPmap_	;
-  int            					jetIndex_	;
   int            					channel		;
    
   float		pdgMtop;
@@ -184,13 +154,9 @@ private:
   float		pdgWidthtop;
   float		pdgWidthw;   
   float		weight_			;
-  float		lheweight_		;
+  float  genweight_   ;
   float		puweight_		;
-  float		hltweight_		;
-  float		btagweight_		;
   float		lumiweight_		;
-  float		btagvetow		; 
-  float		htagw				;   
   float		Mjj				;
   float  	MVV				;
   float  	MVVmethod2		;
@@ -204,25 +170,37 @@ private:
   float		WMassMethod2	;
   float		jetsDeltaEta	;
   int		nBTags			;
-   
+  
+  int nSumGenWeights_;
+  int    nPVs             ; 
   int    nEvents_                ;
+  int    nPassedFilters_         ;  
   int    nPassedTrigger_         ;  
+  int    nPassedChi2_         ;  
   int    nPassedFoundLept_       ;
   int    nPassedFoundMET_        ;
-  int    nPassedFoundW_          ;
-  int    nPassedFoundJet_        ;
-  int    nPassedLepJetDR_        ;
-  int    nPassedJetPtTight_      ;
-  int    nPassedAJetCut_         ;
-  int    nPassedLepJetDR2_       ;
-  int    nPassedMETJetDPhi_      ;
-  int    nPassedJetWDPhi_        ;
+
   int    nPassedTopMass_         ;    
   int    nPassedJetMass_         ;     
   int    nPassedJetPrunedMass_   ;
   int    nPassedTau21Cut_        ;
-  int    nPassedExoCandidateMass_;
   int    nPassedWTag_				 ;
+  int    nPassedFilter_HBHE_;
+  int    nPassedFilter_CSCHalo_;
+  int    nPassedFilter_HCALlaser_;
+  int    nPassedFilter_ECALDeadCell_;
+  int    nPassedFilter_GoodVtx_;
+  int    nPassedFilter_TrkFailure_;
+  int    nPassedFilter_EEBadSc_;
+  int    nPassedFilter_ECALlaser_;
+  int    nPassedFilter_TrkPOG_;
+  int    nPassedFilter_TrkPOG_manystrip_;
+  int    nPassedFilter_TrkPOG_toomanystrip_;
+  int    nPassedFilter_TrkPOG_logError_;
+  int    nPassedFilter_METFilters_;
+  int    nPassedMETFiltersAll_;
+  int    nPassedTrkFiltersAll_;
+  int    nPassedGoodPVFilter_;
    
    
   //Dijet cut flow
@@ -261,10 +239,12 @@ private:
   //FAT JET: the most energetic AK8 jet satisfying loosejetID && cleaned from the all HEEP/highPtMuon leptons in a cone dR=1.0:
   float jet_pt; 
   float jet_eta; 
+  float jet_deta;
   float jet_phi; 
   float jet_mass_pruned;
   float jet_mass_softdrop; 
   float jet_tau2tau1; 
+  float sum_genweights; 
 
   //W boson:
   float W_pt;
@@ -274,13 +254,8 @@ private:
   //lvj MASS:
   float m_lvj;
 
-  //AK4 JETS collection: - cleaned from the all HEEP/highPtMuon leptons && dR>=1.0 from the fat jet && isLooseJetId
   int njets;  //AK4 jets
-  int nbtag;  //number of AK4 jets b-tagged with iCSVM
-  float jet2_pt;  //1st most energetic AK4 
-  float jet2_btag;  //1st most energetic AK4 
-  float jet3_pt;  //2nd most energetic AK4 
-  float jet3_btag;  //2nd most energetic AK4 
+  int nbtag;  //number of AK4 jets b-tagged with iCSVM 
 
 }; // class ExoDiBosonAnalysis
 

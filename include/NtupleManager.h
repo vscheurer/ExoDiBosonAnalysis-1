@@ -11,7 +11,7 @@ public:
    NtupleManager( SCycleBase * theAnalysis );
    ~NtupleManager( void );
    
-   void ConnectVariables( std::string treeName );
+   void ConnectVariables( std::string treeName, bool runOnMC_ );
    InputData getData( void ){return theData_;}
    
 private:

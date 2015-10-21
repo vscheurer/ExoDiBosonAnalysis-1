@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <TLorentzVector.h>
+#include <map>
 
 class InputData {
 
@@ -29,6 +30,27 @@ public:
 	float                            lheNj                ;
 	float                            genWeight            ;
 	float                            qScale               ;
+  
+  int                             el_N              	 ;
+  std::vector<float>*    	   el_e 	    	 ;
+  std::vector<float>*  	   el_eta	    	 ;
+  std::vector<float>*  	   el_pt	    	 ;
+  std::vector<float>*  	   el_phi	    	 ;
+  std::vector<int  >*  	   el_isHEEP	         ;
+   std::vector<int  >*  	 el_isLooseElectron	         ;
+   std::vector<int  >*  	 el_isMediumElectron	         ;
+   std::vector<int  >*  	 el_isTightElectron	         ;
+
+  int                      mu_N          ;
+  std::vector<float>*      mu_e 	    	 ;
+  std::vector<float>*  	   mu_eta	    	 ;
+  std::vector<float>*  	   mu_pt	    	 ;
+  std::vector<float>*  	   mu_phi	    	 ;
+  std::vector<float>*  	   mu_trackIso           ;   
+  std::vector<int  >*      mu_isHighPtMuon       ;
+  std::vector<int  >*      mu_isLooseMuon       ;
+  std::vector<int  >*      mu_isTightMuon       ;
+  std::vector<int  >*  	   mu_isPFMuon	         ;
    
 	int                        nlep						    	;
 	std::vector<float>*    	   lep_e					  		;
@@ -85,23 +107,36 @@ public:
 	std::vector<float>*  	   jetAK8pruned_jec			;
 	std::vector<float>*  	   jetAK8softdrop_jec		;
 	std::vector<float>*		   jetAK8_csv					;
-	std::vector<int  >*		   jetAK8_nm					;
-	std::vector<int  >*		   jetAK8_cm					;
-	std::vector<float>*		   jetAK8_che					;
-	std::vector<float>*		   jetAK8_ne					;
-	std::vector<float>*		   jetAK8_muf					;
-	std::vector<float>*		   jetAK8_phf					;
-	std::vector<float>* 	      jetAK8_emf					;
-	std::vector<float>*	      jetAK8_nhf					;
-	std::vector<float>*		   jetAK8_chf					;
-	std::vector<float>*		   jetAK8_area					;
    
 	std::vector<float>*		   jetAK8_tau1					;
 	std::vector<float>*		   jetAK8_tau2					;
 	std::vector<float>*		   jetAK8_tau3					;
-	std::vector<bool >*  	   jetAK8_IDLoose				;  
+	std::vector<bool >*  	   jetAK8_IDLoose				; 
+  std::vector<bool >*  	   jetAK8_IDTight				; 
 	std::vector<int  >*  	   jetAK8_flavor				;
 	std::vector<int  >*  	   jetAK8_nconstituents		;
+  
+  std::vector<int>*        jetAK8_cm; //chargedMultiplicity
+  std::vector<int>*        jetAK8_nm; //neutralMultiplicity
+  std::vector<float>*		   jetAK8_muf; //muonEnergyFraction
+  std::vector<float>*		   jetAK8_phf; //photonEnergyFraction
+  std::vector<float>*		   jetAK8_emf; //chargedEmEnergyFraction
+  std::vector<float>*		   jetAK8_nhf; //neutralHadronEnergyFraction
+  std::vector<float>*		   jetAK8_chf; //chargedHadronEnergyFraction
+  std::vector<float>*		   jetAK8_area; //jetArea
+  std::vector<float>*		   jetAK8_che; //fj.chargedHadronEnergy()+fj.electronEnergy()+fj.muonEnergy()
+  std::vector<float>*		   jetAK8_ne; //fj.neutralHadronEnergy()+fj.photonEnergy()
+  std::vector<float>*		   jetAK8_hf_hf; //HFHadronEnergyFraction());
+  std::vector<float>*		   jetAK8_hf_emf; //HFEMEnergyFraction());
+  std::vector<float>*		   jetAK8_hof; //hoEnergyFraction());
+  std::vector<int>*		     jetAK8_chm; //chargedHadronMultiplicity());
+  std::vector<int>*		     jetAK8_neHadMult ; //neutralHadronMultiplicity());
+  std::vector<int>*		     jetAK8_phoMult; //photonMultiplicity());
+  std::vector<float>*		   jetAK8_nemf; //neutralEmEnergyFraction());
+  std::vector<float>*		   jetAK8_cemf ; //chargedEmEnergyFraction());
+  std::vector<float>*		   jetAK8_charge; //charge());		
+  
+  
   
   int			      ngenJetsAK8               ;
   std::vector<float>*  	      genJetAK8_pt              ;
@@ -109,6 +144,8 @@ public:
   std::vector<float>* 	      genJetAK8_mass            ;
   std::vector<float>*  	      genJetAK8_phi             ;
   std::vector<float>*  	      genJetAK8_e               ;
+  std::vector<float>*  	      genJetAK8_prunedmass      ;
+  std::vector<float>*  	      genJetAK8_softdropmass    ;
   
       
 	// int                             njetsAK8pruned    	 ;
@@ -118,36 +155,45 @@ public:
 	//   std::vector<float>*		   jetAK8pruned_e    	 ;
 	//   std::vector<float>*		   jetAK8pruned_mass 	 ;
 
-	std::vector<int						>* nsoftdropsubjets						;
-	std::vector< std::vector<float>	>* subjetAK8softdrop_csv		;    
-	std::vector< std::vector<float>	>* subjetAK8softdrop_pt 		;    
-	std::vector< std::vector<float>	>* subjetAK8softdrop_eta		;    
-	std::vector< std::vector<float>	>* subjetAK8softdrop_phi		;    
-	std::vector< std::vector<float>	>* subjetAK8softdrop_e  		;    
-	std::vector< std::vector<int>		>* subjetAK8softdrop_flavor	;    
-       
-	std::vector<int  >*             nPUTrue                     ;
-	std::vector<int  >*             bX                     		;
-	int                             nPVs                     	; 
-	int                             EVENT_event						;
-	int                             EVENT_run							;
-	int                             EVENT_lumi						;
+	std::vector<int						>* subjetAK8_softdrop_N						;
+	std::vector< std::vector<float>	>* subjetAK8_softdrop_csv		;    
+	std::vector< std::vector<float>	>* subjetAK8_softdrop_pt 		;    
+	std::vector< std::vector<float>	>* subjetAK8_softdrop_eta		;    
+	std::vector< std::vector<float>	>* subjetAK8_softdrop_phi		;    
+	std::vector< std::vector<float>	>* subjetAK8_softdrop_e  		;    
+	std::vector< std::vector<int>		>* subjetAK8_softdrop_flavor	;    
   
-  bool    isFired_HLT_AK8PFJet360_TrimMass30_v1                   ;
-  bool    isFired_HLT_AK8PFHT700_TrimR0p1PT0p03Mass50_v1          ;
-  bool    isFired_HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV0p41_v1 ;
-  bool    isFired_HLT_PFHT650_WideJetMJJ950DEtaJJ1p5_v1           ;
-  bool    isFired_HLT_PFHT650_WideJetMJJ900DEtaJJ1p5_v1           ;
-  bool    isFired_HLT_PFHT350_v1                                  ;
-  bool    isFired_HLT_PFHT600_v1                                  ;
-  bool    isFired_HLT_PFHT650_v1                                  ;
-  bool    isFired_HLT_PFHT900_v1                                  ;
-	bool    isFired_HLT_HT400_v1                                    ;
-	
-	bool   	isFired_HLT_Mu40_v1																			;
-	bool		isFired_HLT_Ele95_CaloIdVT_GsfTrkIdT_v1									;
-	
-              
+  std::vector<int  >*             nPUTrue               ;
+  std::vector<int  >*             bX                    ;
+  int                             nPVs                  ; 
+  int                             EVENT_event           ;
+  int                             EVENT_run             ;
+  int                             EVENT_lumi            ;
+  bool                            PV_filter             ;
+   
+  std::map<std::string,bool>*         HLT_isFired;
+
+  /*std::vector<float>*		       triggerObject_pt 	 ;
+  std::vector<float>*		       triggerObject_eta	 ;
+  std::vector<float>*		       triggerObject_phi	 ;
+  std::vector<float>*		       triggerObject_mass	 ;
+  std::vector< std::vector<float> >*  triggerObject_filterIDs   ;
+  std::vector< std::vector<int> >*    triggerObject_firedTrigger;*/
+
+  bool passFilter_HBHE_;
+  bool passFilter_CSCHalo_;
+  bool passFilter_HCALlaser_;
+  bool passFilter_ECALDeadCell_;
+  bool passFilter_GoodVtx_;
+  bool passFilter_TrkFailure_;
+  bool passFilter_EEBadSc_;
+  bool passFilter_ECALlaser_;
+  bool passFilter_TrkPOG_;
+  bool passFilter_TrkPOG_manystrip_;
+  bool passFilter_TrkPOG_toomanystrip_;
+  bool passFilter_TrkPOG_logError_;
+  bool passFilter_METFilters_;
+               
 private:
    
 };
