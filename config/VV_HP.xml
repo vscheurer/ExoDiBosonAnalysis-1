@@ -8,7 +8,7 @@
       
   <Cycle Name="ExoDiBosonAnalysis" OutputDirectory="../AnalysisOutput/Pruned/VV/HP/" PostFix="" ProofServer="lite" ProofWorkDir="" RunMode="LOCAL" TargetLumi="1.0">
     
-    <!-- <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1WW_13TeV_800GeV">
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1WW_13TeV_800GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToWW_kMpl01_M-800_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
@@ -33,7 +33,7 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToWW_kMpl01_M-1600_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData> -->
+    </InputData>
     <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1WW_13TeV_1800GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToWW_kMpl01_M-1800_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
@@ -50,7 +50,7 @@
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
     </InputData>
-   <!--  <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1WW_13TeV_3000GeV">
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1WW_13TeV_3000GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToWW_kMpl01_M-3000_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
@@ -90,7 +90,7 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToZZ_kMpl01_M-1600_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData> -->
+    </InputData>
     <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1ZZ_13TeV_1800GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToZZ_kMpl01_M-1800_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
@@ -106,7 +106,7 @@
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
     </InputData>
-   <!--  <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1ZZ_13TeV_3000GeV">
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="RS1ZZ_13TeV_3000GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_RSGravToZZ_kMpl01_M-3000_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
@@ -148,7 +148,7 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_BulkGravToWW_narrow_M-1600_13TeV-madgraph_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData> -->
+    </InputData>
    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="BulkWW_13TeV_1800GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_BulkGravToWW_narrow_M-1800_13TeV-madgraph_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
@@ -162,7 +162,7 @@
         </InputData>  
 
 
-    <!--  <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="BulkWW_13TeV_2000GeV">
+     <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="BulkWW_13TeV_2000GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_BulkGravToWW_narrow_M-2000_13TeV-madgraph_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
@@ -184,7 +184,7 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-1000_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData> 
+    </InputData>
      <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="WprimeToWZ_1200GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-1200_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
@@ -199,7 +199,7 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-1600_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData>-->
+    </InputData>
     <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="WprimeToWZ_1800GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-1800_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-1800_TuneCUETP8M1_13TeV-pythia8_2.root" Lumi="1.0"/>
@@ -216,7 +216,7 @@
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
     </InputData>
-     <!--  <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="WprimeToWZ_3000GeV">
+      <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="Signal" Type="WprimeToWZ_3000GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-3000_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
@@ -247,7 +247,7 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring15/WtaggingWithPuppi/EXOVVTree_WprimeToWZ_M-800_TuneCUETP8M1_13TeV-pythia8_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData> -->
+    </InputData>
             
     <UserConfig>
                           
@@ -277,10 +277,10 @@
       <Item Name="JetPtCutTight" Value="200." />
       <Item Name="JetEtaCut" Value="2.4" />
       <Item Name="Tau21Cut" Value="true" />
-      <Item Name="Tau21HPLow" Value="0.0" />
-      <Item Name="Tau21HPHigh" Value="0.60" />     
+      <Item Name="Tau21HPLow" Value="0.00" />
+      <Item Name="Tau21HPHigh" Value="0.50" />     
       <Item Name="Tau21Low" Value="0.00" />
-      <Item Name="Tau21High" Value="0.60" />  
+      <Item Name="Tau21High" Value="0.50" />  
       
       <!--pruned mass-->
       <Item Name="UsePruned" Value="true"/>  
@@ -293,7 +293,7 @@
       <Item Name="xSec" Value="1." />
       <Item Name="genEvents" Value="1." />
       <Item Name="Lumi" Value="1." />
-      <Item Name="PUdata" Value="data/PUweights_Run2015D.root" />
+      <Item Name="PUdata" Value="data/DataPUProfile_2015CD.root" />
     
 
     </UserConfig>

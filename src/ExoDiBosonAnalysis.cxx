@@ -151,11 +151,11 @@ void ExoDiBosonAnalysis::BeginCycle() throw( SError ) {
 //==============================================================================================
 void ExoDiBosonAnalysis::initWeight( void ){
 
-  // PUWeight::Scenario sc = PUWeight_.toScenario("PUS10");
-  // PUWeight_.initPUWeights(PUProfileData_,sc);
+  PUWeight::Scenario sc = PUWeight_.toScenario("PUS25ns");
+  PUWeight_.initPUWeights(PUProfileData_,sc);
   
-  TFile* fPUweights = TFile::Open(PUProfileData_.c_str(),"READ");
-  hPUweights_ = (TH1F*)fPUweights->Get("puweights");
+  // TFile* fPUweights = TFile::Open(PUProfileData_.c_str(),"READ");
+  // hPUweights_ = (TH1F*)fPUweights->Get("puweights");
    
 }
 
@@ -241,10 +241,10 @@ void ExoDiBosonAnalysis::setWeight( TString infile ){
     if( (*data_.bX)[v] == 0 ) puweight_ = PUWeight_.getPUWeight( (*data_.nPUTrue)[v] );
   }
 
-  if( data_.nPVs <= 50 ){
-    int bin = hPUweights_->GetXaxis()->FindBin(data_.nPVs);
-    puweight_ = hPUweights_->GetBinContent(bin);
-  }
+  // if( data_.nPVs <= 52 ){
+  //   int bin = hPUweights_->GetXaxis()->FindBin(data_.nPVs);
+  //   puweight_ = hPUweights_->GetBinContent(bin);
+  // }
          
   double lumiw = xSec_/genEvents_;     
   lumiweight_ = lumiw*LumiWeight_.getLumiWeight( infile )*Lumi_; 

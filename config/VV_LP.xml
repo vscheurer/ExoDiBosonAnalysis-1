@@ -265,13 +265,13 @@
       <!--jet selections-->
       
       <Item Name="dEtaCut" Value="1.3" /> 
-      <Item Name="MjjCut" Value="950.0" /> 
+      <Item Name="MjjCut" Value="1000.0" /> 
       <Item Name="JetPtCutLoose" Value="30." />
       <Item Name="JetPtCutTight" Value="200." />
       <Item Name="JetEtaCut" Value="2.4" />
       <Item Name="Tau21Cut" Value="true" />
-      <Item Name="Tau21HPLow" Value="0.0" />
-      <Item Name="Tau21HPHigh" Value="0.5" />     
+      <Item Name="Tau21HPLow" Value="0.00" />
+      <Item Name="Tau21HPHigh" Value="0.50" />     
       <Item Name="Tau21Low" Value="0.50" />
       <Item Name="Tau21High" Value="0.75" />  
       
@@ -286,7 +286,7 @@
       <Item Name="xSec" Value="1." />
       <Item Name="genEvents" Value="1." />
       <Item Name="Lumi" Value="1." />
-      <Item Name="PUdata" Value="data/PUweights_Run2015D.root" />
+      <Item Name="PUdata" Value="data/DataPUProfile_2015CD.root" />
     
 
     </UserConfig>
