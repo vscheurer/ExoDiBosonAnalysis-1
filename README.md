@@ -1,7 +1,8 @@
 # ExoDiBosonAnalysis
 
 You first need to set up the SFrame Framework as described here:
-https://wiki-zeuthen.desy.de/ATLAS/Projects/TopPhysicsInternal/AnalysisFramework/Tutorial (current tag is SFrame-04-00-01/)
+https://wiki-zeuthen.desy.de/ATLAS/Projects/TopPhysicsInternal/AnalysisFramework/Tutorial 
+(current tag is SFrame-04-00-01/)
 In order to run SFrame you need a working version ROOT (setting up the CMSSW enviroment will do, CMSSW_7_4_X with X>1)
 After sourcing SFrame 
 
