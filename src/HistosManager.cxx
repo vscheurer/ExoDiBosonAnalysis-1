@@ -20,7 +20,7 @@ HistosManager::~HistosManager( void ){
 void HistosManager::bookHistos( std::string Channel_ ){
  
  theAnalysis_->Book( TH1F( "runNumber", "run number"      , 1000, 251000, 252000 ) );
- theAnalysis_->Book( TH1F( "nVertices", "number of PVs"    ,  40, 0. ,  40. ) );
+ theAnalysis_->Book( TH1F( "nVertices", "number of PVs"    ,  20, 0. ,  40. ) );
  
  
  if( Channel_ == "VVdijet" || Channel_ == "qVdijet" ){
@@ -71,24 +71,25 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "phf"   ,"(*data_.jetAK8_phf)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "emf"   ,"(*data_.jetAK8_emf)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "nhf"   ,"(*data_.jetAK8_nhf)",20,0.,1. ) );
-  theAnalysis_->Book( TH1F( "chf"   ,"(*data_.jetAK8_chf)",20,0.,1.2 ) );
-  theAnalysis_->Book( TH1F( "area"  ,"(*data_.jetAK8_area)",20,0.,4. ) );
-  theAnalysis_->Book( TH1F( "tau1"  ,"(*data_.jetAK8_tau1)",100,0.,1. ) );
-  theAnalysis_->Book( TH1F( "tau2"  ,"(*data_.jetAK8_tau2)",100,0.,1. ) );
+  theAnalysis_->Book( TH1F( "chf"   ,"(*data_.jetAK8_chf)",20,0.,1. ) );
+  theAnalysis_->Book( TH1F( "area"  ,"(*data_.jetAK8_area)",20,0.,6. ) );
+  theAnalysis_->Book( TH1F( "tau1"  ,"(*data_.jetAK8_tau1)",20,0.,1. ) );
+  theAnalysis_->Book( TH1F( "tau2"  ,"(*data_.jetAK8_tau2)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "tau2tau1"  ,"(*data_.jetAK8_tau21)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "tau3tau1"  ,"(*data_.jetAK8_tau31)",20,0.,1. ) );
-  theAnalysis_->Book( TH1F( "tau3"  ,"(*data_.jetAK8_tau3)",100,0.,1. ) );
+  theAnalysis_->Book( TH1F( "tau3tau2"  ,"(*data_.jetAK8_tau32)",20,0.,1. ) );
+  theAnalysis_->Book( TH1F( "tau3"  ,"(*data_.jetAK8_tau3)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "che"   ,"(*data_.jetAK8_che)",30,0.,3000. ) );
   theAnalysis_->Book( TH1F( "ne"   ,"(*data_.jetAK8_ne)",50,0.,5000. ) );
-  theAnalysis_->Book( TH1F( "HFHadronEnergyFraction", "HFHadronEnergyFraction" , 100, 0., 1. ) );
+  theAnalysis_->Book( TH1F( "HFHadronEnergyFraction", "HFHadronEnergyFraction" , 30, 0., 0.3 ) );
   theAnalysis_->Book( TH1F( "HFEMEnergyFraction", "HFEMEnergyFraction" , 100, 0., 1. ) );
-  theAnalysis_->Book( TH1F( "hoEnergyFraction", "hoEnergyFraction" , 100, -1.0, 1. ) );
-  theAnalysis_->Book( TH1F( "chargedHadronMultiplicity", "chargedHadronMultiplicity" , 100, 0., 100 ) );
+  theAnalysis_->Book( TH1F( "hoEnergyFraction", "hoEnergyFraction" , 100, 0., 1. ) );
+  theAnalysis_->Book( TH1F( "chargedHadronMultiplicity", "chargedHadronMultiplicity" , 60, 0., 120 ) );
   theAnalysis_->Book( TH1F( "neutralHadronMultiplicity", "neutralHadronMultiplicity" , 30, 0., 30. ) );
-  theAnalysis_->Book( TH1F( "photonMultiplicity", "photonMultiplicity" , 100, 0., 100. ) );
+  theAnalysis_->Book( TH1F( "photonMultiplicity", "photonMultiplicity" , 50, 0., 100. ) );
   theAnalysis_->Book( TH1F( "neutralEmEnergyFraction", "neutralEmEnergyFraction" , 20, 0., 1. ) );
   theAnalysis_->Book( TH1F( "chargedEmEnergyFraction", "chargedEmEnergyFraction" , 20, 0., 1. ) );
-  theAnalysis_->Book( TH1F( "charge", "charge" , 41, -20., 20. ) );
+  theAnalysis_->Book( TH1F( "charge", "charge" , 41, -30., 30. ) );
   
   
   
@@ -268,10 +269,10 @@ void HistosManager::formatHistos( std::string Channel_ ){
   theAnalysis_->Hist( "recoWMass"     )->GetXaxis()->SetTitle( "M [GeV]");
   theAnalysis_->Hist( "METsumET" )->GetXaxis()->SetTitle( "MET/sumET");
   theAnalysis_->Hist( "MET"    )->GetXaxis()->SetTitle( "MET [GeV]");
-  theAnalysis_->Hist( "PrunedMass"	)->GetXaxis()->SetTitle( "M [GeV]");
-  theAnalysis_->Hist( "SoftdropMass")->GetXaxis()->SetTitle( "M [GeV]");
+  theAnalysis_->Hist( "PrunedMass"	)->GetXaxis()->SetTitle( "Pruned mass [GeV]");
+  theAnalysis_->Hist( "SoftdropMass")->GetXaxis()->SetTitle( "Softdrop mass [GeV]");
   theAnalysis_->Hist( "Mass"		)->GetXaxis()->SetTitle( "M [GeV]");
-  theAnalysis_->Hist( "Tau21" )->GetXaxis()->SetTitle( "#tau{21}");
+  theAnalysis_->Hist( "Tau21" )->GetXaxis()->SetTitle( "#tau_{21}");
   theAnalysis_->Hist( "Pt" 	  )->GetXaxis()->SetTitle( "p_{T} [GeV]");
   theAnalysis_->Hist( "Eta")->GetXaxis()->SetTitle( "#eta");
   theAnalysis_->Hist( "Phi")->GetXaxis()->SetTitle( "#phi"); 
@@ -285,8 +286,10 @@ void HistosManager::formatHistos( std::string Channel_ ){
   theAnalysis_->Hist( "area")->GetXaxis()->SetTitle( "Jet area" );
   theAnalysis_->Hist( "tau1")->GetXaxis()->SetTitle( "#tau_{1}" );
   theAnalysis_->Hist( "tau2")->GetXaxis()->SetTitle( "#tau_{2}" );
+  theAnalysis_->Hist( "tau3")->GetXaxis()->SetTitle( "#tau_{3}" );
   theAnalysis_->Hist( "tau2tau1")->GetXaxis()->SetTitle( "#tau_{21}" );
   theAnalysis_->Hist( "tau3tau1")->GetXaxis()->SetTitle( "#tau_{31}" );
+  theAnalysis_->Hist( "tau3tau2")->GetXaxis()->SetTitle( "#tau_{32}" );
   theAnalysis_->Hist( "che")->GetXaxis()->SetTitle( "Charged energy" );
   theAnalysis_->Hist( "ne")->GetXaxis()->SetTitle( "Neutral energy" );
   theAnalysis_->Hist( "HFHadronEnergyFraction")->GetXaxis()->SetTitle( "HF Hadron Energy Fraction");

@@ -531,9 +531,7 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   if (jetsDeltaEta <= dEtaCut_) passedDeltaEtaCut = true;	
   
   if ( ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M() >= MjjCut_ ){
-    jet_deta = fabs( Vcand.at(0).p4.Eta()  - Vcand.at(1).p4.Eta());
-    Hist( "DeltaEta")	->Fill( jetsDeltaEta , weight_ ); 	
-    Hist( "DeltaR")	  ->Fill( (Vcand.at(0).p4).DeltaR(Vcand.at(1).p4) , weight_ ); 	
+    jet_deta = fabs( Vcand.at(0).p4.Eta()  - Vcand.at(1).p4.Eta());	
     passedMjjCut = true;
   }
   
@@ -546,6 +544,9 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   
   if( !passedMjjCut) return false;   
   nPassedMjj_++;
+  
+  Hist( "DeltaEta")	->Fill( jetsDeltaEta , weight_ ); 	
+  Hist( "DeltaR")	  ->Fill( (Vcand.at(0).p4).DeltaR(Vcand.at(1).p4) , weight_ ); 
   
   if(GenStudies_ && isSignal_) doGroomingStudies(infile);
   
@@ -571,6 +572,7 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
     Hist( "area"    )  ->Fill( Vcand.at(i).area  , weight_ );
     Hist( "tau1"    )  ->Fill( Vcand.at(i).tau1  , weight_ );
     Hist( "tau2"    )  ->Fill( Vcand.at(i).tau2  , weight_ );
+    Hist( "tau3tau2"    )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau2  , weight_ );
     Hist( "tau3tau1"    )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau1  , weight_ );
     Hist( "tau2tau1"    )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1  , weight_ );
     Hist( "tau3"    )  ->Fill( Vcand.at(i).tau3  , weight_ );

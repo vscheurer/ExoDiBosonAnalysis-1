@@ -155,18 +155,18 @@ double LumiWeight::getLumiWeight( TString sample ){
       xSec_ = 0.000165;
       genEvents_ = 192944.;   
     }
-    if( sample.Contains( "ST_t-channel_top" ) ){
+    else if( sample.Contains( "ST_t-channel_top" ) ){
        xSec_ = 136.02*0.322;
        genEvents_ = 3299800.;
     }  
-    if( sample.Contains( "ST_t-channel_antitop" ) ){
+    else if( sample.Contains( "ST_t-channel_antitop" ) ){
        xSec_ = 80.95*0.322;
        genEvents_ = 1695400.;
     }         
     else if( sample.Contains( "ST_s-channel" ) ){
        xSec_ = 11.36*0.322;
-       // genEvents_ = 984400.;
-       genEvents_ = 613384.; //sumweights
+       //genEvents_ = 984400.; //das
+       genEvents_ = 613384.; //genweights
     }	  
     else if( sample.Contains( "ST_t-channel" ) && !(sample.Contains("top") || sample.Contains("antitop")) ){
        xSec_ = 216.99*0.322;
@@ -182,35 +182,39 @@ double LumiWeight::getLumiWeight( TString sample ){
     }   
     else if( sample.Contains( "TTJets" ) ){
        xSec_ = 831.76;
-       // genEvents_ = 42730273.;
-       genEvents_ = 14170480.; //sumWEIGTHS
+       //genEvents_ = 42730273.; //das
+       genEvents_ = 14170480.; //genweights
+    }
+    else if( sample.Contains( "TT" ) && sample.Contains("powheg") ){
+       xSec_ = 831.76;
+       genEvents_ = 19899500.;
     }
     else if( sample.Contains( "_WW_" ) ){
        xSec_ = 118.7;
        genEvents_ = 994416.;
     }
     else if( sample.Contains( "_WZ_" ) ){
-       xSec_ = 66.1;
+       xSec_ = 47.13;//66.1;
        genEvents_ = 991232.;
     }
     else if( sample.Contains( "_ZZ_" ) ){
-       xSec_ = 15.4;
+       xSec_ = 16.5;//15.4;
        genEvents_ = 996168.;
     }      
     else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){
-       xSec_ = 1292.;
+       xSec_ = 1.21*1347.;//1292.;
        genEvents_ = 10142187.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
-       xSec_ = 385.9;
+       xSec_ = 1.21*360.;//385.9;
        genEvents_ = 5231856.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){
-       xSec_ = 47.9;
+       xSec_ = 1.21*48.9;//47.9;
        genEvents_ = 1901705.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-600ToInf" ) ){
-       xSec_ = 19.9;
+       xSec_ = 1.21*18.77;//19.9;
        genEvents_ = 1036108.;
     } 	 
     else if( sample.Contains( "WJetsToLNu" ) && !sample.Contains("_HT-") ){
@@ -221,9 +225,46 @@ double LumiWeight::getLumiWeight( TString sample ){
       xSec_ = 6104.0;
       genEvents_ = 28825132.;
       // v3 = 28825132.
+    }
+    else if( sample.Contains( "WJetsToQQ_HT-600ToInf" ) ){
+      xSec_ = 95.14;
+      genEvents_ = 1006060.;
+    }
+    else if( sample.Contains( "ZJetsToQQ_HT600toInf" ) ){
+      xSec_ = 5.670000;
+      genEvents_ = 982095.;
     } 
+    else if( sample.Contains( "QCD_HT200to300" ) ){
+      xSec_ = 1735000.0;
+      genEvents_ =18718905.;
+    }
+    else if( sample.Contains( "QCD_HT300to500" ) ){
+      xSec_ = 366800.0;
+      genEvents_ =19826197.;
+    }
+    else if( sample.Contains( "QCD_HT500to700" ) ){
+      xSec_ = 29370.0;
+      genEvents_ =19664159.;
+    }
+    else if( sample.Contains( "QCD_HT700to1000" ) ){
+      xSec_ = 6524.0;
+      genEvents_ = 15356448.;
+    }
+    else if( sample.Contains( "QCD_HT1000to1500" ) ){
+      xSec_ = 1064.0;
+      genEvents_ = 4963895.;
+    } 
+    else if( sample.Contains( "QCD_HT1500to2000" ) ){
+      xSec_ = 121.5;
+      genEvents_ = 3868886.;
+    }
+    else if( sample.Contains( "QCD_HT2000toInf" ) ){
+      xSec_ = 25.42;
+      genEvents_ = 1912529.;
+    }
+    
   }
-
+    
   if( sample.Contains( "_RSGravToWW_kMpl01_M-600_" ) ){
     // xSec_ = 2.37;
     xSec_ = 1.;
