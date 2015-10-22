@@ -31,7 +31,7 @@ JetCandidate::JetCandidate( TLorentzVector tlv )
    ,cemf(-99)
    ,charge(-99)
    ,area(-99)
-     
+   ,rho(-99)
 {
 
 }

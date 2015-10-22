@@ -18,6 +18,8 @@
 #include "../ExoDiBosonAnalysis/include/METCandidate.h"
 #include "../ExoDiBosonAnalysis/include/HiggsCandidate.h"
 
+#include "../Analysis/PredictedDistribution/interface/PredictedDistribution.h"
+
 class HistosManager;
 class NtupleManager;
 
@@ -71,6 +73,8 @@ public:
   void doJetTriggerEfficiency2    	 ( void );
   void doGenTTReco               ( void );
   void doGroomingStudies         (  TString infile  );
+
+  void setPredictedDistribution();
      
 private:
   ClassDef( ExoDiBosonAnalysis, 0 );  
@@ -245,6 +249,7 @@ private:
   float jet_mass_softdrop; 
   float jet_tau2tau1; 
   float sum_genweights; 
+  float jet_rho; 
 
   //W boson:
   float W_pt;
@@ -256,6 +261,8 @@ private:
 
   int njets;  //AK4 jets
   int nbtag;  //number of AK4 jets b-tagged with iCSVM 
+
+  PredictedDistribution * hvv_pred; 
 
 }; // class ExoDiBosonAnalysis
 
