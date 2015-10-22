@@ -5,7 +5,7 @@
 #include "../ExoDiBosonAnalysis/include/MatchingTools.h"
 
 #include <iostream>
-
+#include <TRandom.h>
 
 //==============================================================================================
 ClassImp( ExoDiBosonAnalysis );
@@ -128,6 +128,13 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
 
 //==============================================================================================
 ExoDiBosonAnalysis::~ExoDiBosonAnalysis() {
+
+
+  hvv_pred->GetPredictedHist()->Write();
+  hvv_pred->GetTaggableHist()->Write();
+  hvv_pred->GetObservedHist()->Write();
+
+  delete hvv_pred;
 	
   if( theHistosManager_ ){
     delete theHistosManager_;
@@ -185,6 +192,7 @@ void ExoDiBosonAnalysis::BeginInputData( const SInputData& ) throw( SError ) {
   DeclareVariable( jet_tau2tau1         , "jet_tau2tau1"		  , OutputTreeName_.c_str() );
   DeclareVariable( lumiweight_          , "lumiweight"        , OutputTreeName_.c_str() );
   DeclareVariable( sum_genweights       , "sum_genweights"        , OutputTreeName_.c_str() );
+  DeclareVariable( jet_rho              , "jet_rho"            , OutputTreeName_.c_str() );
      
   return;
 
@@ -594,6 +602,7 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
       jet_mass_pruned = Vcand.at(i).prunedMass;
       jet_mass_softdrop = Vcand.at(i).softdropMass;
       jet_tau2tau1 = Vcand.at(i).tau2/Vcand.at(i).tau1;
+      jet_rho = Vcand.at(i).rho; 
     }
     
     
@@ -1189,6 +1198,17 @@ void ExoDiBosonAnalysis::fillHistos( std::string Channel ){
       Hist( "VcandPhi"          )->Fill( Vcand.at(i).p4.Phi(), weight_ );
       Hist( "VcandMass"         )->Fill( Vcand.at(i).mass , weight_ );
     }
+
+
+    if ( Vcand.size() >= 2 ) {
+      unsigned int tag = gRandom->Integer(1);
+      unsigned int probe = 1;
+      if ( tag == 1 ) probe = 0;
+
+      bool tagged = Vcand.at(tag).tau2/Vcand.at(tag).tau1 < 0.6 && Vcand.at(tag).softdropMass > 65. && Vcand.at(tag).softdropMass < 105.;
+
+      hvv_pred->Accumulate( (Vcand.at(0).p4 + Vcand.at(1).p4).M(), Vcand.at(probe).rho, tagged, weight_);
+    }
   }
   
   else if(Channel_ == "SFmuJets"){
@@ -1247,7 +1267,10 @@ void ExoDiBosonAnalysis::EndInputData( const SInputData& ) throw( SError ) {
     Hist( "nPassedChi2"     )->SetBinContent(1,nPassedChi2_*weight_      );
 
   }
-   
+  
+
+  hvv_pred->SetCalculatedErrors();
+  
   return;
 
 }
@@ -1599,4 +1622,16 @@ void ExoDiBosonAnalysis::doGroomingStudies(  TString sample  ){
     if ( (genJetCand[jj].p4).DeltaR(itH->second) < 0.8) Hist( "genHMass" )->Fill( (genJetCand[jj].p4).M() );
     if ( (genJetCand[jj].p4).DeltaR(itZ->second) < 0.8) Hist( "genZMass" )->Fill( (genJetCand[jj].p4).M() );
   }
+}
+
+void ExoDiBosonAnalysis::setPredictedDistribution()
+{
+  TFile * f = TFile::Open( "data/mistagRate_mod_wjetsmc.root" );
+  TH1D * hist = (TH1D*)f->Get("rLoMod");
+
+
+  hvv_pred = new PredictedDistribution (hist, "hvv_pred", "Predicted VV Mass", 100, 0, 5000); 
+  hvv_pred->GetTaggableHist()->SetDirectory(0);
+  hvv_pred->GetObservedHist()->SetDirectory(0);
+  hvv_pred->GetPredictedHist()->SetDirectory(0);
 }

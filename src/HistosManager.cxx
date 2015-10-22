@@ -2,6 +2,7 @@
 #include "include/ExoDiBosonAnalysis.h"
 #include "include/Utilities.h"
 
+
 #include <TH1F.h>
 #include <TH2F.h>
 
@@ -13,6 +14,7 @@ HistosManager::HistosManager( ExoDiBosonAnalysis* theAnalysis):theAnalysis_( the
 
 ////////////////////////////////////////////////////////////////////
 HistosManager::~HistosManager( void ){
+
 
 }
 
@@ -373,7 +375,9 @@ void HistosManager::formatHistos( std::string Channel_ ){
   Utilities::OverflowToLast( theAnalysis_->Hist( "HadronicbFlavor" ) );
    
  }
-	
+
+ theAnalysis_->setPredictedDistribution();
+
 
    
 }

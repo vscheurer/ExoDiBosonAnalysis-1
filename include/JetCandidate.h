@@ -38,6 +38,8 @@ public:
    float cemf;
    float charge;
    float area;
+
+   float rho; 
       
 private:
 
