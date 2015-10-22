@@ -155,13 +155,21 @@ public:
 	//   std::vector<float>*		   jetAK8pruned_e    	 ;
 	//   std::vector<float>*		   jetAK8pruned_mass 	 ;
 
-	std::vector<int						>* subjetAK8_softdrop_N						;
-	std::vector< std::vector<float>	>* subjetAK8_softdrop_csv		;    
-	std::vector< std::vector<float>	>* subjetAK8_softdrop_pt 		;    
-	std::vector< std::vector<float>	>* subjetAK8_softdrop_eta		;    
-	std::vector< std::vector<float>	>* subjetAK8_softdrop_phi		;    
-	std::vector< std::vector<float>	>* subjetAK8_softdrop_e  		;    
-	std::vector< std::vector<int>		>* subjetAK8_softdrop_flavor	;    
+  std::vector<int>*                  subjetAK8_softdrop_N      ;
+  std::vector< std::vector<float> >* subjetAK8_softdrop_pt     ;
+  std::vector< std::vector<float> >* subjetAK8_softdrop_eta    ;
+  std::vector< std::vector<float> >* subjetAK8_softdrop_phi    ;
+  std::vector< std::vector<float> >* subjetAK8_softdrop_e      ;
+  std::vector< std::vector<float> >* subjetAK8_softdrop_csv    ;      
+  std::vector< std::vector<int> >*   subjetAK8_softdrop_flavour;      
+
+  std::vector<int>*                  subjetAK8_pruned_N      ;
+  std::vector< std::vector<float> >* subjetAK8_pruned_pt     ;
+  std::vector< std::vector<float> >* subjetAK8_pruned_eta    ;
+  std::vector< std::vector<float> >* subjetAK8_pruned_phi    ;
+  std::vector< std::vector<float> >* subjetAK8_pruned_e      ;
+  std::vector< std::vector<float> >* subjetAK8_pruned_csv    ;      
+  std::vector< std::vector<int> >*   subjetAK8_pruned_flavour;  
   
   std::vector<int  >*             nPUTrue               ;
   std::vector<int  >*             bX                    ;
