@@ -594,8 +594,7 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
       jet_mass_pruned = Vcand.at(i).prunedMass;
       jet_mass_softdrop = Vcand.at(i).softdropMass;
       jet_tau2tau1 = Vcand.at(i).tau2/Vcand.at(i).tau1;
-      jet_rho = SoftdropSubjetCand_[i][0].rho;
-      jet_rho = SoftdropSubjetCand_[i][1].rho;
+      jet_rho = Vcand.at(i).rho;
     }
     
     
@@ -755,9 +754,12 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
         jet.cemf = (*data_.jetAK8_cemf).at(jj);
         jet.charge = (*data_.jetAK8_charge).at(jj);
         jet.area = (*data_.jetAK8_area).at(jj);
-        Vcand.push_back( jet );
         
-        std::vector<JetCandidate> tmp;   
+        
+        std::vector<JetCandidate> tmp;
+
+	TLorentzVector prunedP4;
+
         for( int sj = 0; sj < (*data_.subjetAK8_pruned_N)[jj]; ++sj ){
          TLV.SetPtEtaPhiE((*data_.subjetAK8_pruned_pt)[jj][sj],(*data_.subjetAK8_pruned_eta)[jj][sj],(*data_.subjetAK8_pruned_phi)[jj][sj],(*data_.subjetAK8_pruned_e)[jj][sj]);
          csv = (*data_.subjetAK8_pruned_csv)[jj][sj];
@@ -766,10 +768,12 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
          jetC.flavor = 0;
          jetC.rho = pow( TLV.M() / ((*data_.subjetAK8_pruned_pt)[jj][sj] * 0.8),2);
          tmp.push_back(jetC);
+	 prunedP4 += TLV;
         }
         PrunedSubjetCand_.push_back(tmp);
         tmp.clear();
 
+	TLorentzVector softdropP4;
         for( int sj = 0; sj < (*data_.subjetAK8_softdrop_N)[jj]; ++sj ){
          TLV.SetPtEtaPhiE((*data_.subjetAK8_softdrop_pt)[jj][sj],(*data_.subjetAK8_softdrop_eta)[jj][sj],(*data_.subjetAK8_softdrop_phi)[jj][sj],(*data_.subjetAK8_softdrop_e)[jj][sj]);
          csv = (*data_.subjetAK8_softdrop_csv)[jj][sj];
@@ -779,10 +783,13 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
          jetC.rho = pow( TLV.M() / ((*data_.subjetAK8_softdrop_pt)[jj][sj] * 0.8),2);
          if( runOnMC_ ) jetC.flavor = (*data_.subjetAK8_softdrop_flavour)[jj][sj];
          tmp.push_back(jetC);
+	 softdropP4 += TLV;
         }
         SoftdropSubjetCand_.push_back(tmp);
         tmp.clear();
-        
+
+	jet.rho = pow( softdropP4.M() / (softdropP4.Perp() * 0.8), 2);
+	Vcand.push_back( jet );
         
       }
       else
@@ -825,8 +832,8 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
         secondJet.cemf = (*data_.jetAK8_cemf).at(jj);
         secondJet.charge = (*data_.jetAK8_charge).at(jj);
         secondJet.area = (*data_.jetAK8_area).at(jj);
-        Vcand.push_back( secondJet );
-        
+
+        TLorentzVector prunedP4;
         std::vector<JetCandidate> tmp;
         for( int sj = 0; sj < (*data_.subjetAK8_pruned_N)[jj]; ++sj ){
          TLV.SetPtEtaPhiE((*data_.subjetAK8_pruned_pt)[jj][sj],(*data_.subjetAK8_pruned_eta)[jj][sj],(*data_.subjetAK8_pruned_phi)[jj][sj],(*data_.subjetAK8_pruned_e)[jj][sj]);
@@ -837,10 +844,12 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
          jetC.rho = pow( TLV.M() / ((*data_.subjetAK8_pruned_pt)[jj][sj] * 0.8),2);
          if( runOnMC_ ) jetC.flavor = (*data_.subjetAK8_pruned_flavour)[jj][sj];
          tmp.push_back(jetC);
+	 prunedP4 += TLV;
         }
         PrunedSubjetCand_.push_back(tmp);
         tmp.clear();
 
+	TLorentzVector softdropP4;
         for( int sj = 0; sj < (*data_.subjetAK8_softdrop_N)[jj]; ++sj ){
          TLV.SetPtEtaPhiE((*data_.subjetAK8_softdrop_pt)[jj][sj],(*data_.subjetAK8_softdrop_eta)[jj][sj],(*data_.subjetAK8_softdrop_phi)[jj][sj],(*data_.subjetAK8_softdrop_e)[jj][sj]);
          csv = (*data_.subjetAK8_softdrop_csv)[jj][sj];
@@ -850,8 +859,12 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
          jetC.rho = pow( TLV.M() / ((*data_.subjetAK8_softdrop_pt)[jj][sj] * 0.8),2);
          if( runOnMC_ ) jetC.flavor = (*data_.subjetAK8_softdrop_flavour)[jj][sj];
          tmp.push_back(jetC);
+	 softdropP4 += TLV;
         }
         SoftdropSubjetCand_.push_back(tmp);
+	
+	secondJet.rho = pow( softdropP4.M() / (softdropP4.Perp() * 0.8), 2);
+        Vcand.push_back( secondJet );
       }
       else
         continue;
