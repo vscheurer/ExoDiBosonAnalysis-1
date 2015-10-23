@@ -18,7 +18,7 @@
 #include "../ExoDiBosonAnalysis/include/METCandidate.h"
 #include "../ExoDiBosonAnalysis/include/HiggsCandidate.h"
 
-#include "../Analysis/PredictedDistribution/interface/PredictedDistribution.h"
+#include "../ExoDiBosonAnalysis/include/PredictedDistribution.h"
 
 class HistosManager;
 class NtupleManager;
