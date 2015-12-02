@@ -53,6 +53,7 @@ public:
        
   bool passedTTbarSelections     ( void );
   bool passedDijetSelections     (  TString infile  );
+  bool passedDijetSelectionsAK4     (  TString infile  );
   bool passedFilters             ( void );
   bool passedTrigger             ( void );
 	
@@ -68,6 +69,7 @@ public:
 
 
   bool findJetCandidates         ( void );
+  bool findJetCandidatesAK4      ( void );
 
   void doJetTriggerEfficiency    	 ( void );
   void doJetTriggerEfficiency2    	 ( void );
@@ -85,6 +87,9 @@ private:
   PUWeight       PUWeight_        ;
   LumiWeight     LumiWeight_      ;
   TH1F*          hPUweights_      ;
+  TFile*         fMistag_         ;
+  TH1D*          hMistag_         ;
+  PredictedDistribution * hvv_pred; 
 
   std::map<int,TLorentzVector>	genCandidates_	;
   std::vector<LeptonCandidate>	leptonCand_		;
@@ -112,8 +117,9 @@ private:
   bool           runOnMC_         ;
   bool           GenStudies_       ;
   std::string    Channel_         ; 
+  std::string    MassWindow_  ; 
   bool           Trigger_         ;
-	bool           applyFilters_  ;
+  bool           applyFilters_  ;
    
   bool           UsePruned_     ;
 
@@ -140,10 +146,10 @@ private:
 
   /* pruned mass */
   bool           VetoSR_          ;
-  double         mPMLow_		   ;
-  double         mPMHigh_	   ;
-  double         mSDLow_		   ;
-  double         mSDHigh_	   ; 
+  double         mWLow_		   ;
+  double         mWHigh_	   ;
+  double         mZLow_		   ;
+  double         mZHigh_	   ;
 
   double         xSec_            ;
   double         genEvents_       ;
@@ -153,13 +159,15 @@ private:
 
   // END OF XML CONFIGURATION //
    
-  int            					channel		;
+  int  channel		;
+  int  category		;
    
   float		pdgMtop;
   float		pdgMw; 
   float		pdgWidthtop;
   float		pdgWidthw;   
   float		weight_			;
+  float		weight			;
   float  genweight_   ;
   float		puweight_		;
   float		lumiweight_		;
@@ -243,13 +251,26 @@ private:
   float l_phi; 
 
   //FAT JET: the most energetic AK8 jet satisfying loosejetID && cleaned from the all HEEP/highPtMuon leptons in a cone dR=1.0:
-  float jet_pt; 
-  float jet_eta; 
-  float jet_deta;
-  float jet_phi; 
-  float jet_mass_pruned;
-  float jet_mass_softdrop; 
-  float jet_tau2tau1; 
+  
+  float jet_deta; 
+  
+  float jet_pt_jet1; 
+  float jet_eta_jet1; 
+  float jet_phi_jet1; 
+  float jet_mass_jet1;
+  float jet_mass_pruned_jet1;
+  float jet_mass_softdrop_jet1; 
+  float jet_tau2tau1_jet1; 
+  
+  float jet_pt_jet2; 
+  float jet_eta_jet2; 
+  float jet_phi_jet2; 
+  float jet_mass_jet2;
+  float jet_mass_pruned_jet2;
+  float jet_mass_softdrop_jet2; 
+  float jet_tau2tau1_jet2; 
+  
+  
   float sum_genweights; 
   float jet_rho; 
 
@@ -263,8 +284,6 @@ private:
 
   int njets;  //AK4 jets
   int nbtag;  //number of AK4 jets b-tagged with iCSVM 
-
-  PredictedDistribution * hvv_pred; 
 
 }; // class ExoDiBosonAnalysis
 

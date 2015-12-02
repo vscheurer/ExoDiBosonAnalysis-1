@@ -39,6 +39,7 @@ namespace std {} using namespace std;
 
 // Header files passed as explicit arguments
 #include "include/BTagWeight.h"
+#include "include/BinomialEff.h"
 #include "include/EquationSolver.h"
 #include "include/ExoDiBosonAnalysis.h"
 #include "include/HLTWeight.h"
@@ -54,6 +55,7 @@ namespace std {} using namespace std;
 #include "include/MuonCandidate.h"
 #include "include/NtupleManager.h"
 #include "include/PUWeight.h"
+#include "include/PredictedDistribution.h"
 #include "include/RecoCandidate.h"
 #include "include/Utilities.h"
 #include "include/VCandidate.h"
@@ -73,7 +75,7 @@ namespace ROOT {
       ::ExoDiBosonAnalysis *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::ExoDiBosonAnalysis >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("ExoDiBosonAnalysis", ::ExoDiBosonAnalysis::Class_Version(), "include/ExoDiBosonAnalysis.h", 24,
+         instance("ExoDiBosonAnalysis", ::ExoDiBosonAnalysis::Class_Version(), "include/ExoDiBosonAnalysis.h", 26,
                   typeid(::ExoDiBosonAnalysis), DefineBehavior(ptr, ptr),
                   &::ExoDiBosonAnalysis::Dictionary, isa_proxy, 4,
                   sizeof(::ExoDiBosonAnalysis) );
@@ -479,6 +481,7 @@ namespace {
   void TriggerDictionaryInitialization_ExoDiBosonAnalysis_Dict_Impl() {
     static const char* headers[] = {
 "include/BTagWeight.h",
+"include/BinomialEff.h",
 "include/EquationSolver.h",
 "include/ExoDiBosonAnalysis.h",
 "include/HLTWeight.h",
@@ -494,6 +497,7 @@ namespace {
 "include/MuonCandidate.h",
 "include/NtupleManager.h",
 "include/PUWeight.h",
+"include/PredictedDistribution.h",
 "include/RecoCandidate.h",
 "include/Utilities.h",
 "include/VCandidate.h",
@@ -525,6 +529,7 @@ class __attribute__((annotate("$clingAutoload$include/BTagWeight.h")))  TLorentz
 
 #define _BACKWARD_BACKWARD_WARNING_H
 #include "include/BTagWeight.h"
+#include "include/BinomialEff.h"
 #include "include/EquationSolver.h"
 #include "include/ExoDiBosonAnalysis.h"
 #include "include/HLTWeight.h"
@@ -540,6 +545,7 @@ class __attribute__((annotate("$clingAutoload$include/BTagWeight.h")))  TLorentz
 #include "include/MuonCandidate.h"
 #include "include/NtupleManager.h"
 #include "include/PUWeight.h"
+#include "include/PredictedDistribution.h"
 #include "include/RecoCandidate.h"
 #include "include/Utilities.h"
 #include "include/VCandidate.h"

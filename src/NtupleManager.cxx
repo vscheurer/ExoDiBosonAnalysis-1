@@ -51,7 +51,8 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
 }
     
     theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_pruned_massCorr", theData_.jetAK8_prunedmass);
-    theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_softdrop_massCorr", theData_.jetAK8_softdropmass);
+    theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_pruned_jec", theData_.jetAK8_pruned_jec);
+    theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_softdrop_mass", theData_.jetAK8_softdropmass);
       
   // if(!runOnMC_){
  //    theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_pruned_mass", theData_.jetAK8_prunedmass);
@@ -77,7 +78,7 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
   theAnalysis_->ConnectVariable( treeName.c_str(), "mu_isPFMuon"              , theData_.mu_isPFMuon       );
   theAnalysis_->ConnectVariable( treeName.c_str(), "mu_isLooseMuon"           , theData_.mu_isLooseMuon       );
   theAnalysis_->ConnectVariable( treeName.c_str(), "mu_isTightMuon"           , theData_.mu_isTightMuon       );
-
+   
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_N"                 , theData_.njetsAK4	      	);
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_e"       , theData_.jetAK4_e       );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_eta"     , theData_.jetAK4_eta     );
@@ -86,6 +87,7 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_cisv"    , theData_.jetAK4_csv     );
   if(runOnMC_)theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_hadronFlavour" , theData_.jetAK4_flavor  );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_IDLoose" , theData_.jetAK4_IDLoose	);
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_IDTight" , theData_.jetAK4_IDTight	);
    
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_N"                 , theData_.njetsAK8          );
   // theAnalysis_->ConnectVariable( treeName.c_str(), "njetsAK8"                 , theData_.njetsAK8          );
@@ -161,6 +163,8 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
   theAnalysis_->ConnectVariable( treeName.c_str(), "HLT_isFired" 	   , theData_.HLT_isFired );
 
   theAnalysis_->ConnectVariable( treeName.c_str(), "passFilter_HBHE"		      , theData_.passFilter_HBHE_		 );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "passFilter_HBHELoose"		      , theData_.passFilter_HBHELoose_		 );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "passFilter_HBHEIso"		      , theData_.passFilter_HBHEIso_		 );
   theAnalysis_->ConnectVariable( treeName.c_str(), "passFilter_CSCHalo"	      , theData_.passFilter_CSCHalo_		 );
   theAnalysis_->ConnectVariable( treeName.c_str(), "passFilter_HCALlaser"	      , theData_.passFilter_HCALlaser_  	 );
   theAnalysis_->ConnectVariable( treeName.c_str(), "passFilter_ECALDeadCell"	      , theData_.passFilter_ECALDeadCell_	 );

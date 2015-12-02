@@ -23,41 +23,45 @@ void HistosManager::bookHistos( std::string Channel_ ){
  
  theAnalysis_->Book( TH1F( "runNumber", "run number"      , 1000, 251000, 252000 ) );
  theAnalysis_->Book( TH1F( "nVertices", "number of PVs"    ,  20, 0. ,  40. ) );
- 
+ theAnalysis_->Book( TH1F( "sumGenWeight" 													, "sumGenWeight"									 	, 1	, 0.5, 1.5		) );
  
  if( Channel_ == "VVdijet" || Channel_ == "qVdijet" ){
-  theAnalysis_->Book( TH1F( "genWMass", "Gen W#rightarrow qq", 300,   -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genWPrunedMass"   , "Gen W#rightarrow qq", 300,   -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genWSoftdropMass"  , "Gen W#rightarrow qq", 300,   -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genTMass", "Gen W#rightarrow qq", 300,   -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genTPrunedMass"   , "Gen W#rightarrow qq", 300,   -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genTSoftdropMass"  , "Gen W#rightarrow qq", 300,   -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genZMass", "Gen Z#rightarrow qq", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "genHMass", "Gen H#rightarrow bb", 300,  -1. , 300. ) );
+  theAnalysis_->Book( TH1F( "genWMass", "Gen W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genWPrunedMass"   , "Gen W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genWSoftdropMass"  , "Gen W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genTMass", "Gen W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genTPrunedMass"   , "Gen W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genTSoftdropMass"  , "Gen W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genZMass", "Gen Z#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "genHMass", "Gen H#rightarrow bb", 60,   0. , 300. ) );
   theAnalysis_->Book( TH1F( "recoWTau21"      , "Reco W#rightarrow qq", 20.,  0. , 1. ) );
   theAnalysis_->Book( TH1F( "recoHTau21"      , "Reco H#rightarrow bb", 20.,  0. , 1. ) );
   theAnalysis_->Book( TH1F( "recoZTau21"      , "Reco Z#rightarrow qq", 20.,  0. , 1. ) );
-  theAnalysis_->Book( TH1F( "recoWPrunedMass"   , "Reco W#rightarrow qq", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoZPrunedMass"   , "Reco Z#rightarrow qq", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoHPrunedMass"   , "Reco H#rightarrow bb", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoTPrunedMass"   , "top" , 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoWSoftdropMass"  , "Reco W#rightarrow qq", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoZSoftdropMass"  , "Reco Z#rightarrow qq", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoHSoftdropMass"  , "Reco H#rightarrow bb", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoTSoftdropMass"  , "Reco t", 300,  -1. , 300. ) );
-  theAnalysis_->Book( TH1F( "recoWMass"      , "Reco W#rightarrow qq", 300,  -1. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoWPrunedMass"   , "Reco W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoZPrunedMass"   , "Reco Z#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoHPrunedMass"   , "Reco H#rightarrow bb", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoTPrunedMass"   , "top" , 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoWSoftdropMass"  , "Reco W#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoZSoftdropMass"  , "Reco Z#rightarrow qq", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoHSoftdropMass"  , "Reco H#rightarrow bb", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoTSoftdropMass"  , "Reco t", 60,   0. , 300. ) );
+  theAnalysis_->Book( TH1F( "recoWMass"      , "Reco W#rightarrow qq", 60,   0. , 300. ) );
 	
-  theAnalysis_->Book( TH1F( "METsumET", "MET/sumEt"      , 60	, 0.	, 1.	) );
-  theAnalysis_->Book( TH1F( "MET"   , "MET"  , 120	, 0.	, 600.	) );
+  theAnalysis_->Book( TH1F( "METsumET", "MET/sumEt"      , 100	, 0.	, .6	) );
+  theAnalysis_->Book( TH1F( "MET"   , "MET"  , 500	, 0.	, 1000.	) );
  
-  theAnalysis_->Book( TH1F( "LeptonJet_JetID"   , "0 = AllLooseJets, 1 = Jets+tightID, 2 = GenLeptonMatch(EleMu), 3 = GenLeptonMatch(EleMuTau), 4 = GenLeptonMatch+tightID, 5 =RecoLeptonMatch, 6 =RecoLeptonMatch+TightID"	, 7	, 0.	, 7.	) );
+  // theAnalysis_->Book( TH1F( "LeptonJet_JetID"   , "0 = AllLooseJets, 1 = Jets+tightID, 2 = GenLeptonMatch(EleMu), 3 = GenLeptonMatch(EleMuTau), 4 = GenLeptonMatch+tightID, 5 =RecoLeptonMatch, 6 =RecoLeptonMatch+TightID"  , 7  , 0.  , 7.  ) );
  
   /* V candidate */
-  theAnalysis_->Book( TH1F( "Mjj"  										 		, "M_{jj} "	   								  , 140	, 900.	, 7900.	) );
-  theAnalysis_->Book( TH1F( "DeltaEta"	 	  															, "#Delta#eta_{jj}, Mjj cut"	   				 	, 200	, 0.	, 5.0		) );
-  theAnalysis_->Book( TH1F( "DeltaR"	 	  													 		, "#DeltaR_{jj}, Mjj cut"	   				 	  , 50	, 0.	, 10.0		) );
+  theAnalysis_->Book( TH1F( "Mjj_afterPrunedMass"           , "M_{jj} "	   								  , 100	, 1000.	, 6000.	) );
+  theAnalysis_->Book( TH1F( "Mjj"  								   		 		, "M_{jj} "	   								  , 100	, 1000.	, 6000.	) );
+  theAnalysis_->Book( TH1F( "Mjj_fine"  										 		, "M_{jj} "	   								  , 7000	, 0.	, 7000.	) );
+  theAnalysis_->Book( TH1F( "MjjAK4"  					 					 		, "M_{jj} AK4 "	   								  , 7000	, 0.	, 7000.	) );
+  theAnalysis_->Book( TH1F( "DeltaEta"	 	  															, "#Delta#eta_{jj}, Mjj cut"	   				 	, 31	, 0.	, 1.5		) );
+  theAnalysis_->Book( TH1F( "DeltaR"	 	  													 		, "#DeltaR_{jj}, Mjj cut"	   				 	  , 40	, 0.	, 4.		) );
   theAnalysis_->Book( TH1F( "PrunedMass"																		, "pruned M_{j}, dEta+Mjj cut"		, 60	, 0.	, 300.	) );
   theAnalysis_->Book( TH1F( "PrunedMass_afterTau21"																		, "pruned M_{j}"		, 60	, 0.	, 300.	) );
+  theAnalysis_->Book( TH1F( "Tau21_afterPrunedMass"  ,"(*data_.jetAK8_tau21)",20,0.,1. ) );
   
   theAnalysis_->Book( TH1F( "SoftdropMass"																	, "softdrop M_{j}, dEta+Mjj cut	"	, 60	, 0.	, 300.	) );
   theAnalysis_->Book( TH1F( "Mass"																	    , " M_{j}, dEta+Mjj cut	"	, 60	, 0.	, 300.	) );
@@ -69,12 +73,12 @@ void HistosManager::bookHistos( std::string Channel_ ){
   
   theAnalysis_->Book( TH1F( "cm"   ,"(*data_.jetAK8_cm	 )",20,0.,100. ) );
   theAnalysis_->Book( TH1F( "nm"   ,"(*data_.jetAK8_nm	 )",20,0.,90. ) );
-  theAnalysis_->Book( TH1F( "muf"   ,"(*data_.jetAK8_muf)",20,0.,.4 ) );
+  theAnalysis_->Book( TH1F( "muf"   ,"(*data_.jetAK8_muf)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "phf"   ,"(*data_.jetAK8_phf)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "emf"   ,"(*data_.jetAK8_emf)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "nhf"   ,"(*data_.jetAK8_nhf)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "chf"   ,"(*data_.jetAK8_chf)",20,0.,1. ) );
-  theAnalysis_->Book( TH1F( "area"  ,"(*data_.jetAK8_area)",20,0.,6. ) );
+  theAnalysis_->Book( TH1F( "area"  ,"(*data_.jetAK8_area)",40,1.,4. ) );
   theAnalysis_->Book( TH1F( "tau1"  ,"(*data_.jetAK8_tau1)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "tau2"  ,"(*data_.jetAK8_tau2)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "tau2tau1"  ,"(*data_.jetAK8_tau21)",20,0.,1. ) );
@@ -83,27 +87,29 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "tau3"  ,"(*data_.jetAK8_tau3)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "che"   ,"(*data_.jetAK8_che)",30,0.,3000. ) );
   theAnalysis_->Book( TH1F( "ne"   ,"(*data_.jetAK8_ne)",50,0.,5000. ) );
-  theAnalysis_->Book( TH1F( "HFHadronEnergyFraction", "HFHadronEnergyFraction" , 30, 0., 0.3 ) );
-  theAnalysis_->Book( TH1F( "HFEMEnergyFraction", "HFEMEnergyFraction" , 100, 0., 1. ) );
-  theAnalysis_->Book( TH1F( "hoEnergyFraction", "hoEnergyFraction" , 100, 0., 1. ) );
+  theAnalysis_->Book( TH1F( "HFHadronEnergyFraction", "HFHadronEnergyFraction" , 30, 0., 0.1 ) );
+  theAnalysis_->Book( TH1F( "HFEMEnergyFraction", "HFEMEnergyFraction" , 100, 0., .1 ) );
+  theAnalysis_->Book( TH1F( "hoEnergyFraction", "hoEnergyFraction" , 100, 0., .1 ) );
   theAnalysis_->Book( TH1F( "chargedHadronMultiplicity", "chargedHadronMultiplicity" , 60, 0., 120 ) );
   theAnalysis_->Book( TH1F( "neutralHadronMultiplicity", "neutralHadronMultiplicity" , 30, 0., 30. ) );
   theAnalysis_->Book( TH1F( "photonMultiplicity", "photonMultiplicity" , 50, 0., 100. ) );
   theAnalysis_->Book( TH1F( "neutralEmEnergyFraction", "neutralEmEnergyFraction" , 20, 0., 1. ) );
   theAnalysis_->Book( TH1F( "chargedEmEnergyFraction", "chargedEmEnergyFraction" , 20, 0., 1. ) );
-  theAnalysis_->Book( TH1F( "charge", "charge" , 41, -30., 30. ) );
+  theAnalysis_->Book( TH1F( "charge", "charge" , 21, -30., 30. ) );
   
   
   
   theAnalysis_->Book( TH1F( "Tau21_punzi"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi1TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi1v2TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi1v6TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-   theAnalysis_->Book( TH1F( "Tau21_punzi1v8TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi2TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi2v5TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi3TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
-  theAnalysis_->Book( TH1F( "Tau21_punzi4TeV"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
+  theAnalysis_->Book( TH1F( "Tau21_punzi1"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
+  theAnalysis_->Book( TH1F( "Tau21_punzi2"   	  													, "#tau_{21}, dEta+Mjj+Mass cut" 	 				, 100	, 0. , 1. 	) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi1TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi1v2TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi1v6TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  //  theAnalysis_->Book( TH1F( "Tau21_punzi1v8TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi2TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi2v5TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi3TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
+  // theAnalysis_->Book( TH1F( "Tau21_punzi4TeV"                                 , "#tau_{21}, dEta+Mjj+Mass cut"            , 100  , 0. , 1.   ) );
 
 			
 	
@@ -111,7 +117,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "VcandPrunedMass" 															, "pruned M_{j}, all cuts applied"		, 30,   50. , 110.	) );
   theAnalysis_->Book( TH1F( "VcandSoftdropMass" 														, "Softdrop M_{j}, all cuts applied"	, 30,   50. , 110.	) ); 	
   theAnalysis_->Book( TH1F( "VcandTau21"   	  													, "Jet #tau_{21}, all cuts applied"		, 20	, 0. , 1.		) );
-  theAnalysis_->Book( TH1F( "DiBosonInvMass"	   											  	, "di-bosons inv. mass"						,6200 	, 800.	, 7000.	) );
+  theAnalysis_->Book( TH1F( "DiBosonInvMass"	   											  	, "di-bosons inv. mass"						,7000 	, 0.	, 7000.	) );
   theAnalysis_->Book( TH1F( "VcandPt" 	  																, " AK8 jet pt"						, 140	, 200.	, 2000.	) );
   theAnalysis_->Book( TH1F( "VcandEta"	  																, " AK8 jet eta"						, 50	, -2.5, 2.5		) );
   theAnalysis_->Book( TH1F( "VcandPhi"	  																, " AK8 jet phi"						, 64	, -3.2, 3.2		) );
@@ -157,12 +163,15 @@ void HistosManager::bookHistos( std::string Channel_ ){
  else if( Channel_ == "SFmuJets" || Channel_ == "SFeleJets" ){
   
   /************************ SF ************************/
-	
-  
-  theAnalysis_->Book( TH1F( "sumGenWeight" 													, "sumGenWeight"									 	, 1	, 0.5, 1.5		) );
   theAnalysis_->Book( TH1F( "leptonPT" 	  		 												, "leptonPT"	   				, 60	, 0.	, 600.	) );
   theAnalysis_->Book( TH1F( "leptonPhi" 	  		 											, "leptonPhi"	   				, 50	, -5.	, 5.	) );
   theAnalysis_->Book( TH1F( "leptonEta" 	  		 											, "leptonEta"	   				, 50	, -5.0	, 5.0	) );
+  theAnalysis_->Book( TH1F( "MET_beforeCut", "MET"   , 50	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "MET_afterCut", "MET"   , 50	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "JetPt_Leading1", "Pt"   , 200	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "JetPt_Leading2", "Pt"   , 200	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "JetPt_Leading3", "Pt"   , 200	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "JetPt_Leading4", "Pt"   , 200	, 0.	, 500.	) );
   theAnalysis_->Book( TH1F( "MET", "MET"   , 50	, 0.	, 500.	) );
   
   /* AK4 */
@@ -241,6 +250,7 @@ void HistosManager::formatHistos( std::string Channel_ ){
   theAnalysis_->Hist( "VVdeltaEta"					)->GetXaxis()->SetTitle( "#Delta#eta_{jj}"     );
   theAnalysis_->Hist( "DeltaEta")->GetXaxis()->SetTitle( "#Delta#eta_{jj}"     );
   theAnalysis_->Hist( "Mjj"  )->GetXaxis()->SetTitle( "M_{jj} [GeV]");
+  theAnalysis_->Hist( "Mjj_fine"  )->GetXaxis()->SetTitle( "M_{jj} [GeV]");
   theAnalysis_->Hist( "Tau21_punzi"		 		)->GetXaxis()->SetTitle( "#tau_{21}"			  	 	);
   theAnalysis_->Hist( "PrunedMass"					)->GetXaxis()->SetTitle( "M_{j} [GeV]"      	 );
   theAnalysis_->Hist( "PrunedMass_afterTau21"					)->GetXaxis()->SetTitle( "Pruned M_{j} [GeV]"      	 );
@@ -311,18 +321,20 @@ void HistosManager::formatHistos( std::string Channel_ ){
   Utilities::OverflowToLast( theAnalysis_->Hist( "METsumET" 	 ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "MET" 	 ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "DiBosonInvMass" ) );
-  Utilities::OverflowToLast( theAnalysis_->Hist( "VVdeltaEta"					) );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "VVdeltaEta"          ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "DeltaEta"     ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "Mjj") );
+   Utilities::OverflowToLast( theAnalysis_->Hist( "Mjj_fine") );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "Mass"     ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "PrunedMass"     ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "PrunedMass_afterTau21"     ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "SoftdropMass"    ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "Tau21_punzi"				) ); 
-  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandPt"					) );
-  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandEta"					) );
-  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandPhi"					) );
-  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandMass"					) );
-  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandTau21"					) );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandPt"          ) );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandEta"          ) );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandPhi"          ) );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandMass"          ) );
+  Utilities::OverflowToLast( theAnalysis_->Hist( "VcandTau21"          ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "HFHadronEnergyFraction" ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "HFEMEnergyFraction" ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "hoEnergyFraction" ) );
@@ -379,7 +391,7 @@ void HistosManager::formatHistos( std::string Channel_ ){
    
  }
 
- theAnalysis_->setPredictedDistribution();
+ // theAnalysis_->setPredictedDistribution();
 
 
    

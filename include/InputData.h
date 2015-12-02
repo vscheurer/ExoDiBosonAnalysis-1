@@ -92,7 +92,8 @@ public:
 	std::vector<float>*		   jetAK4_e 	     			;
 	std::vector<float>*		   jetAK4_csv 	     			;
 	std::vector<int  >*		   jetAK4_flavor 	     		;
-	std::vector<bool >*  	   jetAK4_IDLoose 	     	;  
+	std::vector<bool >*  	   jetAK4_IDLoose 	     	; 
+  std::vector<bool >*  	   jetAK4_IDTight 	     	;  
    
 	int                        njetsAK8 	     			;
 	std::vector<float>*		   jetAK8_pt 	     			;
@@ -104,7 +105,7 @@ public:
 	std::vector<float>*		   jetAK8_softdropmass;
 	std::vector<float>*		   jetAK8_prunedmassCorr	;
 	std::vector<float>*		   jetAK8_softdropmassCorr	;
-	std::vector<float>*  	   jetAK8pruned_jec			;
+	std::vector<float>*  	   jetAK8_pruned_jec			;
 	std::vector<float>*  	   jetAK8softdrop_jec		;
 	std::vector<float>*		   jetAK8_csv					;
    
@@ -189,6 +190,8 @@ public:
   std::vector< std::vector<int> >*    triggerObject_firedTrigger;*/
 
   bool passFilter_HBHE_;
+  bool passFilter_HBHEIso_;
+  bool passFilter_HBHELoose_;
   bool passFilter_CSCHalo_;
   bool passFilter_HCALlaser_;
   bool passFilter_ECALDeadCell_;
