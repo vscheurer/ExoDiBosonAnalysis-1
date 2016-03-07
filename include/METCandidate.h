@@ -8,6 +8,8 @@ class METCandidate : public RecoCandidate {
 public:
    METCandidate( TLorentzVector tlv );
    ~METCandidate( void );
+   
+   double sumEt;
       
 private:
 

@@ -18,6 +18,7 @@
 #include "../ExoDiBosonAnalysis/include/METCandidate.h"
 #include "../ExoDiBosonAnalysis/include/HiggsCandidate.h"
 #include "../ExoDiBosonAnalysis/include/PredictedDistribution.h"
+#include "../../GoodRunsLists/include/TGoodRunsListReader.h"
 
 
 class HistosManager;
@@ -53,16 +54,20 @@ public:
        
   bool passedTTbarSelections     ( void );
   bool passedDijetSelections     (  TString infile  );
-  bool passedDijetSelectionsAK4     (  TString infile  );
+  bool passedDijetSelectionsAK4  (  TString infile  );
+  bool applyJSON                 ( void );
   bool passedFilters             ( void );
   bool passedTrigger             ( void );
 	
   bool findLeptonCandidate       ( void );     
+  double getMuonScale            ( double oldpt );
   bool findMuonCandidate         ( void ); 
   bool findElectronCandidate     ( void ); 
   bool findMETCandidate          ( void );
   bool findWCandidate            ( void );
   bool findHadronicWCandidate    ( void );
+  void findExoCandidate          ( void );
+  
   void findAK4Jets             ( void ); 
   TLorentzVector getp4Nu         ( void );
   TLorentzVector getp4NuMethod2  ( void );
@@ -85,11 +90,14 @@ private:
   NtupleManager* theNtupleManager_;
   InputData      data_            ;
   PUWeight       PUWeight_        ;
+  HLTWeight      HLTWeight_       ;
+  BTagWeight     BTagWeight_      ;
   LumiWeight     LumiWeight_      ;
   TH1F*          hPUweights_      ;
   TFile*         fMistag_         ;
   TH1D*          hMistag_         ;
   PredictedDistribution * hvv_pred; 
+  Root::TGoodRunsList m_grl;
 
   std::map<int,TLorentzVector>	genCandidates_	;
   std::vector<LeptonCandidate>	leptonCand_		;
@@ -107,10 +115,13 @@ private:
   std::vector<std::vector<JetCandidate> > SoftdropSubjetCand_;
   
   int jetINDX;
+  
+  int            ScaleMuonUpDown_  ;
 
   // XML configuration //
    
-  /* general settings */         
+  /* general settings */    
+  bool           isLowMass ;     
   std::string    InputTreeName_   ;
   std::string    OutputTreeName_  ;   
   bool           isSignal_        ;
@@ -124,8 +135,8 @@ private:
   bool           UsePruned_     ;
 
   /* leptonic selections */
-  int foundAMu;
-  int foundAEle;
+  int    foundAEle              ;
+  int    foundAMu               ;
   double         leptPtCut_	   ;
   double         leptEtaCut_	   ;
   double         AleptPtCut_	   ;
@@ -155,12 +166,19 @@ private:
   double         genEvents_       ;
   double         Lumi_            ;
   std::string    PUProfileData_   ;
+  std::string    JSONfile_;
+  std::string    BTagEff4vetoData_  ;
+  std::string    BTagEff4fatjetData_;
+  std::string    BTagEff4subjetData_;
    
 
   // END OF XML CONFIGURATION //
    
   int  channel		;
   int  category		;
+  int run;
+  int event;
+  int lumi;
    
   float		pdgMtop;
   float		pdgMw; 
@@ -170,8 +188,13 @@ private:
   float		weight			;
   float  genweight_   ;
   float		puweight_		;
-  float		lumiweight_		;
+  float		hltweight_		;
+  float  btagweight_  ;
+  float  lumiweight_  ;
+  float  btagvetow    ;
+  float  htagw        ;  
   float		Mjj				;
+  float  	MWW				;
   float  	MVV				;
   float  	MVVmethod2		;
   float  	Mj1				;
@@ -191,14 +214,16 @@ private:
   int    nPassedFilters_         ;  
   int    nPassedTrigger_         ;  
   int    nPassedChi2_         ;  
-  int    nPassedFoundLept_       ;
-  int    nPassedFoundMET_        ;
+  
+  int     nak4jets;
 
   int    nPassedTopMass_         ;    
   int    nPassedJetMass_         ;     
   int    nPassedJetPrunedMass_   ;
   int    nPassedTau21Cut_        ;
   int    nPassedWTag_				 ;
+  
+  int    nPassedFilter_HBHEIso_;
   int    nPassedFilter_HBHE_;
   int    nPassedFilter_CSCHalo_;
   int    nPassedFilter_HCALlaser_;
@@ -223,20 +248,18 @@ private:
   int    nPassedMjj_			 ;
   int    nPassedWtagging_		 ;
 	
-  //TTbar SF cut flow
-  int    nPassedIsoLep_		;
+  //TTbar W-tag SF cut flow
+  int    nPassedFoundLept_  ;
+  int    nPassedFoundMET_   ;
+  int    nPassedIsoLep_     ;
   int    nPassedVetoLep_		;
-  int    nPassed1Jet_			;
-  int    nPassed2Jet_			;
-  int    nPassed3Jet_			;
-  int    nPassed4Jet_			;
-  int    nPassed1bTag_			;
-  int    nPassed2bTag_			;
+  int    nPassedFoundW_			;
+  int    nPassedFoundJet_   ;
+  int    nPassedLepJetDR_   ;
+  int    nPassed1bTag_      ;
+
 	
-  /* for synch */
-  int run;
-  int event;
-  int lumi;
+  /* for tree */
   int nPV;
 
   float pfMET;
@@ -249,6 +272,7 @@ private:
   float l_pt; 
   float l_eta; 
   float l_phi; 
+  float l_iso ;
 
   //FAT JET: the most energetic AK8 jet satisfying loosejetID && cleaned from the all HEEP/highPtMuon leptons in a cone dR=1.0:
   
@@ -259,6 +283,8 @@ private:
   float jet_phi_jet1; 
   float jet_mass_jet1;
   float jet_mass_pruned_jet1;
+  float jet_mass_pruned_W1;
+  float jet_mass_pruned_Z1;
   float jet_mass_softdrop_jet1; 
   float jet_tau2tau1_jet1; 
   
@@ -267,6 +293,8 @@ private:
   float jet_phi_jet2; 
   float jet_mass_jet2;
   float jet_mass_pruned_jet2;
+  float jet_mass_pruned_W2;
+  float jet_mass_pruned_Z2;
   float jet_mass_softdrop_jet2; 
   float jet_tau2tau1_jet2; 
   
@@ -284,6 +312,20 @@ private:
 
   int njets;  //AK4 jets
   int nbtag;  //number of AK4 jets b-tagged with iCSVM 
+  
+
+  float jet_mass_pruned ;
+  float jet_pt ;
+  float jet_csv ;
+  float jet_eta ;
+  float jet_phi ;
+  float jet_tau2tau1 ;
+  
+  
+  float Wlept_pt ;
+  float Wlept_mt ;
+  int   realW    ;
+  
 
 }; // class ExoDiBosonAnalysis
 

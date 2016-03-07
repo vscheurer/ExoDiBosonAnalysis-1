@@ -14,7 +14,7 @@ NtupleManager::~NtupleManager( void ){
 }
 
 ////////////////////////////////////////////////////////////////////
-void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
+void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_, TString sample   ){
   
   if(runOnMC_){
     theAnalysis_->ConnectVariable( treeName.c_str(), "genParticle_pdgId"     , theData_.genParticle_pdgId   );
@@ -40,14 +40,14 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
     theAnalysis_->ConnectVariable( treeName.c_str(), "nPuVtxTrue"	      , theData_.nPUTrue     );
     theAnalysis_->ConnectVariable( treeName.c_str(), "bX"		            , theData_.bX          );
     
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_N"    , theData_.ngenJetsAK8    );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_pt"   , theData_.genJetAK8_pt   );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_eta"  , theData_.genJetAK8_eta  );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_mass" , theData_.genJetAK8_mass );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_phi"  , theData_.genJetAK8_phi  );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_e"    , theData_.genJetAK8_e    );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_prunedmass"   , theData_.genJetAK8_prunedmass   );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_softdropmass" , theData_.genJetAK8_softdropmass );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_N"    , theData_.ngenJetsAK8    );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_pt"   , theData_.genJetAK8_pt   );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_eta"  , theData_.genJetAK8_eta  );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_mass" , theData_.genJetAK8_mass );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_phi"  , theData_.genJetAK8_phi  );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_e"    , theData_.genJetAK8_e    );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_prunedmass"   , theData_.genJetAK8_prunedmass   );
+    // theAnalysis_->ConnectVariable( treeName.c_str(), "genJetAK8_softdropmass" , theData_.genJetAK8_softdropmass );
 }
     
     theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_pruned_massCorr", theData_.jetAK8_prunedmass);
@@ -65,8 +65,10 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
   theAnalysis_->ConnectVariable( treeName.c_str(), "el_pt"		       , theData_.el_pt     	    );
   theAnalysis_->ConnectVariable( treeName.c_str(), "el_phi"		       , theData_.el_phi    	    );
   theAnalysis_->ConnectVariable( treeName.c_str(), "el_isHeepElectron"        , theData_.el_isHEEP         );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "el_isLooseElectron"        , theData_.el_isLooseElectron         );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "el_isMediumElectron"        , theData_.el_isMediumElectron         );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "el_isLooseElectron"       , theData_.el_isLooseElectron   );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "el_isMediumElectron"      , theData_.el_isMediumElectron  );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "el_isTightElectron"       , theData_.el_isTightElectron   );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "el_isVetoElectron"        , theData_.el_isVetoElectron    );
 
   theAnalysis_->ConnectVariable( treeName.c_str(), "mu_N"		       , theData_.mu_N      	    );
   theAnalysis_->ConnectVariable( treeName.c_str(), "mu_e"		       , theData_.mu_e      	    );
@@ -84,7 +86,12 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_eta"     , theData_.jetAK4_eta     );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_pt"      , theData_.jetAK4_pt      );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_phi"     , theData_.jetAK4_phi     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_cisv"    , theData_.jetAK4_csv     );
+  if( sample.Contains( "LowMass" ) or sample.Contains( "Fall" ) or sample.Contains( "16Dec2015" ) ){
+    theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_csv"    , theData_.jetAK4_csv     );
+  }
+  else{
+     theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_cisv"    , theData_.jetAK4_csv     );
+  }
   if(runOnMC_)theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_hadronFlavour" , theData_.jetAK4_flavor  );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_IDLoose" , theData_.jetAK4_IDLoose	);
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_IDTight" , theData_.jetAK4_IDTight	);
@@ -127,21 +134,21 @@ void NtupleManager::ConnectVariables( std::string treeName, bool runOnMC_  ){
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_cemf"     , theData_.jetAK8_cemf     ); //chargedEmEnergyFraction());
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_charge"     , theData_.jetAK8_charge     ); //charge());		
   
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_N"	, theData_.subjetAK8_softdrop_N       );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_pt"	, theData_.subjetAK8_softdrop_pt      );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_eta"	, theData_.subjetAK8_softdrop_eta     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_phi"	, theData_.subjetAK8_softdrop_phi     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_e"	, theData_.subjetAK8_softdrop_e       );   
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_csv"	, theData_.subjetAK8_softdrop_csv     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_partonFlavour", theData_.subjetAK8_softdrop_flavour );   
-
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_N"	, theData_.subjetAK8_pruned_N       );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_pt"	, theData_.subjetAK8_pruned_pt      );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_eta"	, theData_.subjetAK8_pruned_eta     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_phi"	, theData_.subjetAK8_pruned_phi     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_e"	, theData_.subjetAK8_pruned_e       );   
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_csv"	, theData_.subjetAK8_pruned_csv     );
-  theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_partonFlavour", theData_.subjetAK8_pruned_flavour );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_N"  , theData_.subjetAK8_softdrop_N       );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_pt"  , theData_.subjetAK8_softdrop_pt      );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_eta"  , theData_.subjetAK8_softdrop_eta     );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_phi"  , theData_.subjetAK8_softdrop_phi     );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_e"  , theData_.subjetAK8_softdrop_e       );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_csv"  , theData_.subjetAK8_softdrop_csv     );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_softdrop_partonFlavour", theData_.subjetAK8_softdrop_flavour );
+  //
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_N"  , theData_.subjetAK8_pruned_N       );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_pt"  , theData_.subjetAK8_pruned_pt      );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_eta"  , theData_.subjetAK8_pruned_eta     );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_phi"  , theData_.subjetAK8_pruned_phi     );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_e"  , theData_.subjetAK8_pruned_e       );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_csv"  , theData_.subjetAK8_pruned_csv     );
+  // theAnalysis_->ConnectVariable( treeName.c_str(), "subjetAK8_pruned_partonFlavour", theData_.subjetAK8_pruned_flavour );
 
   theAnalysis_->ConnectVariable( treeName.c_str(), "MET_et"           , theData_.MET_et             );
   theAnalysis_->ConnectVariable( treeName.c_str(), "MET_sumEt"        , theData_.MET_sumEt          );

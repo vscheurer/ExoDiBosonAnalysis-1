@@ -40,6 +40,7 @@ public:
    std::vector<int  >*  	 el_isLooseElectron	         ;
    std::vector<int  >*  	 el_isMediumElectron	         ;
    std::vector<int  >*  	 el_isTightElectron	         ;
+   std::vector<int  >*  	 el_isVetoElectron	         ;
 
   int                      mu_N          ;
   std::vector<float>*      mu_e 	    	 ;

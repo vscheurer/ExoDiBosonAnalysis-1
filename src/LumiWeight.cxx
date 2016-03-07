@@ -17,273 +17,186 @@ double LumiWeight::getLumiWeight( TString sample ){
 
   xSec_ = 1.;
   genEvents_ = 1.;
-   
-  //lumi weights for 50ns samples 
-  // if( sample.Contains("50ns") ){
-  //
-  //     if( sample.Contains( "QCD_Pt_170to300_" ) ){
-  //       xSec_ = 117276.;
-  //       genEvents_ = 3438066.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_300to470_" ) ){
-  //       xSec_ = 7823.;
-  //       genEvents_ = 2630578.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_470to600_" ) ){
-  //       xSec_ = 648.2;
-  //       genEvents_ = 1939229.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_600to800_" ) ){
-  //       xSec_ = 186.9;
-  //       genEvents_ = 1890256.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_800to1000_" ) ){
-  //       xSec_ = 32.293;
-  //       genEvents_ = 1911296.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_1000to1400_" ) ){
-  //       xSec_ = 9.4183;
-  //       genEvents_ = 1461216.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_1400to1800_" ) ){
-  //       xSec_ = 0.84265;
-  //       genEvents_ = 197959.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_1800to2400_" ) ){
-  //       xSec_ = 0.114943;
-  //       genEvents_ = 194924.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_2400to3200_" ) ){
-  //       xSec_ = 0.006830;
-  //       genEvents_ = 198383.;
-  //     }
-  //     else if( sample.Contains( "QCD_Pt_3200toInf_" ) ){
-  //       xSec_ = 0.000165;
-  //       genEvents_ = 188696.;
-  //     }
-  //     //single top samples
-  //     if( sample.Contains( "ST_t-channel_top" ) ){
-  //       xSec_ = 136.02*0.322;
-  //       genEvents_ = 1273800.;
-  //     }
-  //     else if( sample.Contains( "ST_t-channel_antitop" ) ){
-  //       xSec_ = 80.95*0.322;
-  //       genEvents_ = 681900.;
-  //     }
-  //     else if( sample.Contains( "ST_tW_top" ) ){
-  //       xSec_ = 35.6;
-  //       genEvents_ = 998400.;
-  //     }
-  //     else if( sample.Contains( "ST_tW_antitop" ) ){
-  //       xSec_ = 35.6;
-  //       genEvents_ = 1000000.;
-  //     }
-  //     //VV samples
-  //     else if( sample.Contains( "_WW_" ) ){
-  //       xSec_ = 118.7;
-  //       genEvents_ = 989608.;
-  //     }
-  //     else if( sample.Contains( "_WZ_" ) ){
-  //       xSec_ = 66.1;
-  //       genEvents_ = 996920.;
-  //     }
-  //     else if( sample.Contains( "_ZZ_" ) ){
-  //       xSec_ = 15.4;
-  //       genEvents_ = 998848.;
-  //     }
-  //     //W+Jets samples
-  //     else if( sample.Contains( "WJetsToLNu" ) && !sample.Contains("_HT-") ){
-  //       xSec_ = 61526.7;
-  //       genEvents_ = 24089991.;
-  //     }
-  //     //TTbar samples
-  //     else if( sample.Contains( "TTJets" ) && sample.Contains( "amcatnlo" ) ){
-  //       xSec_ = 831.76;
-  //       genEvents_ = 4994250.;
-  //     }
-  //     else if( sample.Contains( "TT_" ) && sample.Contains( "powheg" ) ){
-  //       xSec_ = 831.76;
-  //       genEvents_ = 19665194.;
-  //     }
-  //     else if( sample.Contains( "DYJetsToLL" ) ){
-  //       xSec_ = 6104.0;
-  //       genEvents_ = 19925500.;
-  //       // v3 = 28825132.
-  //     }
-  //   }
-        
-  //25 ns samples old version
-  if( !sample.Contains("50ns") && !sample.Contains("reMiniAOD") ){
+  
+  if( sample.Contains( "Fall15" ) ){
     //single top samples
     if( sample.Contains( "ST_t-channel_top" ) ){
-      xSec_ = 136.02*0.322;
-      genEvents_ = 3299800.;
+      xSec_ = 136.02*0.3272;
+      genEvents_ = 3299200.;
     }  
     else if( sample.Contains( "ST_t-channel_antitop" ) ){
-      xSec_ = 80.95*0.322;
-      genEvents_ = 1695400.;
+      xSec_ = 80.95*0.3272;
+      genEvents_ = 1392366.;
     }         
+
     else if( sample.Contains( "ST_s-channel" ) ){
-      xSec_ = 11.36*0.322;
+      xSec_ = 11.36*0.3272;
       //genEvents_ = 984400.; //das
-      genEvents_ = 613384.; //genweights
+      genEvents_ = 621946.; //genweights
     }	  
-    else if( sample.Contains( "ST_t-channel" ) && !(sample.Contains("top") || sample.Contains("antitop")) ){
-      xSec_ = 216.99*0.322;
-      genEvents_ = 2966200.;
-    }	
     else if( sample.Contains( "ST_tW_top" ) ){
-      xSec_ = 35.6;
-      genEvents_ = 995600.;
-    } 
-    else if( sample.Contains( "ST_tW_antitop" ) ){
       xSec_ = 35.6;
       genEvents_ = 1000000.;
-    }   
-    else if( sample.Contains( "TTJets" ) && sample.Contains("amcatnloFXFX") ){
-      xSec_ = 831.76;
-      //genEvents_ = 42730273.; //das
-      genEvents_ = 14170480.; //genweights
-    }
-    else if( sample.Contains( "TT" ) && sample.Contains("powheg") ){
-      xSec_ = 831.76;
-      genEvents_ = 19899500.;
-    }
-    else if( sample.Contains( "_WW_" ) ){
-      xSec_ = 118.7;
-      genEvents_ = 994416.;
-    }
-    else if( sample.Contains( "_WZ_" ) ){
-      xSec_ = 47.13;//66.1;
-      genEvents_ = 991232.;
-    }
-    else if( sample.Contains( "_ZZ_" ) ){
-      xSec_ = 16.5;//15.4;
-      genEvents_ = 996168.;
-    }      
-    else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){
-      xSec_ = 1.21*1347.;//1292.;
-      genEvents_ = 10142187.;
-    } 
-    else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
-      xSec_ = 1.21*360.;//385.9;
-      genEvents_ = 5231856.;
-    } 
-    else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){
-      xSec_ = 1.21*48.9;//47.9;
-      genEvents_ = 1901705.;
-    } 
-    else if( sample.Contains( "WJetsToLNu_HT-600ToInf" ) ){
-      xSec_ = 1.21*18.77;//19.9;
-      genEvents_ = 1036108.;
-    } 	 
-    else if( sample.Contains( "WJetsToLNu" ) && !sample.Contains("_HT-") ){
-      xSec_ = 61526.7;
-      genEvents_ = 24151270.;
-    }
-  
-  }
-  //25 ns reMiniAOD
-  else{
-    //single top samples
-    if( sample.Contains( "ST_t-channel_top" ) ){
-      xSec_ = 136.02*0.322;
-      genEvents_ = 3299800.;
-    }  
-    if( sample.Contains( "ST_t-channel_antitop" ) ){
-      xSec_ = 80.95*0.322;
-      genEvents_ = 1680200.;
-    }         
-    else if( sample.Contains( "ST_s-channel" ) ){
-      xSec_ = 11.36*0.322;
-      //genEvents_ = 984400.; //das
-      genEvents_ = 613384.; //genweights
-    }	  
-    /*else if( sample.Contains( "ST_t-channel" ) && !(sample.Contains("top") || sample.Contains("antitop")) ){//wrong for reMiniAOD
-    xSec_ = 216.99*0.322;
-    genEvents_ = 2966200.;
-    }*/	
-    else if( sample.Contains( "ST_tW_top" ) ){
-      xSec_ = 35.6;
-      genEvents_ = 995600.;
     } 
     else if( sample.Contains( "ST_tW_antitop" ) ){
       xSec_ = 35.6;
-      genEvents_ = 988500.;
+      genEvents_ = 999400.;
     }   
-    /*else if( sample.Contains( "TTJets" ) ){ //wrong for reMiniAOD
-    xSec_ = 831.76;
-    //genEvents_ = 42730273.; //das
-    genEvents_ = 14170480.; //genweights
-    }*/
-    else if( sample.Contains( "TT" ) && sample.Contains("powheg") ){
+    else if( sample.Contains( "TT" ) && sample.Contains("herwig") ){ //TO DO
       xSec_ = 831.76;
-      genEvents_ = 19757190.;
+      genEvents_ = 16640209;  //DAS 17520956.
     }
-    else if( sample.Contains( "_WW_" ) && !sample.Contains( "powheg" ) ){
-      xSec_ = 118.7;
-      genEvents_ = 993640.;
+
+    else if( sample.Contains( "TT" ) && sample.Contains("pythia8")){
+      xSec_ = 831.76;
+      genEvents_ = 57708252.; //DAS 97994442
     }
-    else if( sample.Contains( "_WW_" ) && sample.Contains( "powheg" ) ){
-      xSec_ = 118.7;
-      genEvents_ = 1951600.;
+
+    else if( sample.Contains( "WWToLNuQQ") ){
+      xSec_ = 49.997;
+      genEvents_ = 5733983.;
     }
-    else if( sample.Contains( "_WZ_" ) && !sample.Contains( "amcatnlo" ) ){
-      xSec_ = 47.13;//66.1;
-      genEvents_ = 978512.;
-    }
-    else if( sample.Contains( "_WZ_" ) && sample.Contains( "amcatnlo" ) ){
-      xSec_ = 47.13;//66.1;
-      genEvents_ = 978512.;
-    }
-    else if( sample.Contains( "_ZZ_" ) && !sample.Contains( "amcatnlo" ) ){
-      xSec_ = 16.5;//15.4;
-      genEvents_ = 996944.;
-    }      
-    else if( sample.Contains( "_ZZ_" ) && sample.Contains( "amcatnlo" ) ){
-      xSec_ = 16.5;//15.4;
-      genEvents_ = 18790122.;
-    }  
+    else if( sample.Contains( "WZTo1L1Nu2Q" ) ){
+      xSec_ = 10.71;
+      //genEvents_ = 978512.;//das
+      genEvents_ = 9937317.; //gen weights
+    }   
+    else if( sample.Contains( "ZZTo2L2Q" ) ){
+      xSec_ = 3.22;
+      //genEvents_ = 18790122.;//das
+      genEvents_ = 11863244.;//gen weights
+    } 
+    
     else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){
       xSec_ = 1.21*1345.;//1292.;
-      genEvents_ = 10152718.;
+      genEvents_ = 9759062.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
       xSec_ = 1.21*359.7;//385.9;
-      genEvents_ = 5221599.;
+      genEvents_ = 4141655.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){//TO DO
       xSec_ = 1.21*48.91;//47.9;
       genEvents_ = 1745914.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-600To800" ) ){
       xSec_ = 1.21*12.05;//47.9;
-      genEvents_ = 4041997.;
+      genEvents_ = 113821.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){//TO DO
       xSec_ = 1.21*5.501;//47.9;
-      genEvents_ = 1574633.;
+      genEvents_ = 44737.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-1200To2500" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-1200To2500" ) ){//TO DO
       xSec_ = 1.21*1.329;//47.9;
       genEvents_ = 255637.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-2500ToInf" ) ){
       xSec_ = 1.21*0.03216;//47.9;
-      genEvents_ = 253036.;
+      genEvents_ = 47408.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-600ToInf" ) ){
-      xSec_ = 1.21*18.77;//19.9;
-      genEvents_ = 1039152.;
-    } 	 
-    /*else if( sample.Contains( "WJetsToLNu" ) && !sample.Contains("_HT-") ){ //wrong for reMiniAOD
-    xSec_ = 61526.7;
-    genEvents_ = 24151270.;
-    }*/
-
   }
+  else{
+    if( sample.Contains( "ST_t-channel_top" ) ){
+    xSec_ = 136.02*0.3272;
+    genEvents_ = 3299800.;
+  }  
+  if( sample.Contains( "ST_t-channel_antitop" ) ){
+    xSec_ = 80.95*0.3272;
+    genEvents_ = 1680200.;
+  }         
+  if( sample.Contains( "ST_t-channel" ) && sample.Contains( "ext" ) ){
+    xSec_ = 216.99*0.322;
+    //genEvents_ = 29954054.; //das
+    genEvents_ =  6456052.; //gen weights
+  }  
+  else if( sample.Contains( "ST_s-channel" ) ){
+    xSec_ = 11.36*0.3272;
+    //genEvents_ = 984400.; //das
+    genEvents_ = 613384.; //genweights
+  }	  
+  else if( sample.Contains( "ST_tW_top" ) ){
+    xSec_ = 35.6;
+    genEvents_ = 995600.;
+  } 
+  else if( sample.Contains( "ST_tW_antitop" ) ){
+    xSec_ = 35.6;
+    genEvents_ = 988500.;
+  }   
+  else if( sample.Contains( "TT" ) && sample.Contains("herwig") ){
+    xSec_ = 831.76;
+    genEvents_ = 16640209;  //DAS 17520956.
+  }
+  else if( sample.Contains( "TT" ) && sample.Contains("pythia8") && !sample.Contains("Fall15")){
+    xSec_ = 831.76;
+    genEvents_ = 19757192.; //LOWMASS 17427174
+  }
+  else if( sample.Contains( "_WW_" ) && !sample.Contains( "powheg" ) ){
+    xSec_ = 118.7;
+    genEvents_ = 993640.;
+  }
+  else if( sample.Contains( "_WW" ) && sample.Contains( "powheg" ) ){
+    xSec_ = 49.997;
+    genEvents_ = 1951600.;
+  }
+  else if( sample.Contains( "_WZ_" ) && !sample.Contains( "amcatnlo" ) ){
+    xSec_ = 47.13;
+    genEvents_ = 978512.;
+  }
+  else if( sample.Contains( "_WZ" ) && sample.Contains( "amcatnlo" ) ){
+    xSec_ = 10.71;
+    //genEvents_ = 978512.;//das
+    genEvents_ = 14346866; //gen weights
+  }
+  else if( sample.Contains( "_ZZ_" ) && !sample.Contains( "amcatnlo" ) ){
+    xSec_ = 16.5;
+    genEvents_ = 996944.;
+  }      
+  else if( sample.Contains( "_ZZ" ) && sample.Contains( "amcatnlo" ) ){
+    xSec_ = 3.22;
+    //genEvents_ = 18790122.;//das
+    genEvents_ = 11863244.;//gen weights
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){
+    xSec_ = 1.21*1345.;//1292.;
+    genEvents_ = 10152718.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
+    xSec_ = 1.21*359.7;//385.9;
+    genEvents_ = 5221599.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){
+    xSec_ = 1.21*48.91;//47.9;
+    genEvents_ = 1745914.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-600To800" ) ){
+    xSec_ = 1.21*12.05;//47.9;
+    genEvents_ = 4041997.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){
+    xSec_ = 1.21*5.501;//47.9;
+    genEvents_ = 1574633.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-1200To2500" ) ){
+    xSec_ = 1.21*1.329;//47.9;
+    genEvents_ = 255637.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-2500ToInf" ) ){
+    xSec_ = 1.21*0.03216;//47.9;
+    genEvents_ = 253036.;
+  } 
+  else if( sample.Contains( "WJetsToLNu_HT-600ToInf" ) ){
+    xSec_ = 1.21*18.77;//19.9;
+    genEvents_ = 1039152.;
+  } 
+
+else if( sample.Contains( "_DYJetsToLL_" ) && sample.Contains("-madgraphMLM-")){
+    xSec_ = 4895.0;
+    genEvents_ = 9042031.;
+  }
+   
     
-  if( sample.Contains( "QCD_Pt_170to300_" ) ){
+  else if( sample.Contains( "QCD_Pt_170to300_" ) ){
     xSec_ = 117276.;
     // genEvents_ = 3364368.;
     genEvents_ = 2582714; //OK!!!   
@@ -398,14 +311,6 @@ double LumiWeight::getLumiWeight( TString sample ){
   else if( sample.Contains( "_QCD_HT_1000ToInf_" ) ){
     xSec_ = 769.7;
     genEvents_ = 333733.;
-  }
-  // else if( sample.Contains( "_DYJetsToLL_" ) ){
-  //   xSec_ = 6104.;
-  //   genEvents_ = 28825132.;
-  // }
-  else if( sample.Contains( "_DYJetsToLL_" ) && sample.Contains("-madgraphMLM-")){
-    xSec_ = 4895.0;
-    genEvents_ = 9042031.;
   }
 
   else if( sample.Contains( "_RSGravToWW_kMpl01_M-600_" ) ){
@@ -773,7 +678,7 @@ double LumiWeight::getLumiWeight( TString sample ){
     xSec_ = 1.;
     genEvents_ = 30000.;
   }
-  else if( sample.Contains( "BulkGravToZZ_narrow_M-2000" ) ){
+  else if( sample.Contains( "BulkGravToZZ_narrow_M-1200" ) ){
     xSec_ = 1.;
     genEvents_ = 30000.;
   }
@@ -903,15 +808,11 @@ double LumiWeight::getLumiWeight( TString sample ){
     xSec_ = 1.;
     genEvents_ = 30000.;
   }
+}
   
-  
-  
-   
+   // std::cout<< "Lumi weight: XSEC/GENEVENTS = " << xSec_ << "/" << genEvents_ << std::endl;
 
-// std::cout<<"sample == "<<sample<<std::endl;
-// std::cout<<"xSec_ == "<<xSec_<<std::endl;
-// std::cout<<"genevents == "<<genEvents_<<std::endl;
-   	                                     
-return xSec_/genEvents_;
+  return xSec_/genEvents_;
+  
       
 }

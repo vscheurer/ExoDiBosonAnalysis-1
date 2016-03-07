@@ -75,7 +75,7 @@ namespace ROOT {
       ::ExoDiBosonAnalysis *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::ExoDiBosonAnalysis >(0);
       static ::ROOT::TGenericClassInfo 
-         instance("ExoDiBosonAnalysis", ::ExoDiBosonAnalysis::Class_Version(), "include/ExoDiBosonAnalysis.h", 26,
+         instance("ExoDiBosonAnalysis", ::ExoDiBosonAnalysis::Class_Version(), "include/ExoDiBosonAnalysis.h", 27,
                   typeid(::ExoDiBosonAnalysis), DefineBehavior(ptr, ptr),
                   &::ExoDiBosonAnalysis::Dictionary, isa_proxy, 4,
                   sizeof(::ExoDiBosonAnalysis) );

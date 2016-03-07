@@ -47,7 +47,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "recoTSoftdropMass"  , "Reco t", 60,   0. , 300. ) );
   theAnalysis_->Book( TH1F( "recoWMass"      , "Reco W#rightarrow qq", 60,   0. , 300. ) );
 	
-  theAnalysis_->Book( TH1F( "METsumET", "MET/sumEt"      , 100	, 0.	, .6	) );
+  theAnalysis_->Book( TH1F( "METsumET", "MET/sumEt"      , 100	, 0.	, 1.	) );
   theAnalysis_->Book( TH1F( "MET"   , "MET"  , 500	, 0.	, 1000.	) );
  
   // theAnalysis_->Book( TH1F( "LeptonJet_JetID"   , "0 = AllLooseJets, 1 = Jets+tightID, 2 = GenLeptonMatch(EleMu), 3 = GenLeptonMatch(EleMuTau), 4 = GenLeptonMatch+tightID, 5 =RecoLeptonMatch, 6 =RecoLeptonMatch+TightID"  , 7  , 0.  , 7.  ) );
@@ -146,6 +146,20 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "HT650_MJJ900"   , "HT650_MJJ900"    , 5000, 0.	, 5000.	) ); 
   theAnalysis_->Book( TH1F( "HT" , "OR (HT only)"    , 5000, 0.	, 5000.	) ); 
   theAnalysis_->Book( TH1F( "ALL" , "ALL" , 5000, 0.	, 5000.	) ); 
+  
+  
+  theAnalysis_->Book( TH1F( "PFHT650_VV", "PFHT650", 5000, 0.	, 5000.	) ); 
+  theAnalysis_->Book( TH1F( "HT800_VV", "HT800", 5000, 0.	, 5000.	) ); 
+  theAnalysis_->Book( TH1F( "PFJet360_Trim_VV"   , "AK8PFJet360_TrimMass30"      , 5000, 0.	, 5000.	) );  
+  theAnalysis_->Book( TH1F( "HT700_Trim_VV"    , "HT700_Trim50"    , 5000, 0.	, 5000.	) );
+  theAnalysis_->Book( TH1F( "DiPFJet280_200_TrimMass30_VV" , "DiPFJet280_200_TrimMass30", 5000, 0.	, 5000.	) );  
+  theAnalysis_->Book( TH1F( "HT650_MJJ950_VV"   , "HT650_MJJ950"    , 5000, 0.	, 5000.	) ); 
+  theAnalysis_->Book( TH1F( "HT650_MJJ900_VV"   , "HT650_MJJ900"    , 5000, 0.	, 5000.	) ); 
+  theAnalysis_->Book( TH1F( "Substructure_VV"   , "OR (substructure only)"      , 5000, 0.	, 5000.	) );  
+  theAnalysis_->Book( TH1F( "HT_VV" , "OR (HT only)"    , 5000, 0.	, 5000.	) ); 
+  theAnalysis_->Book( TH1F( "ALL_VV" , "ALL" , 5000, 0.	, 5000.	) ); 
+  
+  
  
   theAnalysis_->Book( TH1F( "PFJet320_SD"  , "PFJet320", 200, 0.	, 200.	) ); 
   theAnalysis_->Book( TH1F( "PFJet360_Trim_SD", "AK8PFJet360_TrimMass30"   , 200, 0.	, 200.	) ); 
@@ -237,6 +251,36 @@ void HistosManager::bookHistos( std::string Channel_ ){
   
    
  }
+ 
+ else if( Channel_.find("WtagSF") != std::string::npos){
+  
+  /************************ SF ************************/
+ 
+  theAnalysis_->Book( TH1F( "MET_beforeCut", "MET"   , 50	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "MET_afterCut", "MET"   , 50	, 0.	, 500.	) );
+  
+  theAnalysis_->Book( TH1F( "leptonPT" 	  		 												, "leptonPT"	   				, 60	, 0.	, 600.	) );
+  theAnalysis_->Book( TH1F( "leptonPhi" 	  		 											, "leptonPhi"	   				, 50	, -5.	, 5.  	) );
+  theAnalysis_->Book( TH1F( "leptonEta" 	  		 											, "leptonEta"	   				, 50	, -5.	, 5.  	) );
+  theAnalysis_->Book( TH1F( "MET"                                     , "MET"                 , 50	, 0.	, 500.	) );
+  theAnalysis_->Book( TH1F( "Wcand_pt" 	  		 												, "Wcand_pt"	   				, 60	, 0.	, 600.	) );
+  
+ 
+  theAnalysis_->Book( TH1F( "nEvents"           , "nEvents"           , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedFilter"     , "nPassedFilter"     , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedTrigger"    , "nPassedTrigger"    , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedFoundLept"  , "nPassedFoundLept"  , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedVetoLep"    , "nPassedVetoLep"    , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedFoundMET"   , "nPassedFoundMET"   , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedFoundW"     , "nPassedFoundW"     , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedFoundJet"   , "nPassedFoundJet"   , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedLepJetDR"   , "nPassedLepJetDR"   , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassedPrunedJetMass"   , "nPassedPrunedJetMass"   , 1	, 0.5, 1.5		) );
+  theAnalysis_->Book( TH1F( "nPassed1bTag"      , "nPassed1bTag"      , 1	, 0.5, 1.5		) );
+  
+   
+ }
+ 
 
 }
 

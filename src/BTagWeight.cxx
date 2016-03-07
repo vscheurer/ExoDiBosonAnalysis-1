@@ -354,8 +354,8 @@ double BTagWeight::getBTagWeight( std::vector<JetCandidate> jets, std::string wh
    double dataNoTag = 1.0;
 
    double CSVwp;
-   if( which == "veto" ) CSVwp = 0.679;
-   else CSVwp = 0.244;
+   if( which == "veto" ) CSVwp = 0.890;
+   else CSVwp = 0.605;
    
    //std::cout << which << " wp " << jets.size() << std::endl;
 
@@ -394,6 +394,7 @@ double BTagWeight::getBTagWeight( std::vector<JetCandidate> jets, std::string wh
    }
 
    weight = (dataNoTag*dataTag)/(mcNoTag*mcTag);
+   //std::cout << "   --------> " << weight << std::endl;
    
    return weight;  
                 
@@ -419,8 +420,8 @@ double BTagWeight::getBTagWeight( JetCandidate jet, std::string which ){
    double dataNoTag = 1.0;
 
    double CSVwp;
-   if( which == "veto" ) CSVwp = 0.679;
-   else CSVwp = 0.244;
+   if( which == "veto" ) CSVwp = 0.890;
+   else CSVwp = 0.605;
 
    //std::cout << which << " wp " << CSVwp << std::endl;
    
@@ -484,8 +485,8 @@ double BTagWeight::getBTagSFWeightUp( std::vector<JetCandidate> jets, std::strin
    double werr      = 0;
 
    double CSVwp;
-   if( which == "veto" ) CSVwp = 0.679;
-   else CSVwp = 0.244;
+   if( which == "veto" ) CSVwp = 0.890;
+   else CSVwp = 0.605;
    
    for( unsigned int j = 0; j < jets.size(); ++j ){
    
@@ -499,11 +500,15 @@ double BTagWeight::getBTagSFWeightUp( std::vector<JetCandidate> jets, std::strin
    for( unsigned int j = 0; j < jets.size(); ++j ){      
       
       SFerr = jetSF_e_up[j];
-      
+
+      //std::cout << "jet " << j << " - pt " << jets[j].p4.Pt() << " - eta " << jets[j].p4.Eta() << " - flavor " << jets[j].flavor << " - eff " << jetEff[j];
+      //std::cout << " sf up " << jetSF[j] + SFerr << std::endl;
+            
       if( jets[j].csv > CSVwp ){
       
          mcTag *= jetEff[j];
-	 dataTag *= jetEff[j]*jetSF[j];
+	 //dataTag *= jetEff[j]*jetSF[j];
+	 dataTag *= jetEff[j]*(jetSF[j]+SFerr);
 	 
 	 errTag += (SFerr/jetSF[j])*(SFerr/jetSF[j]);
 	 
@@ -511,7 +516,8 @@ double BTagWeight::getBTagSFWeightUp( std::vector<JetCandidate> jets, std::strin
       else{
          
 	 mcNoTag *= (1-jetEff[j]);
-	 dataNoTag *= (1-jetEff[j]*jetSF[j]);
+	 //dataNoTag *= (1-jetEff[j]*jetSF[j]);
+	 dataNoTag *= (1-jetEff[j]*(jetSF[j]+SFerr));
 	 
 	 errNoTag += ((-jetEff[j]*SFerr)/(1-jetEff[j]*jetSF[j]))*((-jetEff[j]*SFerr)/(1-jetEff[j]*jetSF[j]));
       
@@ -520,12 +526,14 @@ double BTagWeight::getBTagSFWeightUp( std::vector<JetCandidate> jets, std::strin
    }
 
    weight = (dataNoTag*dataTag)/(mcNoTag*mcTag);
-   werr = TMath::Sqrt(errTag+errNoTag)*weight;
-   weightup = weight+werr;
+   //std::cout << "   --------> " << weight << std::endl;
+   //werr = TMath::Sqrt(errTag+errNoTag)*weight;
+   //weightup = weight+werr;
    
    //std::cout << "########### which " << which << " weight " << weightup << " err " << werr << std::endl;
   
-   return weightup;
+   //return weightup;
+   return weight;
       
 }
 
@@ -550,8 +558,8 @@ double BTagWeight::getBTagSFWeightDown( std::vector<JetCandidate> jets, std::str
    double werr       = 0;
 
    double CSVwp;
-   if( which == "veto" ) CSVwp = 0.679;
-   else CSVwp = 0.244;
+   if( which == "veto" ) CSVwp = 0.890;
+   else CSVwp = 0.605;
    
    for( unsigned int j = 0; j < jets.size(); ++j ){
    
@@ -565,11 +573,15 @@ double BTagWeight::getBTagSFWeightDown( std::vector<JetCandidate> jets, std::str
    for( unsigned int j = 0; j < jets.size(); ++j ){      
       
       SFerr = jetSF_e_down[j];
-      
+
+      //std::cout << "jet " << j << " - pt " << jets[j].p4.Pt() << " - eta " << jets[j].p4.Eta() << " - flavor " << jets[j].flavor << " - eff " << jetEff[j];
+      //std::cout << " sf down " << jetSF[j] - SFerr << std::endl;
+            
       if( jets[j].csv > CSVwp ){
       
          mcTag *= jetEff[j];
-	 dataTag *= jetEff[j]*jetSF[j];
+	 //dataTag *= jetEff[j]*jetSF[j];
+	 dataTag *= jetEff[j]*(jetSF[j]-SFerr);
 	 
 	 errTag += (SFerr/jetSF[j])*(SFerr/jetSF[j]);
 	 
@@ -577,7 +589,8 @@ double BTagWeight::getBTagSFWeightDown( std::vector<JetCandidate> jets, std::str
       else{
          
 	 mcNoTag *= (1-jetEff[j]);
-	 dataNoTag *= (1-jetEff[j]*jetSF[j]);
+	 //dataNoTag *= (1-jetEff[j]*jetSF[j]);
+	 dataNoTag *= (1-jetEff[j]*(jetSF[j]-SFerr));
 	 
 	 errNoTag += ((-jetEff[j]*SFerr)/(1-jetEff[j]*jetSF[j]))*((-jetEff[j]*SFerr)/(1-jetEff[j]*jetSF[j]));
       
@@ -586,12 +599,14 @@ double BTagWeight::getBTagSFWeightDown( std::vector<JetCandidate> jets, std::str
    }
 
    weight = (dataNoTag*dataTag)/(mcNoTag*mcTag);
-   werr = TMath::Sqrt(errTag+errNoTag)*weight;
-   weightdown = (weight-werr) > 0 ? weight-werr:0;
+   //std::cout << "   --------> " << weight << std::endl;
+   //werr = TMath::Sqrt(errTag+errNoTag)*weight;
+   //weightdown = (weight-werr) > 0 ? weight-werr:0;
    
    //std::cout << "########### which " << which << " weight " << weight << " err " << werr << std::endl;
   
-   return weightdown;
+   //return weightdown;
+   return weight;
    
 }
 
@@ -614,8 +629,8 @@ double BTagWeight::getBTagEffWeightUp( std::vector<JetCandidate> jets, std::stri
    double werr      = 0;
 
    double CSVwp;
-   if( which == "veto" ) CSVwp = 0.679;
-   else CSVwp = 0.244; 
+   if( which == "veto" ) CSVwp = 0.890;
+   else CSVwp = 0.605; 
    
    for( unsigned int j = 0; j < jets.size(); ++j ){
    
@@ -674,8 +689,8 @@ double BTagWeight::getBTagEffWeightDown( std::vector<JetCandidate> jets, std::st
    double werr       = 0;
 
    double CSVwp;
-   if( which == "veto" ) CSVwp = 0.679;
-   else CSVwp = 0.244;  
+   if( which == "veto" ) CSVwp = 0.890;
+   else CSVwp = 0.605;  
    
    for( unsigned int j = 0; j < jets.size(); ++j ){
    

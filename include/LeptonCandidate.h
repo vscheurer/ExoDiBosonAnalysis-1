@@ -11,6 +11,14 @@ public:
      
    double iso;
    double scale;
+   int isGlobalMuon;   
+   int globalHits;	  
+   int pixelHits; 
+   int trackerHits;   
+   int matchedStations;
+   double bestTrack_ptErrRel;
+   double d0;		  
+   double dz;		
       
 private:
 
