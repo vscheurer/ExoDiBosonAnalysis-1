@@ -52,11 +52,11 @@ public:
 
   void fillHistos                ( std::string Channel );
        
-  bool passedTTbarSelections     ( void );
+  bool passedTTbarSelections     ( TString infile );
   bool passedDijetSelections     (  TString infile  );
   bool passedDijetSelectionsAK4  (  TString infile  );
   bool applyJSON                 ( void );
-  bool passedFilters             ( void );
+  bool passedFilters             ( TString infile );
   bool passedTrigger             ( void );
 	
   bool findLeptonCandidate       ( void );     
@@ -73,7 +73,7 @@ public:
   TLorentzVector getp4NuMethod2  ( void );
 
 
-  bool findJetCandidates         ( void );
+  bool findJetCandidates         ( TString infile );
   bool findJetCandidatesAK4      ( void );
 
   void doJetTriggerEfficiency    	 ( void );
@@ -125,6 +125,7 @@ private:
   std::string    InputTreeName_   ;
   std::string    OutputTreeName_  ;   
   bool           isSignal_        ;
+  bool           usePuppiSD_        ;
   bool           runOnMC_         ;
   bool           GenStudies_       ;
   std::string    Channel_         ; 
@@ -226,6 +227,7 @@ private:
   int    nPassedFilter_HBHEIso_;
   int    nPassedFilter_HBHE_;
   int    nPassedFilter_CSCHalo_;
+  int    nPassedFilter_CSCTightHalo2015_;
   int    nPassedFilter_HCALlaser_;
   int    nPassedFilter_ECALDeadCell_;
   int    nPassedFilter_GoodVtx_;
@@ -249,6 +251,7 @@ private:
   int    nPassedWtagging_		 ;
 	
   //TTbar W-tag SF cut flow
+  int    nNopuppi_  ;
   int    nPassedFoundLept_  ;
   int    nPassedFoundMET_   ;
   int    nPassedIsoLep_     ;
@@ -315,16 +318,25 @@ private:
   
 
   float jet_mass_pruned ;
+  float jet_mass_pruned_UnCorr;
   float jet_pt ;
   float jet_csv ;
   float jet_eta ;
   float jet_phi ;
   float jet_tau2tau1 ;
-  
+  float jet_jec ;
+  float jet_pruned_jec ;
+  float jet_puppi_softdrop ;
+  float jet_puppi_pruned ;
+  float jet_puppi_tau1;
+  float jet_puppi_tau2;  
+  float jet_puppi_tau3;
+  float jet_puppi_pt;
   
   float Wlept_pt ;
   float Wlept_mt ;
-  int   realW    ;
+  int   realW_def1 ;
+  int   realW_def2 ;
   
 
 }; // class ExoDiBosonAnalysis

@@ -22,14 +22,14 @@ public:
 	std::vector<float>*					genParticle_eta		;
 	std::vector<float>*					genParticle_phi		;
 	std::vector<std::vector<int> >*	genParticle_mother	;
-	std::vector<std::vector<int> >*	genParticle_dau		;
-	std::vector<int  >*					genParticle_nDau		;
+	std::vector<std::vector<int> >*	genParticle_dau  ;
+	std::vector<int  >*					genParticle_nDau		 ;
 	std::vector<int  >*					genParticle_nMoth    ;
-	float										lheV_pt					;
-	float                            lheHT                ;
-	float                            lheNj                ;
-	float                            genWeight            ;
-	float                            qScale               ;
+	float                       lheV_pt              ;
+	float                       lheHT                ;
+	float                       lheNj                ;
+	float                       genWeight            ;
+	float                       qScale               ;
   
   int                             el_N              	 ;
   std::vector<float>*    	   el_e 	    	 ;
@@ -96,16 +96,15 @@ public:
 	std::vector<bool >*  	   jetAK4_IDLoose 	     	; 
   std::vector<bool >*  	   jetAK4_IDTight 	     	;  
    
-	int                        njetsAK8 	     			;
+	int                      njetsAK8 	     			;
 	std::vector<float>*		   jetAK8_pt 	     			;
 	std::vector<float>*		   jetAK8_eta 	     			;
 	std::vector<float>*		   jetAK8_phi 	     			;
 	std::vector<float>*		   jetAK8_e 	     			;
 	std::vector<float>*		   jetAK8_mass 	     		;
 	std::vector<float>*		   jetAK8_prunedmass	;
+  std::vector<float>*		   jetAK8_prunedmass_unCorr	;
 	std::vector<float>*		   jetAK8_softdropmass;
-	std::vector<float>*		   jetAK8_prunedmassCorr	;
-	std::vector<float>*		   jetAK8_softdropmassCorr	;
 	std::vector<float>*  	   jetAK8_pruned_jec			;
 	std::vector<float>*  	   jetAK8softdrop_jec		;
 	std::vector<float>*		   jetAK8_csv					;
@@ -115,7 +114,6 @@ public:
 	std::vector<float>*		   jetAK8_tau3					;
 	std::vector<bool >*  	   jetAK8_IDLoose				; 
   std::vector<bool >*  	   jetAK8_IDTight				; 
-	std::vector<int  >*  	   jetAK8_flavor				;
 	std::vector<int  >*  	   jetAK8_nconstituents		;
   
   std::vector<int>*        jetAK8_cm; //chargedMultiplicity
@@ -138,9 +136,25 @@ public:
   std::vector<float>*		   jetAK8_cemf ; //chargedEmEnergyFraction());
   std::vector<float>*		   jetAK8_charge; //charge());		
   
+std::vector<float>*		   jetAK8_puppi_e;  
+std::vector<float>*		   jetAK8_puppi_eta;
+std::vector<float>*		   jetAK8_puppi_pt;
+std::vector<float>*		   jetAK8_puppi_phi;
+std::vector<float>*		   jetAK8_puppi_tau1;
+std::vector<float>*		   jetAK8_puppi_tau2;
+std::vector<float>*		   jetAK8_puppi_tau3;
   
+std::vector<float>*		   jetAK8_puppi_pruned_mass;
+std::vector<float>*		   jetAK8_puppi_pruned_massCorr;
+std::vector<float>*		   jetAK8_puppi_softdrop_mass;
+std::vector<float>*		   jetAK8_puppi_softdrop_massCorr;
+
+std::vector<float>*		   jetAK10_trimmed_mass;
+std::vector<float>*		   jetAK10_trimmed_massCorr;
+std::vector<float>*		   jetAK8_softdrop_jec;
+std::vector<float>*		   jetAK8_jec;
   
-  int			      ngenJetsAK8               ;
+  int			                    ngenJetsAK8               ;
   std::vector<float>*  	      genJetAK8_pt              ;
   std::vector<float>*  	      genJetAK8_eta             ;
   std::vector<float>* 	      genJetAK8_mass            ;
@@ -194,6 +208,7 @@ public:
   bool passFilter_HBHEIso_;
   bool passFilter_HBHELoose_;
   bool passFilter_CSCHalo_;
+  bool passFilter_CSCTightHalo2015_;
   bool passFilter_HCALlaser_;
   bool passFilter_ECALDeadCell_;
   bool passFilter_GoodVtx_;

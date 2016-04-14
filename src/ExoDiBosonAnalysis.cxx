@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <TRandom.h>
+#include <fstream>
+using namespace std;
 
 //==============================================================================================
 ClassImp( ExoDiBosonAnalysis );
@@ -26,6 +28,7 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "OutputTreeName"		, OutputTreeName_	);
   DeclareProperty( "isSignal"         , isSignal_				);
   DeclareProperty( "runOnMC"          , runOnMC_				);
+  DeclareProperty( "usePuppiSD"       , usePuppiSD_		  );
   DeclareProperty( "GenStudies"       , GenStudies_			);
   DeclareProperty( "Channel"          , Channel_				);
   DeclareProperty( "MassWindow"       , MassWindow_     );
@@ -79,6 +82,7 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   pdgWidthw    = 8.9;
   
   
+  nNopuppi_           = 0;
   nSumGenWeights_           = 0; 
   nEvents_                  = 0;
   nPassedTrigger_           = 0;
@@ -113,6 +117,7 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   nPassedFilter_HBHEIso_             = 0;
   nPassedFilter_HBHE_                = 0;
   nPassedFilter_CSCHalo_             = 0;
+  nPassedFilter_CSCTightHalo2015_    = 0;
   nPassedFilter_HCALlaser_           = 0;
   nPassedFilter_ECALDeadCell_        = 0;
   nPassedFilter_GoodVtx_             = 0;
@@ -187,11 +192,9 @@ void ExoDiBosonAnalysis::initWeight( void ){
 
   TString infile = TString(this->GetHistInputFile()->GetName());
   
-  std::cout<<infile<<std::endl;
-  
   std::string scenario = "PUS25ns";
   if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ) scenario = "PUS25ns76X";
-  
+  if (! (infile.Contains("16Dec2015") or infile.Contains("Fall15"))) PUProfileData_ = "/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/biasXsec_72000.root";
   PUWeight::Scenario sc = PUWeight_.toScenario(scenario);
   PUWeight_.initPUWeights(PUProfileData_,sc);
   
@@ -210,7 +213,7 @@ void ExoDiBosonAnalysis::BeginInputFile( const SInputData& ) throw( SError ) {
   
   TString infile = TString(this->GetHistInputFile()->GetName());
 
-  theNtupleManager_->ConnectVariables( InputTreeName_, runOnMC_ , infile );
+  theNtupleManager_->ConnectVariables( InputTreeName_, infile, runOnMC_ , usePuppiSD_ );
   
   // Initialize weights
   initWeight(); 
@@ -245,15 +248,25 @@ void ExoDiBosonAnalysis::BeginInputData( const SInputData& ) throw( SError ) {
   
   
   if( Channel_.find("WtagSF") != std::string::npos ){
-    DeclareVariable( hltweight_         , "hltweight"         , OutputTreeName_.c_str() );
+    DeclareVariable( hltweight_         , "hltweight"   , OutputTreeName_.c_str() );
     DeclareVariable( MWW                , "MWW"         , OutputTreeName_.c_str() );
     DeclareVariable( jet_mass_pruned    , "Whadr_pruned", OutputTreeName_.c_str() );
+    DeclareVariable( jet_mass_pruned_UnCorr, "Whadr_pruned_UnCorr", OutputTreeName_.c_str() );
     DeclareVariable( jet_csv            , "Whadr_csv"   , OutputTreeName_.c_str() );
     DeclareVariable( jet_pt             , "Whadr_pt"    , OutputTreeName_.c_str() );
     DeclareVariable( jet_eta            , "Whadr_eta"   , OutputTreeName_.c_str() );
     DeclareVariable( jet_phi            , "Whadr_phi"   , OutputTreeName_.c_str() );
-    DeclareVariable( realW              , "Whadr_isW"   , OutputTreeName_.c_str() );
+    DeclareVariable( realW_def1         , "Whadr_isW_def1"   , OutputTreeName_.c_str() );
+    DeclareVariable( realW_def2         , "Whadr_isW_def2"   , OutputTreeName_.c_str() );
     DeclareVariable( jet_tau2tau1       , "Whadr_tau21" , OutputTreeName_.c_str() );
+    DeclareVariable( jet_jec            , "Whadr_jec"   , OutputTreeName_.c_str() );
+    DeclareVariable( jet_pruned_jec     , "Whadr_pruned_jec"      , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_softdrop , "Whadr_puppi_softdrop"  , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_pruned   , "Whadr_puppi_pruned"    , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_tau1     , "Whadr_puppi_tau1"      , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_tau2     , "Whadr_puppi_tau2"      , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_tau3     , "Whadr_puppi_tau3"      , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_pt       , "Whadr_puppi_pt"      , OutputTreeName_.c_str() );
     DeclareVariable( l_pt               , "lept_pt"     , OutputTreeName_.c_str() );
     DeclareVariable( l_eta              , "lept_eta"    , OutputTreeName_.c_str() );
     DeclareVariable( l_phi              , "lept_phi"    , OutputTreeName_.c_str() );
@@ -390,6 +403,8 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
   //// Dijet analysis begins HERE/////////////////////////////////////////////////////////////////////////
   if( Channel_ == "VVdijet" || Channel_ == "qVdijet" ){
     
+    isLowMass = false;
+    
     TString infile = TString(this->GetHistInputFile()->GetName());
     setWeight(infile);
     
@@ -405,14 +420,16 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
 
     if( !passedTrigger() ) throw SError( SError::SkipEvent );
     nPassedTrigger_++;  
-    if( !passedFilters() ) throw SError( SError::SkipEvent );
+    if( !passedFilters( infile ) ) throw SError( SError::SkipEvent );
     nPassedFilters_++;
     
     // if( passedDijetSelectionsAK4(infile) ){
     //   Hist( "MjjAK4" ) -> Fill( ( AK4jetCand_.at(0).p4 + AK4jetCand_.at(1).p4 ).M() , weight_ );
     // }
-      
+    
     if( passedDijetSelections(infile) ) {
+      
+      // std::cout<< "Event nr " << data_.EVENT_event << std::endl;
       
       bool passedTau21Cut				= false;
       
@@ -529,11 +546,11 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
     if( !passedTrigger() ) throw SError( SError::SkipEvent );
     nPassedTrigger_++;
         
-    if( !passedFilters() ) throw SError( SError::SkipEvent );
+    if( !passedFilters( infile ) ) throw SError( SError::SkipEvent );
     nPassedFilters_++;
     
     Hist( "nVertices" )->Fill(data_.nPVs, weight_);
-    if( !passedTTbarSelections() ) return;
+    if( !passedTTbarSelections( infile ) ) return;
     if(GenStudies_){
       doGenTTReco();
     }
@@ -634,14 +651,13 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
   
  
   else if( Channel_.find("WtagSF") != std::string::npos){
-    
+
     int gW = data_.genWeight < 0 ? -1 : 1;
     nSumGenWeights_+=gW;
     
     isLowMass = false;
     if (leptPtCut_ < 50) isLowMass = true ; 
     TString infile = TString(this->GetHistInputFile()->GetName());
-    
     
     Hist( "runNumber" )->Fill(data_.EVENT_run);
     nEvents_++;
@@ -650,43 +666,71 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
     
     if( !passedTrigger() ) throw SError( SError::SkipEvent );
     nPassedTrigger_++;
-        
-    if( !passedFilters() ) throw SError( SError::SkipEvent );
+
+    if( !passedFilters( infile ) ) throw SError( SError::SkipEvent );
     nPassedFilters_++;
-    
-    if( passedTTbarSelections() ){
+
+    if( passedTTbarSelections( infile) ){
       setWeight(infile);
-     
       
-      findExoCandidate();
-      
-      
-      int isW = 0;
+      int isW_def1 = 0;
+      int isW_def2 = 0;
       
       if( runOnMC_ ){
-        TLorentzVector genP;   
-        double genptV = -99;
+        TLorentzVector genP; 
+        std::vector<TLorentzVector> daus;    
+        TLorentzVector hadW; 
+
         for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+          bool isHad = false;
           if( (*data_.genParticle_pt).at(p) < 0.1) continue;
-          if( fabs((*data_.genParticle_pdgId).at(p)) != 24) continue;
-          if( not infile.Contains( "herwig" ) && (*data_.genParticle_status).at(p) != 4 && (*data_.genParticle_status).at(p) != 22 && (*data_.genParticle_status).at(p) != 23) continue;
-          if( infile.Contains( "herwig" ) && (*data_.genParticle_status).at(p) != 11 ) continue;
-          genP.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
-          if( (Vcand.at(0).p4).DeltaR(genP) < 0.3 ) {
-            isW = 1;
-            break;
+          if( fabs((*data_.genParticle_pdgId).at(p)) > 9) continue; 
+          for( unsigned int d = 0; d < (*data_.genParticle_mother)[p].size(); ++d ) {
+            if( fabs((*data_.genParticle_mother)[p][d]) != 24 ) continue;
+            isHad = true;
           }
+          if (!isHad) continue; 
+          genP.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+          daus.push_back(genP);
+        }
+        if( daus.size() > 1){  
+             
+          for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+            bool isHad = false;
+            if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+            if( fabs((*data_.genParticle_pdgId).at(p)) != 24) continue;
+            // if( not infile.Contains( "herwig" ) && (*data_.genParticle_status).at(p) != 4 && (*data_.genParticle_status).at(p) != 22 && (*data_.genParticle_status).at(p) != 23) continue;
+            // if( infile.Contains( "herwig" ) && (*data_.genParticle_status).at(p) != 11 ) continue;
+            if ((*data_.genParticle_dau)[p].size() < 2) continue;
+            for( unsigned int d = 0; d < (*data_.genParticle_dau)[p].size(); ++d ) {
+              if( fabs((*data_.genParticle_dau)[p][d]) > 9) continue;
+              isHad = true;
+            }
+            if (isHad){
+              hadW.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+            }
+          }
+      
+          int isMatch = 0;
+          for( unsigned int p = 0; p < daus.size(); ++p ){
+            float dR = daus.at(p).DeltaR(Vcand.at(0).p4);
+            if (dR < 0.8 ) isMatch +=1;
+          }
+          if (isMatch > 1) isW_def1 = 1;
+          if( (Vcand.at(0).p4).DeltaR(hadW) < 0.4  && daus.at(0).DeltaR(daus.at(1)) < 0.8 ) isW_def2 = 1;
         }
       }
       
       
-      realW = isW;  
+      realW_def1 = isW_def1; 
+      realW_def2 = isW_def2;   
       weight = weight_;
       run = data_.EVENT_run;
       event = data_.EVENT_event;
       lumi = data_.EVENT_lumi;
       nPVs = data_.nPVs;
       jet_mass_pruned = Vcand.at(0).prunedMass;
+      jet_mass_pruned_UnCorr = Vcand.at(0).prunedMassUnCorr;
       jet_csv = Vcand.at(0).csv;
       jet_pt = Vcand.at(0).p4.Pt();
       jet_eta = Vcand.at(0).p4.Eta();
@@ -701,6 +745,13 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
       pfMET = METCand_[0].p4.Pt();
       pfMETPhi = METCand_[0].p4.Phi();	
       nak4jets = AK4jetCand_.size();
+      jet_jec            = Vcand.at(0).jec;
+      jet_pruned_jec     = Vcand.at(0).pruned_jec;
+      jet_puppi_softdrop = Vcand.at(0).puppi_softdropMass;
+      jet_puppi_tau1 = Vcand.at(0).puppi_tau1;
+      jet_puppi_tau2 = Vcand.at(0).puppi_tau2;  
+      jet_puppi_tau3 = Vcand.at(0).puppi_tau3;
+      jet_puppi_pt   = Vcand.at(0).puppi_pt;
     }
     else
       throw SError( SError::SkipEvent );
@@ -723,7 +774,7 @@ bool ExoDiBosonAnalysis::applyJSON( void ){
 
 //Passed filters
 //==============================================================================================
-bool ExoDiBosonAnalysis::passedFilters( void ){
+bool ExoDiBosonAnalysis::passedFilters( TString infile ){
   
   if( data_.PV_filter ) nPassedGoodPVFilter_++;
   else return false;
@@ -734,17 +785,18 @@ bool ExoDiBosonAnalysis::passedFilters( void ){
   if( data_.passFilter_HBHELoose_           ) nPassedFilter_HBHE_++;
   if( data_.passFilter_HBHEIso_             ) nPassedFilter_HBHEIso_++;
   if( data_.passFilter_CSCHalo_             ) nPassedFilter_CSCHalo_++;
-  if( data_.passFilter_HCALlaser_	     ) nPassedFilter_HCALlaser_++;
+  if(( infile.Contains("16Dec2015") or infile.Contains("Fall15")  ) and data_.passFilter_CSCTightHalo2015_    ) nPassedFilter_CSCTightHalo2015_++; 
+  if( data_.passFilter_HCALlaser_	          ) nPassedFilter_HCALlaser_++;
   if( data_.passFilter_ECALDeadCell_        ) nPassedFilter_ECALDeadCell_++;
-  if( data_.passFilter_GoodVtx_	     ) nPassedFilter_GoodVtx_++;
-  if( data_.passFilter_TrkFailure_	     ) nPassedFilter_TrkFailure_++;
-  if( data_.passFilter_EEBadSc_	     ) nPassedFilter_EEBadSc_++;
+  if( data_.passFilter_GoodVtx_	            ) nPassedFilter_GoodVtx_++;
+  if( data_.passFilter_TrkFailure_	        ) nPassedFilter_TrkFailure_++;
+  if( data_.passFilter_EEBadSc_	            ) nPassedFilter_EEBadSc_++;
   if( data_.passFilter_ECALlaser_           ) nPassedFilter_ECALlaser_++;
   if( data_.passFilter_TrkPOG_              ) nPassedFilter_TrkPOG_++;
   if( data_.passFilter_TrkPOG_manystrip_    ) nPassedFilter_TrkPOG_manystrip_++;
   if( data_.passFilter_TrkPOG_toomanystrip_ ) nPassedFilter_TrkPOG_toomanystrip_++;
   if( data_.passFilter_TrkPOG_logError_     ) nPassedFilter_TrkPOG_logError_++;
-  if( data_.passFilter_METFilters_	     ) nPassedFilter_METFilters_++;
+  if( data_.passFilter_METFilters_	        ) nPassedFilter_METFilters_++;
   //if( isGood ) nPassedFilter_EventList_++;          
   
   //bool passMETFiltersAll = data_.passFilter_HBHE_ && data_.passFilter_CSCHalo_ && data_.passFilter_HCALlaser_;
@@ -757,7 +809,9 @@ bool ExoDiBosonAnalysis::passedFilters( void ){
   if( passMETFiltersAll ) nPassedMETFiltersAll_++;
   if( passTrkFiltersAll ) nPassedTrkFiltersAll_++;
   
-  bool passAllfilters = data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_CSCHalo_ && data_.PV_filter && data_.passFilter_EEBadSc_;
+ 
+  bool passAllfilters =data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_CSCHalo_ && data_.PV_filter && data_.passFilter_EEBadSc_;
+  if( infile.Contains("16Dec2015") or infile.Contains("Fall15")  ) passAllfilters =   data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_CSCTightHalo2015_ && data_.PV_filter && data_.passFilter_EEBadSc_; 
   if( passAllfilters ) return true;
   
   return false;    
@@ -868,16 +922,18 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   bool passedWTag						= false;
 	
   //Make sure events contains two AK8 jets passing loose requirements
-  if( findJetCandidates() ) foundTwoJets = true;
+  if( findJetCandidates( infile ) ) foundTwoJets = true;
   if( !foundTwoJets) return false;
   nPassedFoundJets_++;
-  
+     
   //Only select jets separated by |DeltaEta| < cut
   jetsDeltaEta = fabs( Vcand.at(0).p4.Eta()  - Vcand.at(1).p4.Eta() ) ; 
   if (jetsDeltaEta <= dEtaCut_) passedDeltaEtaCut = true;	
   if( !passedDeltaEtaCut) return false;  
   nPassedJetsDEta_++;
   
+  
+   
   if( !Trigger_ && !runOnMC_ ){
     doJetTriggerEfficiency();
     if(Vcand.at(0).p4.Pt() > 600 || Vcand.at(1).p4.Pt() > 600) doJetTriggerEfficiency2();
@@ -1039,7 +1095,7 @@ bool ExoDiBosonAnalysis::findJetCandidatesAK4( void ){
   return foundJets;
 }
 //==============================================================================================
-bool ExoDiBosonAnalysis::findJetCandidates( void ){
+bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   
   TLorentzVector			TLV;
   std::vector<float>	vJetPrunedMass;
@@ -1056,40 +1112,107 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
   float  jetmass2 = -9999;
 		
   vJetPrunedMass.clear();
+  
+  std::vector<TLorentzVector>	vpuppiJets;
+  vpuppiJets.clear();
+  
+  int    PUPPIjetMatchIndex = 999;
+  int    PUPPIjetMatchIndex2 = 999;
+  int    PUPPIjetIndex1 = 999;
+  int    PUPPIjetIndex2 = 999;
+  
+  if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ){
+    for( int j = 0; j < (data_.jetAK8_puppi_softdrop_massCorr)->size() ; ++j ){  
+      if ((*data_.jetAK8_puppi_pt).at(j) < 0.001) continue;
+      TLorentzVector puppiJet;
+      puppiJet.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_eta).at(j), (*data_.jetAK8_puppi_phi).at(j), (*data_.jetAK8_puppi_e).at(j) );
+      vpuppiJets.push_back(puppiJet);
+    }
+  }
+ 
   //Make sure jets passes loose ID, pT and eta cuts
   for( int j = 0; j < data_.njetsAK8 ; ++j ){
     TLV.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-     
-    if( Channel_.find("dijet")!= std::string::npos && j < 2 && (*data_.jetAK8_IDTight).at(j) != 1   )break;
+
+    if( Channel_.find("dijet")!= std::string::npos && j < 1 && (*data_.jetAK8_IDTight).at(j) != 1   )break;
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
-    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_pt).at(j) <= JetPtCutTight_    )continue;
+    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_pt).at(j) <= JetPtCutTight_    )continue;   
     
-    if( Channel_.find("WtagSF_")!= std::string::npos && (*data_.jetAK8_IDLoose).at(j) != 1          )continue;
-    if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_pt).at(j) <= 80	            )continue;
-    
+    if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_IDLoose).at(j) != 1          )continue;
+    if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_pt).at(j) <= 80.  )continue; //before used 80 here!!!
+    if( Channel_.find("WtagSF") != std::string::npos && leptonCand_[0].p4.DeltaR(TLV) <= 1.0        )continue;   
     if( fabs((*data_.jetAK8_eta).at(j)) >= JetEtaCut_ 	                                          	)continue;	
+    // if (data_.EVENT_event == 2335){
+    //   std::cout<< j << ") Jet pT = " << (*data_.jetAK8_pt).at(j) << std::endl;
+    //   std::cout<< j << "Jet ID = " << (*data_.jetAK8_IDTight).at(j) << std::endl;
+    //   std::cout<< j << "Jet pT = " << (*data_.jetAK8_pt).at(j) << std::endl;
+    //   std::cout<< j << "Jet eta = " << fabs((*data_.jetAK8_eta).at(j)) << std::endl;
+    //   std::cout<< j << "Jet pruned mass = " << (*data_.jetAK8_prunedmass)[j]<< std::endl;
+    //
+    // }
+    // if (data_.EVENT_event == 970 or data_.EVENT_event == 2335 or data_.EVENT_event == 8461)  std::cout<< " MY event passed lose jet sel: " << data_.EVENT_event <<std::endl;
     
-    if(Channel_.find("WtagSF") != std::string::npos && leptonCand_[0].p4.DeltaR(TLV) <= 1.0         )continue;
-    // vJetPrunedMass.push_back((*data_.jetAK8_prunedmass).at(j));
+    if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ){
+      float  dRmin  = 9999;
+      for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
+        TLorentzVector ak8tmp;
+        ak8tmp.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+        float dR = vpuppiJets[jj].DeltaR(ak8tmp);
+        if(dR < dRmin) {
+          dRmin = dR;
+          PUPPIjetMatchIndex = jj;
+        }
+      }
+    }
     
-    if( (*data_.jetAK8_prunedmass)[j] > jetmass ){
+    if( !usePuppiSD_ && ((*data_.jetAK8_prunedmass)[j] > jetmass) ){
       jetmass = (*data_.jetAK8_prunedmass)[j];
       bestjet_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
       foundJet = true;
       jetIndex = j;
+      PUPPIjetIndex1 = PUPPIjetMatchIndex;
+    }
+    if( usePuppiSD_ && ((*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex] > jetmass) ){
+      jetmass = (*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex];
+      bestjet_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      foundJet = true;
+      jetIndex = j;
+      PUPPIjetIndex1 = PUPPIjetMatchIndex;
     }
   }
-    
-  for( int j = 0; j < data_.njetsAK8 ; ++j ){  
-    if( (*data_.jetAK8_prunedmass)[j] > jetmass2 && jetIndex!=j ){
+
+  for( int j = 0; j < data_.njetsAK8 ; ++j ){
+    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
+    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_pt).at(j) <= JetPtCutTight_    )continue;    
+    if( fabs((*data_.jetAK8_eta).at(j)) >= JetEtaCut_ 	                                          	)continue;
+    if( !usePuppiSD_ && ((*data_.jetAK8_prunedmass)[j] > jetmass2 && j!=jetIndex) ){
       jetmass2 = (*data_.jetAK8_prunedmass)[j];
       bestjet2_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
       foundJet2 = true;
       jetIndex2 = j;
+     }
+    if (infile.Contains("16Dec2015") or infile.Contains("Fall15")){
+      TLorentzVector ak8tmp;
+      ak8tmp.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      float  dRmin  = 9999;
+      for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
+      float dR = vpuppiJets[jj].DeltaR(ak8tmp);
+      if(dR < dRmin) {
+        dRmin = dR;
+        PUPPIjetMatchIndex2 = jj;
+      }
+    }
+    if( usePuppiSD_ && (*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex2] > jetmass2 && j!=jetIndex ){
+        jetmass2 = (*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex2];
+        bestjet2_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+        foundJet2 = true;
+        jetIndex2 = j;
+        PUPPIjetIndex2 = PUPPIjetMatchIndex2;
+      }
     }
   }
-      
-	
+  
+
   if( Channel_.find("dijet")!= std::string::npos ){
     if (foundJet && foundJet2) foundJets = true;
   }  
@@ -1099,21 +1222,46 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
   }
   
   if( !foundJets) return false;
-    
+  // if (data_.EVENT_event == 970 or data_.EVENT_event == 2335 or data_.EVENT_event == 8461)  std::cout<< " MY event passed find jet: " << data_.EVENT_event <<std::endl;
+
   bool foundOverlap = false;
   if ( Channel_.find("dijet")!= std::string::npos && (findMuonCandidate() || findElectronCandidate()) ){
     for( int i = 0; i < abs(leptonCand_.size()); i++){
       if( bestjet_tlv.DeltaR(leptonCand_.at(i).p4) < 0.8 ) foundOverlap = true;
+      // if (data_.EVENT_event == 970 or data_.EVENT_event == 2335 or data_.EVENT_event == 8461)  std::cout<< " MY event passed find overlap jet 1: " << data_.EVENT_event << " Overlap = " <<bestjet_tlv.DeltaR(leptonCand_.at(i).p4) <<std::endl;
     }
   }
   if( Channel_.find("dijet")!= std::string::npos && foundOverlap ) return false;
-        
+  
+  
+  if (usePuppiSD_ && foundJet && PUPPIjetIndex1 == 999){
+    
+    nNopuppi_++;
+    std::cout<<" index 1 = " << PUPPIjetIndex1 << std::endl;
+    foundJet = false;
+    
+    std::cout<<" (*data_.jetAK8_pt).at(j) = " << (*data_.jetAK8_pt).at(jetIndex) << std::endl;
+    std::cout<<" (*data_.jetAK8_eta).at(j) = " << (*data_.jetAK8_eta).at(jetIndex) << std::endl;
+    std::cout<<" (*data_.jetAK8_phi).at(j) = " << (*data_.jetAK8_phi).at(jetIndex) << std::endl;
+    std::cout<<" (*data_.jetAK8_e).at(j) = " << (*data_.jetAK8_e).at(jetIndex) << std::endl;
+    std::cout<<" (data_.jetAK8_puppi_softdrop_massCorr)->size() = " << (data_.jetAK8_puppi_softdrop_massCorr)->size() << std::endl;
+     for( int j = 0; j < (data_.jetAK8_puppi_softdrop_massCorr)->size() ; ++j ){  
+       std::cout<<" (*data_.jetAK8_puppi_pt).at(j) = " << (*data_.jetAK8_puppi_pt).at(j) << std::endl;
+       std::cout<<" (*data_.jetAK8_puppi_eta).at(j) = " << (*data_.jetAK8_puppi_eta).at(j) << std::endl;
+       std::cout<<" (*data_.jetAK8_puppi_phi).at(j) = " << (*data_.jetAK8_puppi_phi).at(j) << std::endl;
+       std::cout<<" (*data_.jetAK8_puppi_e).at(j) = " << (*data_.jetAK8_puppi_e).at(j) << std::endl;
+        std::cout<<" (*data_.jetAK8_puppi_softdrop_massCorr).at(j) = " << (*data_.jetAK8_puppi_softdrop_massCorr).at(j) << std::endl;
+  }
+}
+
+
   JetCandidate jet(bestjet_tlv);
   jet.csv					  = (*data_.jetAK8_csv).at(jetIndex)           ;
   jet.tau1					= (*data_.jetAK8_tau1).at(jetIndex)          ;
   jet.tau2					= (*data_.jetAK8_tau2).at(jetIndex)          ;
   jet.tau3					= (*data_.jetAK8_tau3).at(jetIndex)          ;
   jet.prunedMass		= (*data_.jetAK8_prunedmass).at(jetIndex)    ;
+  jet.prunedMassUnCorr = (*data_.jetAK8_prunedmass_unCorr).at(jetIndex)    ;
   jet.softdropMass	= (*data_.jetAK8_softdropmass).at(jetIndex)*(*data_.jetAK8_pruned_jec).at(jetIndex)	;
   jet.mass					= (*data_.jetAK8_mass).at(jetIndex)         ;
   jet.flavor				= -99                               ;
@@ -1137,6 +1285,18 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
   jet.cemf = (*data_.jetAK8_cemf).at(jetIndex);
   jet.charge = (*data_.jetAK8_charge).at(jetIndex);
   jet.area = (*data_.jetAK8_area).at(jetIndex);
+  jet.jec = (*data_.jetAK8_jec).at(jetIndex);
+  jet.pruned_jec = (*data_.jetAK8_pruned_jec).at(jetIndex);
+  if( PUPPIjetIndex1 != 999 && (infile.Contains("16Dec2015") or infile.Contains("Fall15")) ) {
+    jet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massCorr).at(PUPPIjetIndex1);
+    jet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex1);
+    jet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex1);
+    jet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex1);
+    jet.puppi_pt   = (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1);
+  }
+
+  
+     
       
   std::vector<JetCandidate> tmp;
     
@@ -1168,6 +1328,7 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
     }
       
     if( foundOverlap ) return false;
+  
     JetCandidate secondJet(bestjet2_tlv);
     secondJet.csv					  = (*data_.jetAK8_csv).at(jetIndex)    ;
     secondJet.tau1          = (*data_.jetAK8_tau1).at(jetIndex2)  ;
@@ -1197,6 +1358,14 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
     secondJet.cemf = (*data_.jetAK8_cemf).at(jetIndex2);
     secondJet.charge = (*data_.jetAK8_charge).at(jetIndex2);
     secondJet.area = (*data_.jetAK8_area).at(jetIndex2);
+    if( PUPPIjetIndex2 != 999 ){
+      secondJet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massCorr).at(PUPPIjetIndex2);
+      secondJet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex2);
+      secondJet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex2);
+      secondJet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex2);
+      secondJet.puppi_pt   = (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex2);
+    }
+ 
 
     std::vector<JetCandidate> tmp;
 
@@ -1216,14 +1385,13 @@ bool ExoDiBosonAnalysis::findJetCandidates( void ){
   //
   //   secondJet.rho = pow( softdropP4.M() / (softdropP4.Perp() * 0.8), 2);
     Vcand.push_back( secondJet );
-  }
-    
+  } 
   if ( (Channel_.find("dijet")!= std::string::npos && Vcand.size() < 2) || ((Channel_.find("WtagSF")!= std::string::npos && Vcand.size() < 1)) ) return false;
   else
     return true;
 }
 //==============================================================================================
-bool ExoDiBosonAnalysis::passedTTbarSelections( void ){
+bool ExoDiBosonAnalysis::passedTTbarSelections( TString infile ){
 
   bool foundLept    = false;
   bool passVeto     = false;
@@ -1271,11 +1439,13 @@ bool ExoDiBosonAnalysis::passedTTbarSelections( void ){
   if( !foundW ) return false;   
   nPassedFoundW_++;
   // Find AK8 W-jet candidate
-  if(findJetCandidates()){
+  if(findJetCandidates( infile )){
     foundAK8 = true;
     // if( leptonCand_[0].p4.DeltaR(Vcand.at(0).p4) > 1.0 ) passAK8LepDR = true;
     if( Vcand.at(0).p4.Pt() >= JetPtCutTight_	) passAK8LepDR = true;
-    if( Vcand.at(0).prunedMass >= mWLow_ && Vcand.at(0).prunedMass <= mZHigh_ ) passAK8PrunedMass = true;
+    float groomedMass = Vcand.at(0).prunedMass;
+    if(usePuppiSD_) groomedMass = Vcand.at(0).puppi_softdropMass;
+    if( groomedMass >= mWLow_ && groomedMass <= mZHigh_ ) passAK8PrunedMass = true;
   }
   
   if( !foundAK8 ) return false;
@@ -1287,9 +1457,9 @@ bool ExoDiBosonAnalysis::passedTTbarSelections( void ){
   if( !passAK8PrunedMass ) return false;   
   nPassedJetPrunedMass_++;
   
+
   // Find b-tagged AK4 jet
   findAK4Jets();
-  
   bool najetCut = false; 
   int najet = 0;
   for( unsigned int j = 0; j < abs(AK4jetCand_.size()); j++ ){
@@ -1297,12 +1467,11 @@ bool ExoDiBosonAnalysis::passedTTbarSelections( void ){
   }
   
   if( najet  > 0 ) found1b = true;
-  
   if( !found1b ) return false;   
   nPassed1bTag_++;
   
   if(foundLept && passVeto && foundMET && foundW && foundAK8 && passAK8LepDR && passAK8PrunedMass && found1b) return true;
-	
+ 
   else
     return false;
 }
@@ -1419,7 +1588,7 @@ bool ExoDiBosonAnalysis::findElectronCandidate( void ){
       //if( fabs((*data_.el_eta)[l]) >= leptEtaCut_ ) continue; 
       if( !isLowMass && (*data_.el_isHEEP)[l] != 1 ) continue;
       if(  isLowMass && (*data_.el_isTightElectron)[l] != 1 ) continue;
-      if( (*data_.el_pt)[l] <= leptPtCut_ ) continue;
+      // if( (*data_.el_pt)[l] <= leptPtCut_ ) continue;
       foundEle = true;
       if( (*data_.el_pt)[l] > ptEle ){   
          ptEle = (*data_.el_pt)[l];
@@ -1465,8 +1634,8 @@ void ExoDiBosonAnalysis::findAK4Jets( void ){
      if( jet.DeltaR(leptonCand_[0].p4) < 0.3 ) continue;
      JetCandidate Ajet(jet);
      Ajet.csv = (*data_.jetAK4_csv)[j];
-     Ajet.flavor = 0;
-     if( runOnMC_ ) Ajet.flavor = abs((*data_.jetAK4_flavor)[j]);
+     // Ajet.flavor = 0;
+     // if( runOnMC_ ) Ajet.flavor = abs((*data_.jetAK4_flavor)[j]);
      AK4jetCand_.push_back(Ajet);
   }
 }
@@ -1698,7 +1867,7 @@ void ExoDiBosonAnalysis::EndInputData( const SInputData& ) throw( SError ) {
 
     printCutFlow();
     theHistosManager_->formatHistos(Channel_);
-    
+    Hist( "nNopuppi")->SetBinContent(1,nNopuppi_*weight_);
     Hist( "sumGenWeight" )->SetBinContent(1,nSumGenWeights_);
     Hist( "nEvents" )->SetBinContent(1,nEvents_*weight_        );
     Hist( "nPassedFilter" )->SetBinContent(1,nPassedFilters_*weight_      );
@@ -1754,11 +1923,11 @@ void ExoDiBosonAnalysis::printCutFlow( void ) {
     std::cout << "number of events		                            " << nEvents_ << std::endl;
     
     std::cout << "passed trigger        " << nPassedTrigger_        << " --- eff = " << (double)nPassedTrigger_/nEvents_ << std::endl; 
-    std::cout << "passed filter HBHE    " << nPassedFilter_HBHE_    << " --- eff = " << (double)nPassedFilter_HBHE_/nEvents_ << std::endl; 
-    std::cout << "passed filter CSCHalo " << nPassedFilter_CSCHalo_ << " --- eff = " << (double)nPassedFilter_CSCHalo_/nEvents_ << std::endl;  
-    std::cout << "passed filter EEBadSc " << nPassedFilter_EEBadSc_ << " --- eff = " << (double)nPassedFilter_EEBadSc_/nEvents_ << std::endl; 
-    std::cout << "passed filter GoodPV  " << nPassedGoodPVFilter_   << " --- eff = " << (double)nPassedGoodPVFilter_/nEvents_ << std::endl; 
-    std::cout << "passed filter         " << nPassedFilters_        << " --- eff = " << (double)nPassedFilters_/nEvents_ << std::endl; 
+    std::cout << "passed filter HBHE    " << nPassedFilter_HBHE_    << " --- eff = " << (double)nPassedFilter_HBHE_/nPassedTrigger_ << std::endl; 
+    std::cout << "passed filter CSCHalo2015 " << nPassedFilter_CSCHalo_ << " --- eff = " << (double)nPassedFilter_CSCTightHalo2015_/nPassedTrigger_ << std::endl;  
+    std::cout << "passed filter EEBadSc " << nPassedFilter_EEBadSc_ << " --- eff = " << (double)nPassedFilter_EEBadSc_/nPassedTrigger_ << std::endl; 
+    std::cout << "passed filter GoodPV  " << nPassedGoodPVFilter_   << " --- eff = " << (double)nPassedGoodPVFilter_/nPassedTrigger_ << std::endl; 
+    std::cout << "passed filter         " << nPassedFilters_        << " --- eff = " << (double)nPassedFilters_/nPassedTrigger_ << std::endl; 
     
     std::cout << "Passed found lep      " << nPassedFoundLept_      << " --- eff (relative, after pass filter)  = " << (double)nPassedFoundLept_/nEvents_     << " (" <<(double)nPassedFoundLept_/nPassedFilters_     <<") "<< std::endl;
     std::cout << "Passed VETO lep       " << nPassedVetoLep_        << " --- eff (relative, after pass filter)  = " << (double)nPassedVetoLep_/nEvents_       << " (" <<(double)nPassedVetoLep_/nPassedFilters_       <<") "<< std::endl;

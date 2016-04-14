@@ -20,80 +20,80 @@ double LumiWeight::getLumiWeight( TString sample ){
   
   if( sample.Contains( "Fall15" ) ){
     //single top samples
-    if( sample.Contains( "ST_t-channel_top" ) ){
+    if( sample.Contains( "ST_t-channel_top" ) ){ //DONE
       xSec_ = 136.02*0.3272;
       genEvents_ = 3299200.;
     }  
-    else if( sample.Contains( "ST_t-channel_antitop" ) ){
+    else if( sample.Contains( "ST_t-channel_antitop" ) ){ //DONE
       xSec_ = 80.95*0.3272;
-      genEvents_ = 1392366.;
+      genEvents_ = 1630900.;
     }         
 
-    else if( sample.Contains( "ST_s-channel" ) ){
+    else if( sample.Contains( "ST_s-channel" ) ){ //DONE
       xSec_ = 11.36*0.3272;
       //genEvents_ = 984400.; //das
-      genEvents_ = 621946.; //genweights
+      genEvents_ = 621946.; //genweights 
     }	  
-    else if( sample.Contains( "ST_tW_top" ) ){
+    else if( sample.Contains( "ST_tW_top" ) ){ //DONE
       xSec_ = 35.6;
       genEvents_ = 1000000.;
     } 
-    else if( sample.Contains( "ST_tW_antitop" ) ){
+    else if( sample.Contains( "ST_tW_antitop" ) ){ //DONE
       xSec_ = 35.6;
       genEvents_ = 999400.;
     }   
     else if( sample.Contains( "TT" ) && sample.Contains("herwig") ){ //TO DO
       xSec_ = 831.76;
-      genEvents_ = 16640209;  //DAS 17520956.
+      genEvents_ = 19409316;  //DAS 17520956.
     }
 
-    else if( sample.Contains( "TT" ) && sample.Contains("pythia8")){
+    else if( sample.Contains( "TT" ) && sample.Contains("pythia8")){ //DONE
       xSec_ = 831.76;
-      genEvents_ = 57708252.; //DAS 97994442
+      genEvents_ = 97994456.;
     }
 
-    else if( sample.Contains( "WWToLNuQQ") ){
+    else if( sample.Contains( "WWToLNuQQ") ){ //DONE
       xSec_ = 49.997;
-      genEvents_ = 5733983.;
+      genEvents_ = 6996000.;
     }
-    else if( sample.Contains( "WZTo1L1Nu2Q" ) ){
+    else if( sample.Contains( "WZTo1L1Nu2Q" ) ){  //DONE
       xSec_ = 10.71;
       //genEvents_ = 978512.;//das
-      genEvents_ = 9937317.; //gen weights
+      genEvents_ = 11466086.; //gen weights
     }   
-    else if( sample.Contains( "ZZTo2L2Q" ) ){
+    else if( sample.Contains( "ZZTo2L2Q" ) ){  //DONE
       xSec_ = 3.22;
       //genEvents_ = 18790122.;//das
-      genEvents_ = 11863244.;//gen weights
+      genEvents_ = 9660541.;//gen weights
     } 
     
-    else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){ //DONE
       xSec_ = 1.21*1345.;//1292.;
-      genEvents_ = 9759062.;
+      genEvents_ = 10205377.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){ //DONE
       xSec_ = 1.21*359.7;//385.9;
-      genEvents_ = 4141655.;
+      genEvents_ = 4949568.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){//TO DO
+    else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){ //DONE
       xSec_ = 1.21*48.91;//47.9;
-      genEvents_ = 1745914.;
+      genEvents_ = 1722920.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-600To800" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-600To800" ) ){ //DONE
       xSec_ = 1.21*12.05;//47.9;
-      genEvents_ = 113821.;
+      genEvents_ = 3767766.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){//TO DO
+    else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){ //DONE
       xSec_ = 1.21*5.501;//47.9;
-      genEvents_ = 44737.;
+      genEvents_ = 1568277.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-1200To2500" ) ){//TO DO
+    else if( sample.Contains( "WJetsToLNu_HT-1200To2500" ) ){ //DONE
       xSec_ = 1.21*1.329;//47.9;
-      genEvents_ = 255637.;
+      genEvents_ = 246239.;
     } 
-    else if( sample.Contains( "WJetsToLNu_HT-2500ToInf" ) ){
+    else if( sample.Contains( "WJetsToLNu_HT-2500ToInf" ) ){ //DONE
       xSec_ = 1.21*0.03216;//47.9;
-      genEvents_ = 47408.;
+      genEvents_ = 251982.;
     } 
   }
   else{

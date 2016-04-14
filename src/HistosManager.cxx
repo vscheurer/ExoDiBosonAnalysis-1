@@ -278,6 +278,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "nPassedPrunedJetMass"   , "nPassedPrunedJetMass"   , 1	, 0.5, 1.5		) );
   theAnalysis_->Book( TH1F( "nPassed1bTag"      , "nPassed1bTag"      , 1	, 0.5, 1.5		) );
   
+  theAnalysis_->Book( TH1F( "nNopuppi" 													, "nNopuppi"									 	, 1	, 0.5, 1.5		) );
    
  }
  

@@ -12,6 +12,7 @@ public:
    float csv ;
    float mass;
    float prunedMass;
+   float prunedMassUnCorr;
    float softdropMass;
    float tau1;
    float tau2;
@@ -40,6 +41,15 @@ public:
    float area;
 
    float rho; 
+   
+   float jec;
+   float pruned_jec; 
+   float puppi_prunedMass; 
+   float puppi_softdropMass; 
+   float puppi_tau1;
+   float puppi_tau2;
+   float puppi_tau3;
+   float puppi_pt;
       
 private:
 
