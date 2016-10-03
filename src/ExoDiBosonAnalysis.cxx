@@ -20,7 +20,8 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
     , puweight_(1.)
     , hltweight_(1.)
     , btagweight_(1.)
-    , lumiweight_(1.){
+    , lumiweight_(1.)
+    , ptweight_(1.){
 
   SetLogName( GetName() );
   /* general settings */   
@@ -55,7 +56,6 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "Tau21High"     	  , Tau21High_	  	);
 	        
   /* pruned mass */ 
-  DeclareProperty( "UsePruned"        , UsePruned_			);
   DeclareProperty( "mZLow"						, mZLow_			    );
   DeclareProperty( "mZHigh"					  , mZHigh_	      	);
   DeclareProperty( "mWLow"						, mWLow_		    	);
@@ -67,24 +67,34 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "Lumi"							, Lumi_					  );
   DeclareProperty( "PUdata"						, PUProfileData_  );
   DeclareProperty( "JSONfile"         , JSONfile_       );
+  DeclareProperty( "PUPPIJEC"         , PUPPIJEC_       );
   
   DeclareProperty( "BTagEff4vetoData"  , BTagEff4vetoData_   );
   DeclareProperty( "BTagEff4fatjetData", BTagEff4fatjetData_ );
   DeclareProperty( "BTagEff4subjetData", BTagEff4subjetData_ );
+  
+  DeclareProperty( "scaleUncPar"      , scaleUncPar_    );
+  DeclareProperty( "JMS"              , JMS_            );
+  DeclareProperty( "JMSunc"           , JMSunc_         );
+  DeclareProperty( "JMR"              , JMR_            );
+  DeclareProperty( "JMRunc"           , JMRunc_         );
+  
       
             
   theHistosManager_ = new HistosManager( this );
   theNtupleManager_ = new NtupleManager( this );
 
   pdgMtop = 171.3;
-  pdgMw		= 79.5;   
+  pdgMw		= 80.4;   
   pdgWidthtop = 19.1;
   pdgWidthw    = 8.9;
   
   
   nNopuppi_           = 0;
   nSumGenWeights_           = 0; 
+  sum_genweights            = 0;
   nEvents_                  = 0;
+  nPassedJSON_              = 0;
   nPassedTrigger_           = 0;
   nPassedFilters_           = 0;	      
   nPassedJetPrunedMass_     = 0;
@@ -134,6 +144,8 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   nPassedGoodPVFilter_               = 0;
   
   // setPredictedDistribution();
+  
+  tr_ = new TRandom3(0);   
    
 }
 
@@ -192,19 +204,28 @@ void ExoDiBosonAnalysis::initWeight( void ){
 
   TString infile = TString(this->GetHistInputFile()->GetName());
   
-  std::string scenario = "PUS25ns";
-  if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ) scenario = "PUS25ns76X";
-  if (! (infile.Contains("16Dec2015") or infile.Contains("Fall15"))) PUProfileData_ = "/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/biasXsec_72000.root";
+  // std::string scenario = "PUS25ns";
+  // if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ) scenario = "PUS25ns76X";
+ // else
+  std::string scenario = "PUS25ns80X";
+  if( infile.Contains("Fall15") ) scenario = "PUS25ns76X";
+  // if( infile.Contains("Spring15") ) PUProfileData_ = "/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/biasXsec_72000.root";
   PUWeight::Scenario sc = PUWeight_.toScenario(scenario);
   PUWeight_.initPUWeights(PUProfileData_,sc);
   
-  HLTWeight::Channel ch = HLTWeight_.toChannel(Channel_);
-  HLTWeight_.initHLTWeights(ch);
   
-  BTagWeight_.initBTagWeights(BTagEff4vetoData_,BTagEff4fatjetData_,BTagEff4subjetData_);
+  TFile* file = TFile::Open( PUPPIJEC_.c_str(),"READ");
+  puppisd_corrGEN      = (TF1*)file->Get("puppiJECcorr_gen");
+  puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
+  puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
+  
+  
+//   HLTWeight::Channel ch = HLTWeight_.toChannel(Channel_);
+//   HLTWeight_.initHLTWeights(ch);
+//   BTagWeight_.initBTagWeights(BTagEff4vetoData_,BTagEff4fatjetData_,BTagEff4subjetData_);
 
-  // TFile* fPUweights = TFile::Open(PUProfileData_.c_str(),"READ");
-  // hPUweights_ = (TH1F*)fPUweights->Get("puweights");
+//   TFile* fPUweights = TFile::Open(PUProfileData_.c_str(),"READ");
+//   hPUweights_ = (TH1F*)fPUweights->Get("puweights");
    
 }
 
@@ -236,15 +257,16 @@ void ExoDiBosonAnalysis::BeginInputData( const SInputData& ) throw( SError ) {
       
   theHistosManager_->bookHistos(Channel_); 
   
-  DeclareVariable( puweight_      , "puweight"         , OutputTreeName_.c_str() );
-  DeclareVariable( lumiweight_    , "lumiweight"        , OutputTreeName_.c_str() );
+  DeclareVariable( puweight_     , "puweight"         , OutputTreeName_.c_str() );
+  DeclareVariable( lumiweight_   , "lumiweight"        , OutputTreeName_.c_str() );
   DeclareVariable( genweight_    , "genweight"         , OutputTreeName_.c_str() );
   DeclareVariable( btagweight_ 	 , "btagweight"        , OutputTreeName_.c_str() );
+  DeclareVariable( ptweight_ 	   , "ptweight"        , OutputTreeName_.c_str() );
   DeclareVariable( weight	   	   , "weight"	       , OutputTreeName_.c_str() );
-  DeclareVariable( run     	 , "run"	       , OutputTreeName_.c_str() );
-  DeclareVariable( event     	 , "event"	       , OutputTreeName_.c_str() );
-  DeclareVariable( lumi     	 , "lumi"	       , OutputTreeName_.c_str() );
-  DeclareVariable( nPVs    , "nPV"        , OutputTreeName_.c_str() );
+  DeclareVariable( run     	     , "run"	       , OutputTreeName_.c_str() );
+  DeclareVariable( event     	   , "event"	       , OutputTreeName_.c_str() );
+  DeclareVariable( lumi     	   , "lumi"	       , OutputTreeName_.c_str() );
+  DeclareVariable( nPVs          , "nPV"        , OutputTreeName_.c_str() );
   
   
   if( Channel_.find("WtagSF") != std::string::npos ){
@@ -266,7 +288,9 @@ void ExoDiBosonAnalysis::BeginInputData( const SInputData& ) throw( SError ) {
     DeclareVariable( jet_puppi_tau1     , "Whadr_puppi_tau1"      , OutputTreeName_.c_str() );
     DeclareVariable( jet_puppi_tau2     , "Whadr_puppi_tau2"      , OutputTreeName_.c_str() );
     DeclareVariable( jet_puppi_tau3     , "Whadr_puppi_tau3"      , OutputTreeName_.c_str() );
-    DeclareVariable( jet_puppi_pt       , "Whadr_puppi_pt"      , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_tau2tau1_jet1, "Whadr_puppi_tau2tau1"  , OutputTreeName_.c_str() );
+    DeclareVariable( jet_puppi_pt       , "Whadr_puppi_pt"        , OutputTreeName_.c_str() );
+    DeclareVariable( jet_ddt_jet1       , "Whadr_ddt"             , OutputTreeName_.c_str() );
     DeclareVariable( l_pt               , "lept_pt"     , OutputTreeName_.c_str() );
     DeclareVariable( l_eta              , "lept_eta"    , OutputTreeName_.c_str() );
     DeclareVariable( l_phi              , "lept_phi"    , OutputTreeName_.c_str() );
@@ -279,10 +303,12 @@ void ExoDiBosonAnalysis::BeginInputData( const SInputData& ) throw( SError ) {
     DeclareVariable( nak4jets           , "nak4jets"    , OutputTreeName_.c_str() );
   }
   if( Channel_.find("dijet") != std::string::npos ){
-  DeclareVariable( channel                 	 , "channel"	       , OutputTreeName_.c_str() );
-  DeclareVariable( category     	           , "category"	       , OutputTreeName_.c_str() );
-  DeclareVariable( jet_deta                  , "jet_deta"           , OutputTreeName_.c_str() );
+  DeclareVariable( channel                 	 , "channel"	         , OutputTreeName_.c_str() );
+  DeclareVariable( category     	           , "category"	         , OutputTreeName_.c_str() );
+  DeclareVariable( jet_deta                  , "jet_deta"          , OutputTreeName_.c_str() );
   DeclareVariable( MVV                       , "MVV"               , OutputTreeName_.c_str() );
+  DeclareVariable( MVV_reduced               , "MVV_reduced"       , OutputTreeName_.c_str() );
+  
   DeclareVariable( jet_mass_jet1             , "jet_mass_jet1"	       , OutputTreeName_.c_str() );
   DeclareVariable( jet_mass_jet2             , "jet_mass_jet2"	       , OutputTreeName_.c_str() );
   DeclareVariable( jet_mass_pruned_jet1      , "jet_mass_pruned_jet1"   , OutputTreeName_.c_str() );
@@ -301,7 +327,22 @@ void ExoDiBosonAnalysis::BeginInputData( const SInputData& ) throw( SError ) {
   DeclareVariable( jet_phi_jet2              , "jet_phi_jet2"			    	, OutputTreeName_.c_str() );
   DeclareVariable( jet_tau2tau1_jet1         , "jet_tau2tau1_jet1"		  , OutputTreeName_.c_str() );
   DeclareVariable( jet_tau2tau1_jet2         , "jet_tau2tau1_jet2"		  , OutputTreeName_.c_str() );
-  
+  DeclareVariable( jet1_puppi_softdrop       , "jet_puppi_softdrop_jet1"  , OutputTreeName_.c_str() );
+  DeclareVariable( jet1_puppi_pruned         , "jet_puppi_pruned_jet1"    , OutputTreeName_.c_str() );
+  DeclareVariable( jet1_puppi_tau1           , "jet_puppi_tau1_jet1"      , OutputTreeName_.c_str() );
+  DeclareVariable( jet1_puppi_tau2           , "jet_puppi_tau2_jet1"      , OutputTreeName_.c_str() );
+  DeclareVariable( jet1_puppi_tau3           , "jet_puppi_tau3_jet1"      , OutputTreeName_.c_str() );
+  DeclareVariable( jet1_puppi_pt             , "jet_puppi_pt_jet1"        , OutputTreeName_.c_str() );
+  DeclareVariable( jet2_puppi_softdrop       , "jet_puppi_softdrop_jet2"  , OutputTreeName_.c_str() );
+  DeclareVariable( jet2_puppi_pruned         , "jet_puppi_pruned_jet2"    , OutputTreeName_.c_str() );
+  DeclareVariable( jet2_puppi_tau1           , "jet_puppi_tau1_jet2"      , OutputTreeName_.c_str() );
+  DeclareVariable( jet2_puppi_tau2           , "jet_puppi_tau2_jet2"      , OutputTreeName_.c_str() );
+  DeclareVariable( jet2_puppi_tau3           , "jet_puppi_tau3_jet2"      , OutputTreeName_.c_str() );
+  DeclareVariable( jet_puppi_tau2tau1_jet1   , "jet_puppi_tau2tau1_jet1"  , OutputTreeName_.c_str() );
+  DeclareVariable( jet_puppi_tau2tau1_jet2   , "jet_puppi_tau2tau1_jet2"  , OutputTreeName_.c_str() );
+  DeclareVariable( jet_ddt_jet1              , "jet_ddt_jet1"             , OutputTreeName_.c_str() );
+  DeclareVariable( jet_ddt_jet2              , "jet_ddt_jet2"             , OutputTreeName_.c_str() );
+
   // DeclareVariable( sum_genweights       , "sum_genweights"        , OutputTreeName_.c_str() );
   // DeclareVariable( jet_rho              , "jet_rho"            , OutputTreeName_.c_str() );
   
@@ -356,9 +397,35 @@ void ExoDiBosonAnalysis::setGenCandidates( void ) {
 }
 
 //==============================================================================================
-void ExoDiBosonAnalysis::setWeight( TString infile ){
- 
+bool ExoDiBosonAnalysis::selectChannel( void ) {
+  
+  if( !isSignal_ ) return false;
+  
+  bool isSignal = false;
+  int nVs = 0;
+  
+  for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+    bool isHad = false;
+    if( (*data_.genParticle_pt).at(p) < 0.01) continue;
+    if( fabs((*data_.genParticle_pdgId).at(p)) != 24 and fabs((*data_.genParticle_pdgId).at(p)) != 23  and fabs((*data_.genParticle_pdgId).at(p)) != 25) continue;
+    if ((*data_.genParticle_dau)[p].size() < 2) continue;
+    for( unsigned int d = 0; d < (*data_.genParticle_dau)[p].size(); ++d ) {
+      if( fabs((*data_.genParticle_dau)[p][d]) > 9) continue;
+      isHad = true;
+    }
+    if (!isHad) continue;
+    nVs ++;
+  }
+  
+   if( Channel_ == "VVdijet" && nVs > 1) isSignal = true;
+   else if (Channel_ == "qVdijet" && nVs > 0) isSignal = true;
+   else isSignal = false;
+   
+  return isSignal;
+}
 
+//==============================================================================================
+void ExoDiBosonAnalysis::setWeight( TString infile ){
   if( !runOnMC_ ) return;
 
   for( unsigned int v = 0; v < (data_.nPUTrue)->size(); ++v ){
@@ -372,166 +439,305 @@ void ExoDiBosonAnalysis::setWeight( TString infile ){
   btagvetow = 1.; 
   htagw = 1.;
   
-  if( Channel_.find("WtagSF_mu") != std::string::npos ) hltweight_ = HLTWeight_.getHLTWeight( leptonCand_[0].p4.Pt(), leptonCand_[0].p4.Eta() );
-  if( Channel_.find("WtagSF")    != std::string::npos ) btagvetow = BTagWeight_.getBTagWeight( AK4jetCand_, "veto" );
- 
-  btagweight_ =  btagvetow*htagw;
+  if( Channel_.find("WtagSF") != std::string::npos && infile.Contains( "TT" ) ){ 
+    
+    float pt_top     = 0;
+    float pt_antitop = 0;
+    
+    float a =  0.156   ;
+    float b = -0.00137 ;
+    
+    for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+      if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+      if( fabs((*data_.genParticle_pdgId).at(p)) != 6) continue;
+      bool isT = false;
+      for( unsigned int d = 0; d < (*data_.genParticle_dau)[p].size(); ++d ) {
+        if( fabs((*data_.genParticle_dau)[p][d]) != 24) continue;
+        isT = true;
+      }
+      if( !isT) continue;
+      if((*data_.genParticle_pdgId).at(p) == 6) pt_top = (*data_.genParticle_pt).at(p);
+      if((*data_.genParticle_pdgId).at(p) == -6) pt_top = (*data_.genParticle_pt).at(p);
+    }
+    ptweight_ = std::sqrt( std::exp( a+b*pt_top )*std::exp( a+b* pt_antitop ) ); 
+  } 
+  
+  // if( Channel_.find("WtagSF_mu") != std::string::npos ) hltweight_ = HLTWeight_.getHLTWeight( leptonCand_[0].p4.Pt(), leptonCand_[0].p4.Eta() );
+  // if( Channel_.find("WtagSF")    != std::string::npos ) btagvetow = BTagWeight_.getBTagWeight( AK4jetCand_, "veto" );
+//   btagweight_ =  btagvetow*htagw;
     
   double lumiw = xSec_/genEvents_;     
   lumiweight_ = lumiw*LumiWeight_.getLumiWeight( infile )*Lumi_; 
-  genweight_ = data_.genWeight < 0 ? -1 : 1; 
- 
-  weight_ = puweight_*lumiweight_*genweight_*hltweight_; 
-
+  if( Channel_.find("WtagSF") != std::string::npos) genweight_ = data_.genWeight < 0 ? -1 : 1;
+  else  if( Channel_.find("dijet") != std::string::npos) genweight_ = data_.genWeight; //
   
+ 
+  // // weight_ = puweight_*lumiweight_*genweight_*hltweight_;
+  // if( Channel_.find("WtagSF") != std::string::npos ){
+  //   weight_ = puweight_*lumiweight_*genweight_*ptweight_;
+  // }
+  
+  weight_ = puweight_*lumiweight_*genweight_*hltweight_*btagvetow;
+  if(weight_ != weight_){
+  std::cout << "Weight is Inf/NAN. Please check if any of the below weights are wrong:"<<std::endl;
+  std::cout << "Total weight = " << weight_ << std::endl    ; std::cout << "PU weight  = " << puweight_  << std::endl;
+  std::cout << "Lumiweight   = " << lumiweight_ << std::endl; std::cout << "Gen weight = " << genweight_ << std::endl;
+  std::cout << "Skipping this event..."<<std::endl;
+  throw SError( SError::SkipEvent );
+  }
+    
 }
 
 //==============================================================================================
 void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SError ) {
-  
 	
   // Connect branches in tree
   initData();
   
-  // // Initialize weights
-  // initWeight();
-  
   // Reset vectors
   reset();
-   
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //// Dijet analysis begins HERE/////////////////////////////////////////////////////////////////////////
+  //// Dijet analysis begins HERE///////////////////////////////////////////////////////////////////////// 
   if( Channel_ == "VVdijet" || Channel_ == "qVdijet" ){
-    
-    isLowMass = false;
     
     TString infile = TString(this->GetHistInputFile()->GetName());
     setWeight(infile);
     
-    int gW = data_.genWeight < 0 ? -1 : 1;
-    nSumGenWeights_+=gW;
-    sum_genweights+=gW;
+    // int gW = data_.genWeight < 0 ? -1 : 1;  //Does not work for pt flat samples!
+    float gW = data_.genWeight;
+    nSumGenWeights_ += gW;
 
-    if( GenStudies_ ) setGenCandidates(); 
-
+    if( isSignal_ and !selectChannel() ) throw SError( SError::SkipEvent );
+    
     Hist( "runNumber" )->Fill(data_.EVENT_run);
+    
+    if( isSignal_ && runOnMC_){
+      TLorentzVector genP;
+      std::vector<TLorentzVector> daus;
+      std::vector<TLorentzVector> myJets;
+      
+      for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+        if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+        bool isDaughter = false;
+        for( unsigned int d = 0; d < (*data_.genParticle_mother)[p].size(); ++d ) {
+          if(Channel_ == "qVdijet" && fabs((*data_.genParticle_mother)[p][d]) != 4000002 and fabs((*data_.genParticle_mother)[p][d]) != 4000001  ) continue;
+          if(Channel_ == "VVdijet" && fabs((*data_.genParticle_mother)[p][d]) != 32 and fabs((*data_.genParticle_mother)[p][d]) != 34 and fabs((*data_.genParticle_mother)[p][d]) != 39 and fabs((*data_.genParticle_mother)[p][d]) != 9000001 and fabs((*data_.genParticle_mother)[p][d]) != 9000002) continue;
+          isDaughter = true ;
+        }
+        if(!isDaughter) continue;
+        genP.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+        daus.push_back(genP);
+      }
+      for( int j = 0; j < data_.njetsAK8 ; ++j ){
+        TLorentzVector myJet;
+        if( (*data_.jetAK8_pt).at(j) <= 200.      )continue;
+        if( fabs((*data_.jetAK8_eta).at(j)) >= 2.4)continue;
+        if( (*data_.jetAK8_IDTight).at(j) != 1    )continue;
+        myJet.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+        for( unsigned int p = 0; p < daus.size(); ++p ){
+          float dR = daus.at(p).DeltaR(myJet);
+          if (dR > 0.8 ) continue;
+          myJets.push_back(myJet);
+        }
+      }
+      if (myJets.size() > 1) Hist( "Mjj_genMatched" ) -> Fill( ( myJets.at(0) + myJets.at(1) ).M() );	
+    }
 
     nEvents_++;
+    if( !applyJSON() ) throw SError( SError::SkipEvent );  
+    nPassedJSON_++;
 
     if( !passedTrigger() ) throw SError( SError::SkipEvent );
-    nPassedTrigger_++;  
+    nPassedTrigger_++;
+    
     if( !passedFilters( infile ) ) throw SError( SError::SkipEvent );
-    nPassedFilters_++;
-    
-    // if( passedDijetSelectionsAK4(infile) ){
-    //   Hist( "MjjAK4" ) -> Fill( ( AK4jetCand_.at(0).p4 + AK4jetCand_.at(1).p4 ).M() , weight_ );
-    // }
-    
+    nPassedFilters_++; 
+
+    if( Channel_ == "VVdijet"){
+      if(GenStudies_){
+        doWTagEfficiency( infile );
+        if( isSignal_ ) doSubstructureStudies( infile );
+      }
+    }
+
+    // // If doing Wtag efficiency plots with data
+  //   if(data_.njetsAK8 > 1) {
+  //     TLorentzVector myJet1;
+  //     TLorentzVector myJet2;
+  //     myJet1.SetPtEtaPhiE( (*data_.jetAK8_pt).at(0), (*data_.jetAK8_eta).at(0), (*data_.jetAK8_phi).at(0), (*data_.jetAK8_e).at(0) );
+  //     myJet2.SetPtEtaPhiE( (*data_.jetAK8_pt).at(1), (*data_.jetAK8_eta).at(1), (*data_.jetAK8_phi).at(1), (*data_.jetAK8_e).at(1) );
+  //     float Mjj = (myJet1 + myJet2).M();
+  //     if(Mjj > 1200. && (*data_.jetAK8_pt).at(0) > 200 && (*data_.jetAK8_pt).at(1) > 200 && fabs(myJet1.Eta()  - myJet2.Eta())<=1.3 ) doWTagEfficiency( infile );
+  //   }
+
+
     if( passedDijetSelections(infile) ) {
-      
-      // std::cout<< "Event nr " << data_.EVENT_event << std::endl;
-      
-      bool passedTau21Cut				= false;
-      
+      int jetINDX1 = -99;
+      int jetINDX2 = -99;
+
+      Hist( "Mjj_final" ) -> Fill( ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M() , weight_ );
+
+      bool passedTau21Cut        = false;
+
+      float groomedMass_jet1 = Vcand.at(0).prunedMass;
+      float groomedMass_jet2 = Vcand.at(1).prunedMass;
+
+      float nsub_jet1 = Vcand.at(0).tau2/Vcand.at(0).tau1;
+      float nsub_jet2 = Vcand.at(1).tau2/Vcand.at(1).tau1;
+
+      if( usePuppiSD_ ){
+         groomedMass_jet1 = Vcand.at(0).puppi_softdropMass;
+         groomedMass_jet2 = Vcand.at(1).puppi_softdropMass;
+
+         nsub_jet1 = Vcand.at(0).puppi_tau2/Vcand.at(0).puppi_tau1;
+         nsub_jet2 = Vcand.at(1).puppi_tau2/Vcand.at(1).puppi_tau1;
+      }
       if( Channel_ == "VVdijet"){
         channel = -1;
+
         //HP category
-        if ( Vcand.at(0).tau2/Vcand.at(0).tau1 > Tau21HPLow_ && Vcand.at(0).tau2/Vcand.at(0).tau1 <= Tau21HPHigh_ && Vcand.at(1).tau2/Vcand.at(1).tau1 > Tau21HPLow_ && Vcand.at(1).tau2/Vcand.at(1).tau1 <= Tau21HPHigh_  ){
+        if ( nsub_jet1 > Tau21HPLow_ && nsub_jet1 <= Tau21HPHigh_ && nsub_jet2 > Tau21HPLow_ && nsub_jet2 <= Tau21HPHigh_  ){
           passedTau21Cut = true ;
-          
-          if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_ && Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_) ){
+
+          if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_ && groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mZHigh_) ){
+            nPassedTau21Cut_ ++;
             category = 0; //VVHP
-            if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mWHigh_) && (Vcand.at(1).prunedMass > mWLow_   && Vcand.at(1).prunedMass <= mWHigh_))  channel = 2; //WWHP
-            else if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mWHigh_) && (Vcand.at(1).prunedMass > mZLow_   && Vcand.at(1).prunedMass <= mZHigh_))  channel = 4; //WZHP
-            else if( (Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mWHigh_) && (Vcand.at(0).prunedMass > mZLow_   && Vcand.at(0).prunedMass <= mZHigh_))  channel = 4; //ZWHP
-            else if( (Vcand.at(0).prunedMass > mZLow_ && Vcand.at(0).prunedMass <= mZHigh_) && (Vcand.at(1).prunedMass > mZLow_   && Vcand.at(1).prunedMass <= mZHigh_))  channel = 6; //ZZHP
+                 if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mWHigh_))  channel = 2; //WWHP
+            else if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_))  channel = 4; //WZHP
+            else if( (groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mWHigh_) && (groomedMass_jet1 > mZLow_   && groomedMass_jet1 <= mZHigh_))  channel = 4; //ZWHP
+            else if( (groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_) && (groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_))  channel = 6; //ZZHP
           }
         }
-        
+
         //LP category
-        else if( ( Vcand.at(0).tau2/Vcand.at(0).tau1 > Tau21HPLow_ && Vcand.at(0).tau2/Vcand.at(0).tau1 <= Tau21HPHigh_ && Vcand.at(1).tau2/Vcand.at(1).tau1 > Tau21Low_ && Vcand.at(1).tau2/Vcand.at(1).tau1 <= Tau21High_  ) ||
-        ( Vcand.at(1).tau2/Vcand.at(1).tau1 > Tau21HPLow_ && Vcand.at(1).tau2/Vcand.at(1).tau1 <= Tau21HPHigh_ && Vcand.at(0).tau2/Vcand.at(0).tau1 > Tau21Low_ && Vcand.at(0).tau2/Vcand.at(0).tau1 <= Tau21High_) ){
-          
-          if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_) && (Vcand.at(1).prunedMass > mWLow_   && Vcand.at(1).prunedMass <= mZHigh_))  {
+        else if( ( nsub_jet1 > Tau21HPLow_ && nsub_jet1 <= Tau21HPHigh_ && nsub_jet2 > Tau21Low_ && nsub_jet2 <= Tau21High_  ) ||
+                  (nsub_jet2 > Tau21HPLow_ && nsub_jet2 <= Tau21HPHigh_ && nsub_jet1 > Tau21Low_ && nsub_jet1 <= Tau21High_) ) {
+
+          if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mZHigh_))  {
             category = 1;  //VVLP
-             
-            if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mWHigh_) && (Vcand.at(1).prunedMass > mWLow_   && Vcand.at(1).prunedMass <= mWHigh_))  channel = 3; //WWLP
-            else if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mWHigh_) && (Vcand.at(1).prunedMass > mZLow_   && Vcand.at(1).prunedMass <= mZHigh_))  channel = 5; //WZLP
-            else if( (Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mWHigh_) && (Vcand.at(0).prunedMass > mZLow_   && Vcand.at(0).prunedMass <= mZHigh_))  channel = 5; //ZWLP
-            else if( (Vcand.at(0).prunedMass > mZLow_ && Vcand.at(0).prunedMass <= mZHigh_) && (Vcand.at(1).prunedMass > mZLow_   && Vcand.at(1).prunedMass <= mZHigh_))  channel = 7; //ZZLP
-          } 
+
+            if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mWHigh_))       channel = 3; //WWLP
+            else if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_))  channel = 5; //WZLP
+            else if( (groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mWHigh_) && (groomedMass_jet1 > mZLow_   && groomedMass_jet1 <= mZHigh_))  channel = 5; //ZWLP
+            else if( (groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_) && (groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_))  channel = 7; //ZZLP
+          }
         }
         // NP category
         else{
-          if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_) && (Vcand.at(1).prunedMass > mWLow_   && Vcand.at(1).prunedMass <= mZHigh_))  {
+          if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mZHigh_))  {
             category = 4;  //VVNP
 
-                 if( Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mWHigh_ && Vcand.at(1).prunedMass > mWLow_   && Vcand.at(1).prunedMass <= mWHigh_)  channel = 14; //WWNP
-            else if( Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mWHigh_ && Vcand.at(1).prunedMass > mZLow_   && Vcand.at(1).prunedMass <= mZHigh_)  channel = 15; //WZNP
-            else if( Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mWHigh_ && Vcand.at(0).prunedMass > mZLow_   && Vcand.at(0).prunedMass <= mZHigh_)  channel = 15; //ZWNP
-            else if( Vcand.at(0).prunedMass > mZLow_ && Vcand.at(0).prunedMass <= mZHigh_ && Vcand.at(1).prunedMass > mZLow_   && Vcand.at(1).prunedMass <= mZHigh_)  channel = 16; //ZZNP
-          }
-        }
-      }  
-      
-      else if( Channel_ == "qVdijet"){
-        channel = -1;
-        for( int i = 0; i < abs(Vcand.size()) ; i++){   
-          //HP
-          if( Vcand.at(i).tau2/Vcand.at(i).tau1 > Tau21HPLow_ && Vcand.at(i).tau2/Vcand.at(i).tau1 <= Tau21HPHigh_ ){
-            passedTau21Cut = true;
-            if(! (Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_)) continue;
-            category = 2; //qVHP
-            jetINDX=i;
-            if (Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mWHigh_) channel = 10; //qWHP
-            else if (Vcand.at(i).prunedMass > mZLow_ && Vcand.at(i).prunedMass <= mZHigh_) channel = 12; //qZHP
-          }
-          //LP
-          else if( Vcand.at(i).tau2/Vcand.at(i).tau1 > Tau21Low_ && Vcand.at(i).tau2/Vcand.at(i).tau1 <= Tau21High_ ){
-            if( !(Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_) ) continue;
-            category = 3; //qVLP
-            jetINDX=i;
-
-            if (Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mWHigh_) channel = 11; //qWLP
-            else if (Vcand.at(i).prunedMass > mZLow_ && Vcand.at(i).prunedMass <= mZHigh_) channel = 13; //qZLP
-          }
-      
-          else{
-            if(! (Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_))continue;
-            category = 5; //qVNP
-            jetINDX=i;
-            if (Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mWHigh_) channel = 17; //qWNP
-            else if (Vcand.at(i).prunedMass > mZLow_ && Vcand.at(i).prunedMass <= mZHigh_) channel = 18; //qZNP
+                 if( groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_ && groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mWHigh_)  channel = 14; //WWNP
+            else if( groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_ && groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_)  channel = 15; //WZNP
+            else if( groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mWHigh_ && groomedMass_jet1 > mZLow_   && groomedMass_jet1 <= mZHigh_)  channel = 15; //ZWNP
+            else if( groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_ && groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_)  channel = 16; //ZZNP
           }
         }
       }
-      
+
+      else if( Channel_ == "qVdijet"){
+        channel = -1;
+        for( int i = 0; i < abs(Vcand.size()) ; i++){
+
+          float groomedMass_jet1 = Vcand.at(i).prunedMass;
+          float nsub_jet1 = Vcand.at(i).tau2/Vcand.at(i).tau1;
+
+
+          if( usePuppiSD_ ){
+             groomedMass_jet1 = Vcand.at(i).puppi_softdropMass;
+             nsub_jet1 = Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1;
+          }
+
+          if(! (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_)) continue;
+          //HP
+          if( nsub_jet1 > Tau21HPLow_ && nsub_jet1 <= Tau21HPHigh_ ){
+            passedTau21Cut = true;
+            category = 2; //qVHP
+            jetINDX1=i;
+            if (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) {
+              channel = 10; //qWHP
+            }
+            else if (groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_) {
+              channel = 12; //qZHP
+            }
+          }
+          //LP
+          else if( nsub_jet1 > Tau21Low_ && nsub_jet1 <= Tau21High_ ){
+            if( !(groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_) ) continue;
+            category = 3; //qVLP
+            jetINDX1=i;
+            if (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) {
+              channel = 11; //qWLP
+            }
+            else if (groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_) {
+              channel = 13; //qZLP
+          }
+        }
+          else{
+            if(! (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_))continue;
+            category = 5; //qVNP
+            jetINDX1=i;
+            if (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) channel = 17; //qWNP
+            else if (groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_) channel = 18; //qZNP
+          }
+        }
+      }
+      if( Channel_ == "qVdijet"){
+        if(jetINDX1 == 0) jetINDX2 = 1;
+        else if (jetINDX1 == 1) jetINDX2 = 0;
+      }
+      else if( Channel_ == "VVdijet"){
+        jetINDX1 = 0;
+        jetINDX2 = 1;
+      }
+
       weight = weight_;
       run = data_.EVENT_run;
       event = data_.EVENT_event;
       lumi = data_.EVENT_lumi;
-      MVV = (Vcand.at(0).p4 + Vcand.at(1).p4).M();
-      jet_deta = fabs( Vcand.at(0).p4.Eta()  - Vcand.at(1).p4.Eta());	     
-      jet_mass_jet1 = Vcand.at(0).p4.M();
-      jet_mass_softdrop_jet1 = Vcand.at(0).softdropMass;
-      jet_mass_pruned_jet1 = Vcand.at(0).prunedMass;
-      jet_pt_jet1 = Vcand.at(0).p4.Pt();
-      jet_eta_jet1 = Vcand.at(0).p4.Eta();
-      jet_phi_jet1 = Vcand.at(0).p4.Phi();
-      jet_tau2tau1_jet1 = Vcand.at(0).tau2/Vcand.at(0).tau1;     
-      jet_mass_jet2 = Vcand.at(1).p4.M();
-      jet_mass_softdrop_jet2 = Vcand.at(1).softdropMass;
-      jet_mass_pruned_jet2 = Vcand.at(1).prunedMass;
-      jet_pt_jet2 = Vcand.at(1).p4.Pt();
-      jet_eta_jet2 = Vcand.at(1).p4.Eta();
-      jet_phi_jet2 = Vcand.at(1).p4.Phi();
-      jet_tau2tau1_jet2 = Vcand.at(1).tau2/Vcand.at(1).tau1;
+      MVV = (Vcand.at(jetINDX1).p4 + Vcand.at(jetINDX2).p4).M();
+      MVV_reduced = ( Vcand.at(jetINDX1).p4 + Vcand.at(jetINDX2).p4 ).M() - ( Vcand.at(jetINDX1).p4.M()-pdgMw ) - ( Vcand.at(jetINDX2).p4.M()-pdgMw );
+      jet_deta = fabs( Vcand.at(jetINDX1).p4.Eta()  - Vcand.at(jetINDX2).p4.Eta());
+      jet_mass_jet1 = Vcand.at(jetINDX1).p4.M();
+      jet_mass_softdrop_jet1 = Vcand.at(jetINDX1).softdropMass;
+      jet_mass_pruned_jet1 = Vcand.at(jetINDX1).prunedMass;
+      jet_pt_jet1 = Vcand.at(jetINDX1).p4.Pt();
+      jet_eta_jet1 = Vcand.at(jetINDX1).p4.Eta();
+      jet_phi_jet1 = Vcand.at(jetINDX1).p4.Phi();
+      jet_tau2tau1_jet1 = Vcand.at(jetINDX1).tau2/Vcand.at(jetINDX1).tau1;
+      jet_mass_jet2 = Vcand.at(jetINDX2).p4.M();
+      jet_mass_softdrop_jet2 = Vcand.at(jetINDX2).softdropMass;
+      jet_mass_pruned_jet2 = Vcand.at(jetINDX2).prunedMass;
+      jet_pt_jet2 = Vcand.at(jetINDX2).p4.Pt();
+      jet_eta_jet2 = Vcand.at(jetINDX2).p4.Eta();
+      jet_phi_jet2 = Vcand.at(jetINDX2).p4.Phi();
+      jet_tau2tau1_jet2 = Vcand.at(jetINDX2).tau2/Vcand.at(jetINDX2).tau1;
       nPVs = data_.nPVs;
-      
+
+      jet1_puppi_softdrop = Vcand.at(jetINDX1).puppi_softdropMass;
+      jet1_puppi_tau1 = Vcand.at(jetINDX1).puppi_tau1;
+      jet1_puppi_tau2 = Vcand.at(jetINDX1).puppi_tau2;
+      jet1_puppi_tau3 = Vcand.at(jetINDX1).puppi_tau3;
+      jet1_puppi_pt   = Vcand.at(jetINDX1).puppi_pt;
+      jet2_puppi_softdrop = Vcand.at(jetINDX2).puppi_softdropMass;
+      jet2_puppi_tau1 = Vcand.at(jetINDX2).puppi_tau1;
+      jet2_puppi_tau2 = Vcand.at(jetINDX2).puppi_tau2;
+      jet2_puppi_tau3 = Vcand.at(jetINDX2).puppi_tau3;
+      jet2_puppi_pt   = Vcand.at(jetINDX2).puppi_pt;
+      jet_puppi_tau2tau1_jet1 = Vcand.at(jetINDX1).puppi_tau2/Vcand.at(jetINDX1).puppi_tau1;
+      jet_puppi_tau2tau1_jet2 = Vcand.at(jetINDX2).puppi_tau2/Vcand.at(jetINDX2).puppi_tau1;
+
+      float DDT_jet1 = Vcand.at(jetINDX1).puppi_tau2/Vcand.at(jetINDX1).puppi_tau1 + ( 0.063 * log( (Vcand.at(jetINDX1).puppi_softdropMass*Vcand.at(jetINDX1).puppi_softdropMass)/Vcand.at(jetINDX1).puppi_pt) );
+      float DDT_jet2 = Vcand.at(jetINDX2).puppi_tau2/Vcand.at(jetINDX2).puppi_tau1 + ( 0.063 * log( (Vcand.at(jetINDX2).puppi_softdropMass*Vcand.at(jetINDX2).puppi_softdropMass)/Vcand.at(jetINDX2).puppi_pt) );
+
+      jet_ddt_jet1 = DDT_jet1;
+      jet_ddt_jet2 = DDT_jet2;
+
       fillHistos(Channel_);
-      
+
     }
-    
+
     else
       throw SError( SError::SkipEvent );
   }
@@ -648,9 +854,8 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
     Hist( "LeptonicWMass" )->Fill ( WmassLep , weight_);
     Hist( "LeptonicTopMass" )->Fill ( TmassLep, weight_);
   }
-  
- 
-  else if( Channel_.find("WtagSF") != std::string::npos){
+   
+  else if( Channel_.find("WtagSF") != std::string::npos ){
 
     int gW = data_.genWeight < 0 ? -1 : 1;
     nSumGenWeights_+=gW;
@@ -658,20 +863,22 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
     isLowMass = false;
     if (leptPtCut_ < 50) isLowMass = true ; 
     TString infile = TString(this->GetHistInputFile()->GetName());
+    setWeight(infile);
     
     Hist( "runNumber" )->Fill(data_.EVENT_run);
     nEvents_++;
     
     if( !applyJSON() ) throw SError( SError::SkipEvent );
+    nPassedJSON_++;
+    
     
     if( !passedTrigger() ) throw SError( SError::SkipEvent );
     nPassedTrigger_++;
 
     if( !passedFilters( infile ) ) throw SError( SError::SkipEvent );
     nPassedFilters_++;
-
     if( passedTTbarSelections( infile) ){
-      setWeight(infile);
+      
       
       int isW_def1 = 0;
       int isW_def2 = 0;
@@ -720,8 +927,7 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
           if( (Vcand.at(0).p4).DeltaR(hadW) < 0.4  && daus.at(0).DeltaR(daus.at(1)) < 0.8 ) isW_def2 = 1;
         }
       }
-      
-      
+    
       realW_def1 = isW_def1; 
       realW_def2 = isW_def2;   
       weight = weight_;
@@ -752,6 +958,12 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
       jet_puppi_tau2 = Vcand.at(0).puppi_tau2;  
       jet_puppi_tau3 = Vcand.at(0).puppi_tau3;
       jet_puppi_pt   = Vcand.at(0).puppi_pt;
+   
+      jet_puppi_tau2tau1_jet1 = Vcand.at(0).puppi_tau2/Vcand.at(0).puppi_tau1;       
+      float DDT_jet1 = Vcand.at(0).puppi_tau2/Vcand.at(0).puppi_tau1 + ( 0.063 * log(Vcand.at(0).puppi_softdropMass*Vcand.at(0).puppi_softdropMass/Vcand.at(0).puppi_pt) );      
+      jet_ddt_jet1 = DDT_jet1;  
+      
+      
     }
     else
       throw SError( SError::SkipEvent );
@@ -766,9 +978,9 @@ bool ExoDiBosonAnalysis::applyJSON( void ){
    if( runOnMC_ || JSONfile_ == "" ) return true;
    return m_grl.HasRunLumiBlock( data_.EVENT_run, data_.EVENT_lumi );
 
-   //bool isGood = m_grl.HasRunLumiBlock( data_.EVENT_run, data_.EVENT_lumi );
-   //if( !isGood ) m_logger << DEBUG << "Bad event! Run: " << data_.EVENT_run <<  " - Lumi Section: " << data_.EVENT_lumi << SLogger::endmsg;
-   //else m_logger << DEBUG << "Good event! Run: " << data_.EVENT_run <<  " - Lumi Section: " << data_.EVENT_lumi << SLogger::endmsg;
+   bool isGood = m_grl.HasRunLumiBlock( data_.EVENT_run, data_.EVENT_lumi );
+   if( !isGood ) m_logger << DEBUG << "Bad event! Run: " << data_.EVENT_run <<  " - Lumi Section: " << data_.EVENT_lumi << SLogger::endmsg;
+   else m_logger << DEBUG << "Good event! Run: " << data_.EVENT_run <<  " - Lumi Section: " << data_.EVENT_lumi << SLogger::endmsg;
 
 }
 
@@ -801,17 +1013,16 @@ bool ExoDiBosonAnalysis::passedFilters( TString infile ){
   
   //bool passMETFiltersAll = data_.passFilter_HBHE_ && data_.passFilter_CSCHalo_ && data_.passFilter_HCALlaser_;
   bool passMETFiltersAll = data_.passFilter_CSCHalo_ && data_.passFilter_HCALlaser_;
-  passMETFiltersAll = passMETFiltersAll && data_.passFilter_ECALDeadCell_ && data_.passFilter_GoodVtx_ && data_.passFilter_TrkFailure_;
-  passMETFiltersAll = passMETFiltersAll && data_.passFilter_EEBadSc_ && data_.passFilter_ECALlaser_ && data_.passFilter_TrkPOG_;
-  
+  // passMETFiltersAll = passMETFiltersAll && data_.passFilter_ECALDeadCell_ && data_.passFilter_GoodVtx_ && data_.passFilter_TrkFailure_;
+//   passMETFiltersAll = passMETFiltersAll && data_.passFilter_EEBadSc_ && data_.passFilter_ECALlaser_ && data_.passFilter_TrkPOG_;
+  passMETFiltersAll =   data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_ECALDeadCell_ && data_.PV_filter && data_.passFilter_EEBadSc_ && data_.passFilter_globalTightHalo2016_ && data_.passFilter_muonBadTrack_ && data_.passFilter_chargedHadronTrackResolution_; 
   bool passTrkFiltersAll = data_.passFilter_TrkPOG_manystrip_ && data_.passFilter_TrkPOG_toomanystrip_ && data_.passFilter_TrkPOG_logError_;
      
   if( passMETFiltersAll ) nPassedMETFiltersAll_++;
   if( passTrkFiltersAll ) nPassedTrkFiltersAll_++;
   
- 
-  bool passAllfilters =data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_CSCHalo_ && data_.PV_filter && data_.passFilter_EEBadSc_;
-  if( infile.Contains("16Dec2015") or infile.Contains("Fall15")  ) passAllfilters =   data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_CSCTightHalo2015_ && data_.PV_filter && data_.passFilter_EEBadSc_; 
+ // bool passAllfilters =   data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_CSCTightHalo2015_ && data_.passFilter_ECALDeadCell_ && data_.PV_filter && data_.passFilter_EEBadSc_;  //Fall 15!
+  bool passAllfilters =   data_.passFilter_HBHELoose_ && data_.passFilter_HBHEIso_ && data_.passFilter_ECALDeadCell_ && data_.PV_filter && data_.passFilter_EEBadSc_ && data_.passFilter_globalTightHalo2016_ && data_.passFilter_muonBadTrack_ && data_.passFilter_chargedHadronTrackResolution_;
   if( passAllfilters ) return true;
   
   return false;    
@@ -857,15 +1068,16 @@ bool ExoDiBosonAnalysis::passedTrigger( void ){
       trignames.push_back("HLT_Ele27_eta2p1_WP75_Gsf_"); //MC
   }
   else{
-    trignames.push_back("HLT_Ele105_CaloIdVT_GsfTrkIdT");
+    // trignames.push_back("HLT_Ele45_WPLoose_Gsf_v"); //NEW! In correspondence with low-mass VW!
+    trignames.push_back("HLT_Ele105_CaloIdVT_GsfTrkIdT"); 
     trignames.push_back("HLT_Ele115_CaloIdVT_GsfTrkIdT");
-   }
+  }
 }
 	
   bool isfired = false;
   for( std::map<std::string,bool>::iterator it = (data_.HLT_isFired)->begin(); it != (data_.HLT_isFired)->end(); ++it){
-    // std::cout<<(it->first)<<std::endl;
     for( unsigned int t = 0; t < trignames.size(); ++t ){
+      // std::cout << (it->first) << std::endl;
       if( (it->first).find(trignames[t]) != std::string::npos && it->second ) isfired = true;
     }
   }
@@ -925,36 +1137,38 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   if( findJetCandidates( infile ) ) foundTwoJets = true;
   if( !foundTwoJets) return false;
   nPassedFoundJets_++;
-     
+
   //Only select jets separated by |DeltaEta| < cut
   jetsDeltaEta = fabs( Vcand.at(0).p4.Eta()  - Vcand.at(1).p4.Eta() ) ; 
   if (jetsDeltaEta <= dEtaCut_) passedDeltaEtaCut = true;	
   if( !passedDeltaEtaCut) return false;  
   nPassedJetsDEta_++;
   
-  
-   
   if( !Trigger_ && !runOnMC_ ){
     doJetTriggerEfficiency();
-    if(Vcand.at(0).p4.Pt() > 600 || Vcand.at(1).p4.Pt() > 600) doJetTriggerEfficiency2();
+    do2DTriggerEfficiency();
+    if(Vcand.at(0).p4.Pt() > 600) doTriggerEfficiencyvsMass();
   }
   
   //Only select jets with Mjj > cut
   if ( ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M() >= MjjCut_ ) passedMjjCut = true;
-  if( !passedMjjCut) return false;   
+  if( !passedMjjCut) return false;
   nPassedMjj_++;
     
   Hist( "DeltaEta")	->Fill( fabs( Vcand.at(0).p4.Eta()  - Vcand.at(1).p4.Eta() ) , weight_ ); 	
   Hist( "DeltaR")	  ->Fill( (Vcand.at(0).p4).DeltaR(Vcand.at(1).p4) , weight_ ); 
   
-  if(isSignal_) doGroomingStudies(infile);
+  Hist( "nVertices"       )->Fill( data_.nPVs, weight_ );
+  Hist( "Rho"              )->Fill( data_.rho, weight_ );
+  for( int j = 0; j < (data_.PV_rho)->size() ; ++j )  Hist( "PV_rho"              )->Fill( (*data_.PV_rho).at(j), weight_ );
   
-  Hist( "nVertices"        	 )->Fill( data_.nPVs, weight_ );
+  Hist( "Pt_jet1"         )->Fill( Vcand.at(0).p4.Pt(), weight_ );
+  Hist( "Pt_jet2"         )->Fill( Vcand.at(1).p4.Pt(), weight_ );
   
   for( int i = 0; i < abs(Vcand.size()) ; i++){
     Hist( "Mass"          )  ->Fill( Vcand.at(i).p4.M(), weight_ );
     Hist( "PrunedMass"    )  ->Fill( Vcand.at(i).prunedMass, weight_ );
-    Hist( "SoftdropMass"  )  ->Fill( Vcand.at(i).softdropMass, weight_ );
+    Hist( "PuppiSoftdropMass")->Fill( Vcand.at(i).puppi_softdropMass, weight_ );
     Hist( "Tau21"         )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1, weight_ );
     Hist( "Pt"         )  ->Fill( Vcand.at(i).p4.Pt(), weight_ );
     Hist( "Eta"         )  ->Fill( Vcand.at(i).p4.Eta(), weight_ );
@@ -973,6 +1187,11 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
     Hist( "tau3tau2"    )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau2  , weight_ );
     Hist( "tau3tau1"    )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau1  , weight_ );
     Hist( "tau2tau1"    )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1  , weight_ );
+    Hist( "puppi_tau3tau2"    )  ->Fill( Vcand.at(i).puppi_tau3/Vcand.at(i).puppi_tau2  , weight_ );
+    Hist( "puppi_tau3tau1"    )  ->Fill( Vcand.at(i).puppi_tau3/Vcand.at(i).puppi_tau1  , weight_ );
+    Hist( "puppi_tau2tau1"    )  ->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1  , weight_ );
+    Hist( "puppi_tau1"    )  ->Fill( Vcand.at(i).puppi_tau1  , weight_ );
+    Hist( "puppi_tau2"    )  ->Fill( Vcand.at(i).puppi_tau2  , weight_ );
     Hist( "tau3"    )  ->Fill( Vcand.at(i).tau3  , weight_ );
     Hist( "che"     )  ->Fill( Vcand.at(i).che  , weight_ );
     Hist( "ne"      )  ->Fill( Vcand.at(i).ne  , weight_ );
@@ -986,14 +1205,15 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
     Hist( "chargedEmEnergyFraction"     )  ->Fill( Vcand.at(i).cemf  , weight_ ); //chargedEmEnergyFraction());
     Hist( "charge"     )  ->Fill( Vcand.at(i).charge , weight_ ); //charge());
     if( Vcand.at(i).tau2/Vcand.at(i).tau1 >= Tau21HPLow_ && Vcand.at(i).tau2/Vcand.at(i).tau1 <= Tau21HPHigh_ ) Hist( "PrunedMass_afterTau21"    )  ->Fill( Vcand.at(i).prunedMass, weight_ );
-    if( Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_ ) Hist( "Tau21_afterPrunedMass" )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1, weight_ );
+    if( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1 >= Tau21HPLow_ && Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1 <= Tau21HPHigh_ ) Hist( "PuppiSoftdropMass_afterTau21")  ->Fill( Vcand.at(i).puppi_softdropMass, weight_ );
+    if( Vcand.at(i).prunedMass > 65. && Vcand.at(i).prunedMass <= 105. ) Hist( "Tau21_afterPrunedMass" )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1, weight_ );
+    if( Vcand.at(i).puppi_softdropMass > 65. && Vcand.at(i).puppi_softdropMass <= 105. ) Hist( "PUPPITau21_afterPUPPISoftdropMass" )  ->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1, weight_ );
   }
 
     
   
   if( Vcand.at(0).prunedMass > mWLow_ || Vcand.at(1).prunedMass > mWLow_ )Hist( "Mjj_afterPrunedMass" ) -> Fill( ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M() , weight_ );	
   Hist( "Mjj" ) -> Fill( ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M() , weight_ );	
-  Hist( "Mjj_fine" ) -> Fill( ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M() , weight_ );	
 
   
   int jetINDXPunzi = 99;
@@ -1001,30 +1221,79 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   float SumEt = (*data_.MET_sumEt).at(0);
   if( MET > 0. ) Hist( "METsumET" )->Fill(MET/SumEt, weight_ );
   if( MET > 0. ) Hist( "MET" )->Fill(MET, weight_ );
-
-if( Channel_ == "VVdijet" && Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_ && Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_ ){
-  passedGroomedMassCut = true;
-  Hist( "Tau21_punzi"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
-  Hist( "Tau21_punzi"	)->Fill( Vcand.at(1).tau2/Vcand.at(1).tau1,weight_ );
-  Hist( "Tau21_punzi1"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
-  Hist( "Tau21_punzi2"	)->Fill( Vcand.at(1).tau2/Vcand.at(1).tau1,weight_ );
-} 
-
-if (Channel_ == "qVdijet"){
-for( int i = 0; i < abs(Vcand.size()) ; i++){
-  if(!(Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_) ) continue;
-    passedGroomedMassCut = true;
-    jetINDXPunzi=i;
-    Hist( "Tau21_punzi"	)->Fill( Vcand.at(jetINDXPunzi).tau2/Vcand.at(jetINDXPunzi).tau1,weight_ );
-  }
-}
-
-  //Cut flow
-  if( !passedGroomedMassCut)	return false;
-  nPassedJetPrunedMass_++;
   
-  // //Apply selection
+  if(!usePuppiSD_){
+    if( Channel_ == "VVdijet"){
+      
+      if( Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_ && Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_){
+            
+        passedGroomedMassCut = true;
+        Hist( "Tau21_punzi1"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+        Hist( "Tau21_punzi2"	)->Fill( Vcand.at(1).tau2/Vcand.at(1).tau1,weight_ );
+      
+        float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
+        for( int i = 0; i < abs(Vcand.size()) ; i++){
+          Hist( "Tau21_punzi"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+          if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ ); 
+          if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+          if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+          if(MJJ > 0.8*1800 && MJJ < 1.2*1800)Hist( "Tau21_punzi1v8TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+          if(MJJ > 0.8*2000 && MJJ < 1.2*2000)Hist( "Tau21_punzi2TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+          if(MJJ > 0.8*2500 && MJJ < 1.2*2500)Hist( "Tau21_punzi2v5TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+          if(MJJ > 0.8*3000 && MJJ < 1.2*3000)Hist( "Tau21_punzi3TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+          if(MJJ > 0.8*4000 && MJJ < 1.2*4000)Hist( "Tau21_punzi4TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+        }
+      }
+    }
+        
+    if (Channel_ == "qVdijet"){
+      for( int i = 0; i < abs(Vcand.size()) ; i++){
+        if(!(Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_) ) continue;
+        passedGroomedMassCut = true;
+        jetINDXPunzi=i;
+        Hist( "Tau21_punzi"	)->Fill( Vcand.at(jetINDXPunzi).tau2/Vcand.at(jetINDXPunzi).tau1,weight_ );
+      }
+    }
+  }
+      
+  else if(usePuppiSD_){
+    if(Channel_ == "VVdijet" && Vcand.at(0).puppi_softdropMass > mWLow_ && Vcand.at(0).puppi_softdropMass <= mZHigh_ && Vcand.at(1).puppi_softdropMass > mWLow_ && Vcand.at(1).puppi_softdropMass <= mZHigh_ ){
+      passedGroomedMassCut = true;
+      Hist( "Tau21_punzi1"	)->Fill( Vcand.at(0).puppi_tau2/Vcand.at(0).puppi_tau1,weight_ );
+      Hist( "Tau21_punzi2"	)->Fill( Vcand.at(1).puppi_tau2/Vcand.at(1).puppi_tau1,weight_ );
+      
+      float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
+      for( int i = 0; i < abs(Vcand.size()) ; i++){
+        Hist( "Tau21_punzi"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+        if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*1800 && MJJ < 1.2*1800)Hist( "Tau21_punzi1v8TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*2000 && MJJ < 1.2*2000)Hist( "Tau21_punzi2TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*2500 && MJJ < 1.2*2500)Hist( "Tau21_punzi2v5TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*3000 && MJJ < 1.2*3000)Hist( "Tau21_punzi3TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+        if(MJJ > 0.8*4000 && MJJ < 1.2*4000)Hist( "Tau21_punzi4TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
+      }
+    }
+
+      if (Channel_ == "qVdijet"){
+        for( int i = 0; i < abs(Vcand.size()) ; i++){
+          if(!(Vcand.at(i).puppi_softdropMass > mWLow_ && Vcand.at(i).puppi_softdropMass <= mZHigh_) ) continue;
+          passedGroomedMassCut = true;
+          jetINDXPunzi=i;
+          Hist( "Tau21_punzi"	)->Fill( Vcand.at(jetINDXPunzi).puppi_tau1/Vcand.at(jetINDXPunzi).puppi_tau1,weight_ );
+        }
+      }
+    }
+
+
+  // //Cut flow
+  // if( !passedGroomedMassCut)  return false;
+  // nPassedJetPrunedMass_++;
+  
+  //Apply selection
   if ( foundTwoJets && passedDeltaEtaCut && passedMjjCut && passedGroomedMassCut) return true;
+  // if ( foundTwoJets && passedDeltaEtaCut && passedMjjCut) return true;
   else
     return false;
 	
@@ -1096,163 +1365,130 @@ bool ExoDiBosonAnalysis::findJetCandidatesAK4( void ){
 }
 //==============================================================================================
 bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
-  
-  TLorentzVector			TLV;
-  std::vector<float>	vJetPrunedMass;
   bool foundJet = false;
   bool foundJet2 = false;
   bool foundJets = false;
-  float csv         = -9999;
-  
+
   TLorentzVector bestjet_tlv;
   TLorentzVector bestjet2_tlv;
   int    jetIndex = 999;
   int    jetIndex2 = 999;
-  float  jetmass  = -9999;
-  float  jetmass2 = -9999;
-		
-  vJetPrunedMass.clear();
-  
-  std::vector<TLorentzVector>	vpuppiJets;
-  vpuppiJets.clear();
-  
+  float  jetmass  = -999;
+
   int    PUPPIjetMatchIndex = 999;
-  int    PUPPIjetMatchIndex2 = 999;
   int    PUPPIjetIndex1 = 999;
   int    PUPPIjetIndex2 = 999;
   
-  if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ){
-    for( int j = 0; j < (data_.jetAK8_puppi_softdrop_massCorr)->size() ; ++j ){  
-      if ((*data_.jetAK8_puppi_pt).at(j) < 0.001) continue;
-      TLorentzVector puppiJet;
-      puppiJet.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_eta).at(j), (*data_.jetAK8_puppi_phi).at(j), (*data_.jetAK8_puppi_e).at(j) );
-      vpuppiJets.push_back(puppiJet);
+  std::vector<TLorentzVector>	vpuppiJets;
+  for( int j = 0; j < (data_.jetAK8_puppi_softdrop_massUnCorr)->size() ; ++j ){  
+    if ((*data_.jetAK8_puppi_pt).at(j) < 0.001) continue;
+    TLorentzVector puppiJet;
+    puppiJet.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_eta).at(j), (*data_.jetAK8_puppi_phi).at(j), (*data_.jetAK8_puppi_e).at(j) );
+    vpuppiJets.push_back(puppiJet);
+  }
+  
+  //Make sure jets passes loose ID, pT and eta cuts
+  TLorentzVector			TLV;
+  for( int j = 0; j < data_.njetsAK8 ; ++j ){
+    float jetPT = (*data_.jetAK8_pt).at(j) ;
+    if( scaleUncPar_.find("JES") != std::string::npos) jetPT = getJetEnergyScale( j );
+    if( scaleUncPar_.find("JER") != std::string::npos) jetPT = getJetEnergyScale( j );
+    TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+    if( Channel_.find("dijet")!= std::string::npos && j < 1 && (*data_.jetAK8_IDTight).at(j) != 1   )break;
+    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
+    if( Channel_.find("dijet")!= std::string::npos && TLV.Pt() <= JetPtCutTight_    )continue;   
+    
+    if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_IDLoose).at(j) != 1          )continue;
+    if( Channel_.find("WtagSF") != std::string::npos && TLV.Pt() <= 80.                             )continue; //before used 80 here!!!
+    if( Channel_.find("WtagSF") != std::string::npos && leptonCand_[0].p4.DeltaR(TLV) <= 1.0        )continue;   
+    if( fabs(TLV.Eta()) >= JetEtaCut_ 	                                                          	)continue;	
+    
+    float  dRmin  = 999;
+    for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
+      float dR = vpuppiJets[jj].DeltaR(TLV);
+      if(dR > dRmin) continue;
+      dRmin = dR;
+      PUPPIjetMatchIndex = jj;
+    }
+    if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
+    if( !usePuppiSD_){
+      if ( (*data_.jetAK8_prunedmass)[j] < jetmass ) continue;
+      jetmass = (*data_.jetAK8_prunedmass)[j];
+      bestjet_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      foundJet = true;
+      jetIndex = j;
+      PUPPIjetIndex1 = PUPPIjetMatchIndex;
+    }
+    else if( usePuppiSD_){
+      float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex) );
+      if ( (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr < jetmass ) continue;
+      jetmass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
+      bestjet_tlv.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      
+      foundJet = true;
+      jetIndex = j;
+      PUPPIjetIndex1 = PUPPIjetMatchIndex;
     }
   }
  
-  //Make sure jets passes loose ID, pT and eta cuts
-  for( int j = 0; j < data_.njetsAK8 ; ++j ){
-    TLV.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+  
+  jetmass  = -999;
+  PUPPIjetMatchIndex = 999;
 
-    if( Channel_.find("dijet")!= std::string::npos && j < 1 && (*data_.jetAK8_IDTight).at(j) != 1   )break;
+  for( int j = 0; j < data_.njetsAK8 ; ++j ){
+    float jetPT = (*data_.jetAK8_pt).at(j) ;
+    
+    if( scaleUncPar_.find("JES") != std::string::npos) jetPT = getJetEnergyScale( j );
+    if( scaleUncPar_.find("JER") != std::string::npos) jetPT = getJetEnergyScale( j );
+    TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
-    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_pt).at(j) <= JetPtCutTight_    )continue;   
-    
-    if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_IDLoose).at(j) != 1          )continue;
-    if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_pt).at(j) <= 80.  )continue; //before used 80 here!!!
-    if( Channel_.find("WtagSF") != std::string::npos && leptonCand_[0].p4.DeltaR(TLV) <= 1.0        )continue;   
-    if( fabs((*data_.jetAK8_eta).at(j)) >= JetEtaCut_ 	                                          	)continue;	
-    // if (data_.EVENT_event == 2335){
-    //   std::cout<< j << ") Jet pT = " << (*data_.jetAK8_pt).at(j) << std::endl;
-    //   std::cout<< j << "Jet ID = " << (*data_.jetAK8_IDTight).at(j) << std::endl;
-    //   std::cout<< j << "Jet pT = " << (*data_.jetAK8_pt).at(j) << std::endl;
-    //   std::cout<< j << "Jet eta = " << fabs((*data_.jetAK8_eta).at(j)) << std::endl;
-    //   std::cout<< j << "Jet pruned mass = " << (*data_.jetAK8_prunedmass)[j]<< std::endl;
-    //
-    // }
-    // if (data_.EVENT_event == 970 or data_.EVENT_event == 2335 or data_.EVENT_event == 8461)  std::cout<< " MY event passed lose jet sel: " << data_.EVENT_event <<std::endl;
-    
-    if( infile.Contains("16Dec2015") or infile.Contains("Fall15") ){
-      float  dRmin  = 9999;
-      for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
-        TLorentzVector ak8tmp;
-        ak8tmp.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-        float dR = vpuppiJets[jj].DeltaR(ak8tmp);
-        if(dR < dRmin) {
-          dRmin = dR;
-          PUPPIjetMatchIndex = jj;
-        }
-      }
+    if( Channel_.find("dijet")!= std::string::npos && TLV.Pt() <= JetPtCutTight_    )continue;    
+    if( fabs( TLV.Eta())  >= JetEtaCut_ )continue;
+    float dRmin  = 999;
+    for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
+      float dR = vpuppiJets[jj].DeltaR(TLV);
+      if(dR > dRmin) continue;
+      dRmin = dR;
+      PUPPIjetMatchIndex = jj;
     }
-    
-    if( !usePuppiSD_ && ((*data_.jetAK8_prunedmass)[j] > jetmass) ){
+    if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
+    if( !usePuppiSD_){
+      if ( (*data_.jetAK8_prunedmass)[j] < jetmass or j == jetIndex) continue;
       jetmass = (*data_.jetAK8_prunedmass)[j];
-      bestjet_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-      foundJet = true;
-      jetIndex = j;
-      PUPPIjetIndex1 = PUPPIjetMatchIndex;
-    }
-    if( usePuppiSD_ && ((*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex] > jetmass) ){
-      jetmass = (*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex];
-      bestjet_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-      foundJet = true;
-      jetIndex = j;
-      PUPPIjetIndex1 = PUPPIjetMatchIndex;
-    }
-  }
-
-  for( int j = 0; j < data_.njetsAK8 ; ++j ){
-    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
-    if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_pt).at(j) <= JetPtCutTight_    )continue;    
-    if( fabs((*data_.jetAK8_eta).at(j)) >= JetEtaCut_ 	                                          	)continue;
-    if( !usePuppiSD_ && ((*data_.jetAK8_prunedmass)[j] > jetmass2 && j!=jetIndex) ){
-      jetmass2 = (*data_.jetAK8_prunedmass)[j];
-      bestjet2_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      bestjet2_tlv.SetPtEtaPhiE(jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
       foundJet2 = true;
       jetIndex2 = j;
-     }
-    if (infile.Contains("16Dec2015") or infile.Contains("Fall15")){
-      TLorentzVector ak8tmp;
-      ak8tmp.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-      float  dRmin  = 9999;
-      for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
-      float dR = vpuppiJets[jj].DeltaR(ak8tmp);
-      if(dR < dRmin) {
-        dRmin = dR;
-        PUPPIjetMatchIndex2 = jj;
-      }
+      PUPPIjetIndex2 = PUPPIjetMatchIndex;
     }
-    if( usePuppiSD_ && (*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex2] > jetmass2 && j!=jetIndex ){
-        jetmass2 = (*data_.jetAK8_puppi_softdrop_massCorr)[PUPPIjetMatchIndex2];
-        bestjet2_tlv.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-        foundJet2 = true;
-        jetIndex2 = j;
-        PUPPIjetIndex2 = PUPPIjetMatchIndex2;
-      }
+    else if( usePuppiSD_){
+      float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex) );
+      if ( (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr < jetmass  or PUPPIjetMatchIndex == PUPPIjetIndex1 ) continue;
+      jetmass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
+      bestjet2_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      foundJet2 = true;
+      jetIndex2 = j;
+      PUPPIjetIndex2 = PUPPIjetMatchIndex;
     }
   }
   
-
-  if( Channel_.find("dijet")!= std::string::npos ){
-    if (foundJet && foundJet2) foundJets = true;
-  }  
-  else
-  if( Channel_.find("WtagSF")!= std::string::npos){
-    if (foundJet ) foundJets = true;
-  }
+  if( Channel_.find("dijet")!= std::string::npos && foundJet && foundJet2) foundJets = true;
+  else if( Channel_.find("WtagSF")!= std::string::npos && foundJet) foundJets = true;
   
   if( !foundJets) return false;
-  // if (data_.EVENT_event == 970 or data_.EVENT_event == 2335 or data_.EVENT_event == 8461)  std::cout<< " MY event passed find jet: " << data_.EVENT_event <<std::endl;
 
   bool foundOverlap = false;
   if ( Channel_.find("dijet")!= std::string::npos && (findMuonCandidate() || findElectronCandidate()) ){
     for( int i = 0; i < abs(leptonCand_.size()); i++){
       if( bestjet_tlv.DeltaR(leptonCand_.at(i).p4) < 0.8 ) foundOverlap = true;
-      // if (data_.EVENT_event == 970 or data_.EVENT_event == 2335 or data_.EVENT_event == 8461)  std::cout<< " MY event passed find overlap jet 1: " << data_.EVENT_event << " Overlap = " <<bestjet_tlv.DeltaR(leptonCand_.at(i).p4) <<std::endl;
     }
   }
   if( Channel_.find("dijet")!= std::string::npos && foundOverlap ) return false;
   
   
   if (usePuppiSD_ && foundJet && PUPPIjetIndex1 == 999){
-    
     nNopuppi_++;
-    std::cout<<" index 1 = " << PUPPIjetIndex1 << std::endl;
     foundJet = false;
-    
-    std::cout<<" (*data_.jetAK8_pt).at(j) = " << (*data_.jetAK8_pt).at(jetIndex) << std::endl;
-    std::cout<<" (*data_.jetAK8_eta).at(j) = " << (*data_.jetAK8_eta).at(jetIndex) << std::endl;
-    std::cout<<" (*data_.jetAK8_phi).at(j) = " << (*data_.jetAK8_phi).at(jetIndex) << std::endl;
-    std::cout<<" (*data_.jetAK8_e).at(j) = " << (*data_.jetAK8_e).at(jetIndex) << std::endl;
-    std::cout<<" (data_.jetAK8_puppi_softdrop_massCorr)->size() = " << (data_.jetAK8_puppi_softdrop_massCorr)->size() << std::endl;
-     for( int j = 0; j < (data_.jetAK8_puppi_softdrop_massCorr)->size() ; ++j ){  
-       std::cout<<" (*data_.jetAK8_puppi_pt).at(j) = " << (*data_.jetAK8_puppi_pt).at(j) << std::endl;
-       std::cout<<" (*data_.jetAK8_puppi_eta).at(j) = " << (*data_.jetAK8_puppi_eta).at(j) << std::endl;
-       std::cout<<" (*data_.jetAK8_puppi_phi).at(j) = " << (*data_.jetAK8_puppi_phi).at(j) << std::endl;
-       std::cout<<" (*data_.jetAK8_puppi_e).at(j) = " << (*data_.jetAK8_puppi_e).at(j) << std::endl;
-        std::cout<<" (*data_.jetAK8_puppi_softdrop_massCorr).at(j) = " << (*data_.jetAK8_puppi_softdrop_massCorr).at(j) << std::endl;
   }
-}
 
 
   JetCandidate jet(bestjet_tlv);
@@ -1262,7 +1498,7 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   jet.tau3					= (*data_.jetAK8_tau3).at(jetIndex)          ;
   jet.prunedMass		= (*data_.jetAK8_prunedmass).at(jetIndex)    ;
   jet.prunedMassUnCorr = (*data_.jetAK8_prunedmass_unCorr).at(jetIndex)    ;
-  jet.softdropMass	= (*data_.jetAK8_softdropmass).at(jetIndex)*(*data_.jetAK8_pruned_jec).at(jetIndex)	;
+  jet.softdropMass	= (*data_.jetAK8_softdropmass).at(jetIndex)	;
   jet.mass					= (*data_.jetAK8_mass).at(jetIndex)         ;
   jet.flavor				= -99                               ;
   jet.rcn					= (*data_.jetAK8_che).at(jetIndex)/(*data_.jetAK8_ne).at(jetIndex);
@@ -1287,35 +1523,15 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   jet.area = (*data_.jetAK8_area).at(jetIndex);
   jet.jec = (*data_.jetAK8_jec).at(jetIndex);
   jet.pruned_jec = (*data_.jetAK8_pruned_jec).at(jetIndex);
-  if( PUPPIjetIndex1 != 999 && (infile.Contains("16Dec2015") or infile.Contains("Fall15")) ) {
-    jet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massCorr).at(PUPPIjetIndex1);
+  if( PUPPIjetIndex1 != 999 && ( !infile.Contains("Spring15")) ) {
+    float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1) , (*data_.jetAK8_puppi_eta).at(PUPPIjetIndex1) );
+    jet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massUnCorr).at(PUPPIjetIndex1)*puppiCorr;
     jet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex1);
     jet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex1);
     jet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex1);
     jet.puppi_pt   = (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1);
   }
 
-  
-     
-      
-  std::vector<JetCandidate> tmp;
-    
-  // TLorentzVector softdropP4;
-  // for( int sj = 0; sj < (*data_.subjetAK8_softdrop_N)[jetIndex]; ++sj ){
-  //   TLV.SetPtEtaPhiE((*data_.subjetAK8_softdrop_pt)[jetIndex][sj],(*data_.subjetAK8_softdrop_eta)[jetIndex][sj],(*data_.subjetAK8_softdrop_phi)[jetIndex][sj],(*data_.subjetAK8_softdrop_e)[jetIndex][sj]);
-  //   csv = (*data_.subjetAK8_softdrop_csv)[jetIndex][sj];
-  //   JetCandidate jetC(TLV);
-  //   jetC.csv = csv;
-  //   jetC.flavor = 0;
-  //   jetC.rho = pow( TLV.M() / ((*data_.subjetAK8_softdrop_pt)[jetIndex][sj] * 0.8),2);
-  //   // if( runOnMC_ ) jetC.flavor = (*data_.subjetAK8_softdrop_flavour)[jetIndex][sj];
-  //   tmp.push_back(jetC);
-  //   softdropP4 += TLV;
-  // }
-  // SoftdropSubjetCand_.push_back(tmp);
-  // tmp.clear();
-  //
-  // jet.rho = pow( softdropP4.M() / (softdropP4.Perp() * 0.8), 2);
   Vcand.push_back( jet );
         
   if( Channel_.find("dijet")!= std::string::npos){
@@ -1359,31 +1575,15 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     secondJet.charge = (*data_.jetAK8_charge).at(jetIndex2);
     secondJet.area = (*data_.jetAK8_area).at(jetIndex2);
     if( PUPPIjetIndex2 != 999 ){
-      secondJet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massCorr).at(PUPPIjetIndex2);
+      float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex2) , (*data_.jetAK8_puppi_eta).at(PUPPIjetIndex2) );
+      secondJet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massUnCorr).at(PUPPIjetIndex2)*puppiCorr;
       secondJet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex2);
       secondJet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex2);
       secondJet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex2);
       secondJet.puppi_pt   = (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex2);
     }
- 
-
     std::vector<JetCandidate> tmp;
-
-    // TLorentzVector softdropP4;
-  //   for( int sj = 0; sj < (*data_.subjetAK8_softdrop_N)[jetIndex2]; ++sj ){
-  //     TLV.SetPtEtaPhiE((*data_.subjetAK8_softdrop_pt)[jetIndex2][sj],(*data_.subjetAK8_softdrop_eta)[jetIndex2][sj],(*data_.subjetAK8_softdrop_phi)[jetIndex2][sj],(*data_.subjetAK8_softdrop_e)[jetIndex2][sj]);
-  //     csv = (*data_.subjetAK8_softdrop_csv)[jetIndex2][sj];
-  //     JetCandidate jetC(TLV);
-  //     jetC.csv = csv;
-  //     jetC.flavor = 0;
-  //     jetC.rho = pow( TLV.M() / ((*data_.subjetAK8_softdrop_pt)[jetIndex2][sj] * 0.8),2);
-  //     // if( runOnMC_ ) jetC.flavor = (*data_.subjetAK8_softdrop_flavour)[jetIndex2][sj];
-  //     tmp.push_back(jetC);
-  //     softdropP4 += TLV;
-  //   }
-  //   SoftdropSubjetCand_.push_back(tmp);
-  //
-  //   secondJet.rho = pow( softdropP4.M() / (softdropP4.Perp() * 0.8), 2);
+    
     Vcand.push_back( secondJet );
   } 
   if ( (Channel_.find("dijet")!= std::string::npos && Vcand.size() < 2) || ((Channel_.find("WtagSF")!= std::string::npos && Vcand.size() < 1)) ) return false;
@@ -1463,7 +1663,7 @@ bool ExoDiBosonAnalysis::passedTTbarSelections( TString infile ){
   bool najetCut = false; 
   int najet = 0;
   for( unsigned int j = 0; j < abs(AK4jetCand_.size()); j++ ){
-     if( AK4jetCand_[j].csv > 0.890 ) najet++;
+     if( AK4jetCand_[j].csv > 0.800 ) najet++;
   }
   
   if( najet  > 0 ) found1b = true;
@@ -1487,35 +1687,36 @@ bool ExoDiBosonAnalysis::findLeptonCandidate( void ){
 
 //==============================================================================================
 bool ExoDiBosonAnalysis::findMuonCandidate( void ){
-
-
-   foundAEle = 0;
-   foundAMu = 0;
+  
+  foundAEle = 0;
+  foundAMu = 0;
    
-   TLorentzVector TLV;
-   bool foundLept = false;
-   double ptMu = -999;
-   int muIndex = 999;
-   double scale = 0.;
-   double newpt = 0.;
-   double scale_ = 0.;
-   for( int l = 0; l < data_.mu_N; ++l ){
-     if( !isLowMass && (*data_.mu_isHighPtMuon)[l] != 1 ) continue;
-     if(  isLowMass && (*data_.mu_isTightMuon)[l] != 1 ) continue;
-      //if( (*data_.mu_isPFMuon)[l] != 1 ) continue;
-      scale = getMuonScale((*data_.mu_pt)[l]);
-      newpt = (*data_.mu_pt)[l]+scale;
-      if( (*data_.mu_trackIso)[l]/newpt >= 0.1 ) continue;
-      if( newpt <= leptPtCut_ ) continue;
-      if( fabs((*data_.mu_eta)[l]) >= leptEtaCut_ ) continue;
-      foundLept = true;
-      if( newpt > ptMu ){  
-         ptMu = newpt;
-         TLV.SetPtEtaPhiE( newpt, (*data_.mu_eta)[l], (*data_.mu_phi)[l], (*data_.mu_e)[l]+scale );  
-	 muIndex = l;
-	 scale_ = scale;
-      }      
-   }
+  TLorentzVector TLV;
+  bool foundLept = false;
+  double ptMu = -999;
+  int muIndex = 999;
+  double scale = 0.;
+  double newpt = 0.;
+  double scale_ = 0.;
+  for( int l = 0; l < data_.mu_N; ++l ){
+    // if( !isLowMass && (*data_.mu_isHighPtMuon)[l] != 1 ) continue;
+    // if(  isLowMass && (*data_.mu_isTightMuon)[l] != 1 ) continue;
+    if( (*data_.mu_isTightMuon)[l] != 1 ) continue;
+    //if( (*data_.mu_isPFMuon)[l] != 1 ) continue;
+    scale = getMuonScale((*data_.mu_pt)[l]);
+    newpt = (*data_.mu_pt)[l]+scale;
+    if( (*data_.mu_trackIso)[l]/newpt >= 0.1 ) continue;
+    if( newpt <= leptPtCut_ ) continue;
+    if( fabs((*data_.mu_eta)[l]) >= leptEtaCut_ ) continue;
+    if( fabs((*data_.mu_eta)[l]) > 1.2 && newpt > 500 ) continue;
+    foundLept = true;
+    if( newpt > ptMu ){  
+      ptMu = newpt;
+      TLV.SetPtEtaPhiE( newpt, (*data_.mu_eta)[l], (*data_.mu_phi)[l], (*data_.mu_e)[l]+scale );  
+      muIndex = l;
+      scale_ = scale;
+    }      
+  }
    
    if( foundLept ){
      LeptonCandidate muCand(TLV);
@@ -1535,8 +1736,9 @@ bool ExoDiBosonAnalysis::findMuonCandidate( void ){
    scale = 0.;
    for( int l = 0; l < data_.mu_N; ++l ){
       if( muIndex == 999 || l == muIndex ) continue;
-      if( !isLowMass && (*data_.mu_isHighPtMuon)[l] != 1 ) continue;
-      if(  isLowMass && (*data_.mu_isLooseMuon)[l] != 1 ) continue;
+      // if( !isLowMass && (*data_.mu_isHighPtMuon)[l] != 1 ) continue;
+      // if(  isLowMass && (*data_.mu_isLooseMuon)[l] != 1 ) continue;
+      if( (*data_.mu_isLooseMuon)[l] != 1 ) continue;
       scale = getMuonScale((*data_.mu_pt)[l]);
       newpt = (*data_.mu_pt)[l]+scale;
       if( (*data_.mu_trackIso)[l]/newpt >= 0.1 ) continue;
@@ -1546,11 +1748,12 @@ bool ExoDiBosonAnalysis::findMuonCandidate( void ){
    }
    
    for( int l = 0; l < data_.el_N; ++l ){
-      if( !isLowMass && (*data_.el_isHEEP)[l] != 1 ) continue;
-      if( isLowMass && (*data_.el_isVetoElectron)[l] != 1 ) continue;
-      if( (*data_.el_pt)[l] <= 35. ) continue;
-      //if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue;
-      //if( fabs((*data_.el_eta)[l]) >= 2.5 ) continue;
+      // if( !isLowMass && (*data_.el_isHEEP)[l] != 1 ) continue;
+      // if( isLowMass && (*data_.el_isVetoElectron)[l] != 1 ) continue;
+      if( (*data_.el_isVetoElectron)[l] != 1 ) continue;
+      if( (*data_.el_pt)[l] <= 30. ) continue;
+      if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue;
+      if( fabs((*data_.el_eta)[l]) >= 2.5 ) continue;
       foundAEle++;
    }
    
@@ -1583,17 +1786,17 @@ bool ExoDiBosonAnalysis::findElectronCandidate( void ){
    double ptEle = -999;
    int eleIndex = 999;
    for( int l = 0; l < data_.el_N; ++l ){
-      if( (*data_.el_pt)[l] <= 35. ) continue;     
-      //if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue; 
-      //if( fabs((*data_.el_eta)[l]) >= leptEtaCut_ ) continue; 
-      if( !isLowMass && (*data_.el_isHEEP)[l] != 1 ) continue;
-      if(  isLowMass && (*data_.el_isTightElectron)[l] != 1 ) continue;
-      // if( (*data_.el_pt)[l] <= leptPtCut_ ) continue;
+      if( (*data_.el_pt)[l] <= leptPtCut_ ) continue;
+      if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue;
+      if( fabs((*data_.el_eta)[l]) >= leptEtaCut_ ) continue;
+      if( (*data_.el_isHEEP)[l] != 1 ) continue;
+      // if(  isLowMass && (*data_.el_isTightElectron)[l] != 1 ) continue;
+      
       foundEle = true;
       if( (*data_.el_pt)[l] > ptEle ){   
          ptEle = (*data_.el_pt)[l];
          TLV.SetPtEtaPhiE( (*data_.el_pt)[l], (*data_.el_eta)[l], (*data_.el_phi)[l], (*data_.el_e)[l] );         
-	 eleIndex = l;
+         eleIndex = l;
       }
    }
 
@@ -1602,25 +1805,23 @@ bool ExoDiBosonAnalysis::findElectronCandidate( void ){
    
    for( int l = 0; l < data_.el_N; ++l ){
       if( eleIndex == 999 || l == eleIndex ) continue;
-      if( !isLowMass && (*data_.el_isHEEP)[l] != 1 ) continue;
-      if(  isLowMass && (*data_.el_isTightElectron)[l] != 1 ) continue;
-      if( (*data_.el_pt)[l] <= AleptPtCut_ ) continue;
-      //if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue;
-      //if( fabs((*data_.el_eta)[l]) >= AleptEtaCut_ ) continue;
+      // if( !isLowMass && (*data_.el_isHEEP)[l] != 1 ) continue;
+      if( (*data_.el_isVetoElectron)[l] != 1 ) continue;
+      if( (*data_.el_pt)[l] <= 30. ) continue;
+      if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue;
+      if( fabs((*data_.el_eta)[l]) >= 2.5 ) continue;
       foundAEle++;
    }   
    for( int l = 0; l < data_.mu_N; ++l ){
-     if( !isLowMass && (*data_.mu_isHighPtMuon)[l] != 1 ) continue;
-     if(  isLowMass && (*data_.mu_isLooseMuon)[l] != 1 ) continue;
+     // if( !isLowMass && (*data_.mu_isHighPtMuon)[l] != 1 ) continue;
+     if(  (*data_.mu_isLooseMuon)[l] != 1 ) continue;
       if( (*data_.mu_trackIso)[l]/(*data_.mu_pt)[l] >= 0.1 ) continue;
       if( (*data_.mu_pt)[l] <= 20. ) continue;
       if( fabs((*data_.mu_eta)[l]) >= 2.4 ) continue;
       foundAMu++;
    }
-   
    return foundEle;
-      
-}
+ }
 
 //==============================================================================================
 void ExoDiBosonAnalysis::findAK4Jets( void ){
@@ -1855,7 +2056,8 @@ void ExoDiBosonAnalysis::EndInputData( const SInputData& ) throw( SError ) {
     //   Hist( "genEvents"               )->SetBinContent(1,genEvents_              );
     Hist( "sumGenWeight" )->SetBinContent(1,nSumGenWeights_);
     Hist( "nEvents"               )->SetBinContent(1,nEvents_*weight_               );
-    Hist( "nPassedFilter"        )->SetBinContent(1,nPassedFilters_*weight_        );
+    Hist( "nPassedJSON"           )->SetBinContent(1,nPassedJSON_*weight_           );
+    Hist( "nPassedFilter"         )->SetBinContent(1,nPassedFilters_*weight_        );
     Hist( "nPassedTrigger"        )->SetBinContent(1,nPassedTrigger_*weight_        );
     Hist( "nPassedFoundJets"      )->SetBinContent(1,nPassedFoundJets_*weight_      );
     Hist( "nPassedJetsDEta"       )->SetBinContent(1,nPassedJetsDEta_*weight_       );
@@ -1870,7 +2072,8 @@ void ExoDiBosonAnalysis::EndInputData( const SInputData& ) throw( SError ) {
     Hist( "nNopuppi")->SetBinContent(1,nNopuppi_*weight_);
     Hist( "sumGenWeight" )->SetBinContent(1,nSumGenWeights_);
     Hist( "nEvents" )->SetBinContent(1,nEvents_*weight_        );
-    Hist( "nPassedFilter" )->SetBinContent(1,nPassedFilters_*weight_      );
+    Hist( "nPassedJSON"     )->SetBinContent(1,nPassedJSON_*weight_           );
+    Hist( "nPassedFilter"   )->SetBinContent(1,nPassedFilters_*weight_      );
     Hist( "nPassedTrigger"  )->SetBinContent(1,nPassedTrigger_*weight_    );
     Hist( "nPassedFoundLept")->SetBinContent(1,nPassedFoundLept_*weight_  );
     Hist( "nPassedVetoLep"  )->SetBinContent(1,nPassedVetoLep_*weight_    );
@@ -1904,6 +2107,7 @@ void ExoDiBosonAnalysis::printCutFlow( void ) {
   
     std::cout << "############ Cut flow: ############" << std::endl;	
     std::cout << "number of events                                " << nEvents_ << std::endl;
+    std::cout << "passed JSON                                     " << nPassedJSON_       << " --- eff = " << (double)nPassedJSON_/nEvents_ << std::endl; 
     std::cout << "passed filter                                   " << nPassedFilters_    << " --- eff = " << (double)nPassedFilters_/nEvents_ << std::endl; 
     std::cout << "passed trigger                                  " << nPassedTrigger_    << " --- eff = " << (double)nPassedTrigger_/nEvents_ << std::endl; 
     std::cout << "found at least 2 jets with pT > 200/ eta < 2.4  " << nPassedFoundJets_  << " --- eff = " << (double)nPassedFoundJets_/nEvents_ << std::endl;
@@ -1921,10 +2125,10 @@ void ExoDiBosonAnalysis::printCutFlow( void ) {
   else if (Channel_.find("WtagSF") != std::string::npos){
     
     std::cout << "number of events		                            " << nEvents_ << std::endl;
-    
+    std::cout << "passed JSON                                     " << nPassedJSON_       << " --- eff = " << (double)nPassedJSON_/nEvents_ << std::endl; 
     std::cout << "passed trigger        " << nPassedTrigger_        << " --- eff = " << (double)nPassedTrigger_/nEvents_ << std::endl; 
     std::cout << "passed filter HBHE    " << nPassedFilter_HBHE_    << " --- eff = " << (double)nPassedFilter_HBHE_/nPassedTrigger_ << std::endl; 
-    std::cout << "passed filter CSCHalo2015 " << nPassedFilter_CSCHalo_ << " --- eff = " << (double)nPassedFilter_CSCTightHalo2015_/nPassedTrigger_ << std::endl;  
+    // std::cout << "passed filter CSCHalo2015 " << nPassedFilter_CSCHalo_ << " --- eff = " << (double)nPassedFilter_CSCTightHalo2015_/nPassedTrigger_ << std::endl;
     std::cout << "passed filter EEBadSc " << nPassedFilter_EEBadSc_ << " --- eff = " << (double)nPassedFilter_EEBadSc_/nPassedTrigger_ << std::endl; 
     std::cout << "passed filter GoodPV  " << nPassedGoodPVFilter_   << " --- eff = " << (double)nPassedGoodPVFilter_/nPassedTrigger_ << std::endl; 
     std::cout << "passed filter         " << nPassedFilters_        << " --- eff = " << (double)nPassedFilters_/nPassedTrigger_ << std::endl; 
@@ -1949,151 +2153,236 @@ void ExoDiBosonAnalysis::printCutFlow( void ) {
 //Efficiency studies============================================================================
 //==============================================================================================
 void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
-
+  
+  float groomedMass_jet1 = Vcand.at(0).prunedMass;
+  float groomedMass_jet2 = Vcand.at(1).prunedMass;
+  
+  if( usePuppiSD_ ){
+     groomedMass_jet1 = Vcand.at(0).puppi_softdropMass;
+     groomedMass_jet2 = Vcand.at(1).puppi_softdropMass;
+   }
   Mjj = ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M();
-
-  ///////////////////////////////////////////// numerators /////////////////////////////////////////////
-  // if(Vcand.at(0).p4.Pt() > 500 || Vcand.at(1).p4.Pt() > 500 ){
+  
   for( std::map<std::string,bool>::iterator it = (data_.HLT_isFired)->begin(); it != (data_.HLT_isFired)->end(); it++){
+    
     std::string trigName = it->first;
     bool decision = it->second;
-    //HLT_IsoMu24_eta2p1_v2 or PFJet320 or PFHT650
-    if( (trigName).find("PFHT650_v") != std::string::npos && decision ){
-      //EVERYTHING BELOW PASSES PFHT650!!!-------------------------------------------------------------------------------------------------------|
-      if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_) || 
-          (Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_ )){
-        Hist( "PFHT650" )->Fill( Mjj);
+    // if( !((trigName).find("PFHT650_v") != std::string::npos && decision) )continue; //For checking JetHT dataset turnon
+    if( !((trigName).find("HLT_IsoMu27_v") != std::string::npos && decision) )continue;    //For checking SingleMuon dataset turnon
+    
+    if( Mjj > 1000 ){
+       Hist( "PFHT650_vsSD" )->Fill( Vcand.at(0).puppi_softdropMass);
+       Hist( "PFHT650_vsPR" )->Fill( Vcand.at(0).prunedMass);    
+       bool passedHT = false;
+       for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+         std::string iter = it2->first;
+         bool value = it2->second;
+         if( (iter).find("PFHT800") != std::string::npos && value) {
+           Hist( "HT800_vsSD" )->Fill( Vcand.at(0).puppi_softdropMass);
+           Hist( "HT800_vsPR" )->Fill( Vcand.at(0).prunedMass);
+         }
+         if( ((iter).find("PFHT800")                       != std::string::npos && value)
+           ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+           ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)) passedHT = true;
+       }
+       
+       if( passedHT ){
+         Hist( "ALL_vsSD" )->Fill( Vcand.at(0).puppi_softdropMass);
+         Hist( "ALL_vsPR" )->Fill( Vcand.at(0).prunedMass);
+       }
+     }
+     
+     // Start no tag
+       Hist( "PFHT650_noTag" )->Fill( Mjj);
 
-        //Pass single tag
-        bool passedHT = false;
-        bool passedSubstructure = false;
-        bool passedALL = false;
+       bool passedHT = false;
+       bool passedSubstructure = false;
+       bool passedALL = false;
         
-        for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
-          std::string iter = it2->first;
-          bool value = it2->second;
+       for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+         std::string iter = it2->first;
+         bool value = it2->second;
 
-          if( (iter).find("PFHT800")                        != std::string::npos && value ) Hist( "HT800" )->Fill( Mjj);
-          if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950" )->Fill( Mjj);
-          if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900" )->Fill( Mjj);
-          if( ((iter).find("PFHT800")                       != std::string::npos && value)
-            ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
-              ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)) passedHT = true;
+         if( (iter).find("PFHT800")                        != std::string::npos && value ) Hist( "HT800_noTag" )->Fill( Mjj);
+         if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950_noTag" )->Fill( Mjj);
+         if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900_noTag" )->Fill( Mjj);
+         if( ((iter).find("PFHT800")                       != std::string::npos && value)
+           ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+           ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)) passedHT = true;
           
-          if( ((iter).find("PFHT800")                       != std::string::npos && value)
-            ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
-              ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)
-                ||((iter).find("AK8PFJet360_TrimMass30")        != std::string::npos && value)
-                  ||((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")!= std::string::npos && value)) passedALL = true;
+         if( ((iter).find("PFHT800")                       != std::string::npos && value)
+           ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+             ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)
+             ||((iter).find("AK8PFJet360_TrimMass30")        != std::string::npos && value)
+             ||((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")!= std::string::npos && value)) passedALL = true;
 
-
-          //SUBSTRUCTURE TRIGGERS
-          if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim" ) ->Fill( Mjj);
-          if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim" )    ->Fill( Mjj);
-          if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30" )->Fill( Mjj);
-          if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
-            || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
-          // || ((iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")!= std::string::npos && value)) passedSubstructure = true;
-        }
-        
-        if( passedHT )          Hist( "HT" )->Fill( Mjj);
-        if( passedSubstructure )Hist( "Substructure" )->Fill( Mjj);
-        if( passedALL )         Hist( "ALL" )->Fill( Mjj);
-        
-      } //Second loop
-      if( (Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_) && 
-          (Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_ )){
-        Hist( "PFHT650" )->Fill( Mjj);
-
-        //Pass double tag
-        bool passedHT = false;
-        bool passedSubstructure = false;
-        bool passedALL = false;
-        
-        for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
-          std::string iter = it2->first;
-          bool value = it2->second;
-
-          if( (iter).find("PFHT800")                        != std::string::npos && value ) Hist( "HT800_VV" )->Fill( Mjj);
-          if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950_VV" )->Fill( Mjj);
-          if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900_VV" )->Fill( Mjj);
-          if( ((iter).find("PFHT800")                       != std::string::npos && value)
-            ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
-              ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)) passedHT = true;
+         //SUBSTRUCTURE TRIGGERS
+         if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim_noTag" ) ->Fill( Mjj);
+         if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim_noTag" )    ->Fill( Mjj);
+         if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30_noTag" )->Fill( Mjj);
+         if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
+           || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
+       }
+       if( passedHT )          Hist( "HT_noTag" )->Fill( Mjj);
+       if( passedSubstructure )Hist( "Substructure_noTag" )->Fill( Mjj);
+       if( passedALL )         Hist( "ALL_noTag" )->Fill( Mjj);
+      //End no tag
+     
+     
+     
+     
+    
+    
+    // Start single tag
+    if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_) ||
+    (groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mZHigh_ )){
           
-          if( ((iter).find("PFHT800")                       != std::string::npos && value)
-            ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
-              ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)
-                ||((iter).find("AK8PFJet360_TrimMass30")        != std::string::npos && value)
-                  ||((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")!= std::string::npos && value)) passedALL = true;
+      Hist( "PFHT650" )->Fill( Mjj);
 
+      bool passedHT = false;
+      bool passedSubstructure = false;
+      bool passedALL = false;
+        
+      for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+        std::string iter = it2->first;
+        bool value = it2->second;
 
-          //SUBSTRUCTURE TRIGGERS
-          if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim_VV" ) ->Fill( Mjj);
-          if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim_VV" )    ->Fill( Mjj);
-          if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30_VV" )->Fill( Mjj);
-          if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
-            || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
-          // || ((iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")!= std::string::npos && value)) passedSubstructure = true;
-        }
+        if( (iter).find("PFHT800")                        != std::string::npos && value ) Hist( "HT800" )->Fill( Mjj);
+        if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950" )->Fill( Mjj);
+        if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900" )->Fill( Mjj);
+        if( ((iter).find("PFHT800")                       != std::string::npos && value)
+          ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+          ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)) passedHT = true;
+          
+        if( ((iter).find("PFHT800")                       != std::string::npos && value)
+          ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+            ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)
+            ||((iter).find("AK8PFJet360_TrimMass30")        != std::string::npos && value)
+            ||((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")!= std::string::npos && value)) passedALL = true;
+
+        //SUBSTRUCTURE TRIGGERS
+        if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim" ) ->Fill( Mjj);
+        if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim" )    ->Fill( Mjj);
+        if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30" )->Fill( Mjj);
+        if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
+          || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
+      }
+      if( passedHT )          Hist( "HT" )->Fill( Mjj);
+      if( passedSubstructure )Hist( "Substructure" )->Fill( Mjj);
+      if( passedALL )         Hist( "ALL" )->Fill( Mjj);
+    } //End single tag
+    
+    //Start double tag
+    if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_) && 
+        (groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mZHigh_ )){
+      Hist( "PFHT650_VV" )->Fill( Mjj);
+
+      //Pass double tag
+      bool passedHT = false;
+      bool passedSubstructure = false;
+      bool passedALL = false;
         
-        if( passedHT )          Hist( "HT_VV" )->Fill( Mjj);
-        if( passedSubstructure )Hist( "Substructure_VV" )->Fill( Mjj);
-        if( passedALL )         Hist( "ALL_VV" )->Fill( Mjj);
+      for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+        std::string iter = it2->first;
+        bool value = it2->second;
+
+        if( (iter).find("PFHT800")                        != std::string::npos && value ) Hist( "HT800_VV" )->Fill( Mjj);
+        if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950_VV" )->Fill( Mjj);
+        if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900_VV" )->Fill( Mjj);
+        if( ((iter).find("PFHT800")                       != std::string::npos && value)
+          ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+            ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)) passedHT = true;
+          
+        if( ((iter).find("PFHT800")                       != std::string::npos && value)
+          ||((iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5")!= std::string::npos && value)
+            ||((iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5")!= std::string::npos && value)
+              ||((iter).find("AK8PFJet360_TrimMass30")        != std::string::npos && value)
+                ||((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")!= std::string::npos && value)) passedALL = true;
+
+        //SUBSTRUCTURE TRIGGERS
+        if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim_VV" ) ->Fill( Mjj);
+        if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim_VV" )    ->Fill( Mjj);
+        if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30_VV" )->Fill( Mjj);
+        if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
+          || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
+      }
         
-      } //Second loop
-    }
-    //EVERYTHING ABOVE USES PFHT650 DENOMINATOR!!!-------------------------------------------------------------------------------------------------------|
+      if( passedHT )          Hist( "HT_VV" )->Fill( Mjj);
+      if( passedSubstructure )Hist( "Substructure_VV" )->Fill( Mjj);
+      if( passedALL )         Hist( "ALL_VV" )->Fill( Mjj);
+        
+    } //End double tag
   }
-  // }
   return;
 }
 
 //==============================================================================================
-void ExoDiBosonAnalysis::doJetTriggerEfficiency2( void ){
+void ExoDiBosonAnalysis::doTriggerEfficiencyvsMass( void ){
   
   for( std::map<std::string,bool>::iterator it = (data_.HLT_isFired)->begin(); it != (data_.HLT_isFired)->end(); it++){ //map1 loop
     std::string trigName = it->first;
     bool decision = it->second;
     //HLT_IsoMu24_eta2p1_v2 or PFJet320
+    if( !(trigName.find("PFJet320") != std::string::npos && decision) ) continue;
+      
+    Hist( "PFJet320_SD")->Fill( Vcand.at(0).puppi_softdropMass);
+    Hist( "PFJet320_P" )->Fill( Vcand.at(0).prunedMass);
 
-    if( (trigName.find("PFJet320") != std::string::npos && decision) ){ 
-      Hist( "PFJet320_SD" )->Fill( Vcand.at(0).softdropMass);
-      Hist( "PFJet320_P" )->Fill( Vcand.at(0).prunedMass);
+    bool passedSub = false;
+    for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+      std::string iter = it2->first;
+      bool value = it2->second;
 
-      bool passedSub = false;
-      for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){ //map2 loop
-        std::string iter = it2->first;
-        bool value = it2->second;
-
-        if( iter.find("AK8PFJet360_TrimMass30")                     != std::string::npos && value ){
-          Hist( "PFJet360_Trim_SD" ) ->Fill( Vcand.at(0).softdropMass);
-          Hist( "PFJet360_Trim_P"  ) ->Fill( Vcand.at(0).prunedMass);
-        }
-        if( iter.find("AK8PFHT700_TrimR0p1PT0p03Mass50")            != std::string::npos && value ){
-          Hist( "HT700_Trim_SD"    ) ->Fill( Vcand.at(0).softdropMass);
-          Hist( "HT700_Trim_P"    ) ->Fill( Vcand.at(0).prunedMass);
-        }
-        if( iter.find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")   != std::string::npos && value ){
-          Hist( "DiPFJet280_200_TrimMass30_SD" ) ->Fill( Vcand.at(0).softdropMass);
-          Hist( "DiPFJet280_200_TrimMass30_P" ) ->Fill( Vcand.at(0).prunedMass);
-        }
-        if( (iter.find("AK8PFJet360_TrimMass30")                    != std::string::npos && value)
-          || (iter.find("AK8PFHT700_TrimR0p1PT0p03Mass50")          != std::string::npos && value)
-            || (iter.find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45") != std::string::npos && value ))passedSub = true;
-      } //map2 loop
-        
-      if(passedSub){
-        Hist( "Substructure_SD" ) ->Fill(Vcand.at(0).softdropMass);
-        Hist( "Substructure_P" )  ->Fill(Vcand.at(0).prunedMass);
-      }  
+      if( iter.find("AK8PFJet360_TrimMass30")!= std::string::npos && value ){
+        Hist( "PFJet360_Trim_SD" ) ->Fill( Vcand.at(0).puppi_softdropMass);
+        Hist( "PFJet360_Trim_P"  ) ->Fill( Vcand.at(0).prunedMass);
+      }
+      if( iter.find("AK8PFHT700_TrimR0p1PT0p03Mass50")            != std::string::npos && value ){
+        Hist( "HT700_Trim_SD"    ) ->Fill( Vcand.at(0).puppi_softdropMass);
+        Hist( "HT700_Trim_P"    ) ->Fill( Vcand.at(0).prunedMass);
+      }
+      if( iter.find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")   != std::string::npos && value ){
+        Hist( "DiPFJet280_200_TrimMass30_SD" ) ->Fill( Vcand.at(0).puppi_softdropMass);
+        Hist( "DiPFJet280_200_TrimMass30_P" ) ->Fill( Vcand.at(0).prunedMass);
+      }
+      if( (iter.find("AK8PFJet360_TrimMass30")                    != std::string::npos && value)
+        || (iter.find("AK8PFHT700_TrimR0p1PT0p03Mass50")          != std::string::npos && value)
+          || (iter.find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45") != std::string::npos && value )) passedSub = true;
+    }
+    if(passedSub){
+      Hist( "Substructure_SD" ) ->Fill(Vcand.at(0).puppi_softdropMass);
+      Hist( "Substructure_P" )  ->Fill(Vcand.at(0).prunedMass);
     }
   }
-
   return;
 }
 
 //==============================================================================================
+void ExoDiBosonAnalysis::do2DTriggerEfficiency( void ){
+  
+  for( std::map<std::string,bool>::iterator it = (data_.HLT_isFired)->begin(); it != (data_.HLT_isFired)->end(); it++){ //map1 loop
+    std::string trigName = it->first;
+    bool decision = it->second;
+    if( !(trigName.find("PFJet320") != std::string::npos && decision) ) continue;
+      
+    Hist( "PtvsMSD_den" )->Fill( Vcand.at(0).p4.Pt(), Vcand.at(0).puppi_softdropMass);
+    Hist( "PtvsMPR_den" )->Fill( Vcand.at(0).p4.Pt(), Vcand.at(0).prunedMass);
+
+    for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+      std::string iter = it2->first;
+      bool value = it2->second;
+      if( iter.find("AK8PFJet360_TrimMass30")!= std::string::npos && value ){
+        Hist( "PtvsMSD_num" )->Fill( Vcand.at(0).p4.Pt(), Vcand.at(0).puppi_softdropMass);
+        Hist( "PtvsMPR_num" )->Fill( Vcand.at(0).p4.Pt(), Vcand.at(0).prunedMass);
+      }
+    }
+  }
+  return;
+}
+
+//==============================================================================================
+  
+  
 
 void ExoDiBosonAnalysis::doGenTTReco( void ){
   int nrBquarks = 0;
@@ -2190,53 +2479,470 @@ void ExoDiBosonAnalysis::doGenTTReco( void ){
 } 
 
 ////////////////////////////////////////////////////// GEN STUDIES ////////////////////////////////////////////////////////////////////////////
-void ExoDiBosonAnalysis::doGroomingStudies(  TString sample  ){
+void ExoDiBosonAnalysis::doSubstructureStudies( TString infile ){
   
-  std::vector< std::map<int,TLorentzVector>::iterator	>	W	;
-  std::vector< std::map<int,TLorentzVector>::iterator	>	Z	;
-  std::vector< std::map<int,TLorentzVector>::iterator	>	H	;
-
-  std::map<int,TLorentzVector>::iterator itW_p =  genCandidates_.find(24);
-  W.push_back(itW_p);
-  std::map<int,TLorentzVector>::iterator itW_m = genCandidates_.find(-24);
-  W.push_back(itW_m);
-  
-  std::map<int,TLorentzVector>::iterator itZ_p =  genCandidates_.find(23);
-  Z.push_back(itZ_p);
-  std::map<int,TLorentzVector>::iterator itZ_m = genCandidates_.find(-23);
-  Z.push_back(itZ_m);
     
-  std::map<int,TLorentzVector>::iterator itH = genCandidates_.find(25)!=genCandidates_.end() ? genCandidates_.find(25) : genCandidates_.find(-25);
-
-  std::map<int,TLorentzVector>::iterator itE = genCandidates_.find(11)!=genCandidates_.end() ? genCandidates_.find(11) : genCandidates_.find(-11);
-  std::map<int,TLorentzVector>::iterator itM = genCandidates_.find(13)!=genCandidates_.end() ? genCandidates_.find(13) : genCandidates_.find(-13);
-  std::map<int,TLorentzVector>::iterator itT = genCandidates_.find(15)!=genCandidates_.end() ? genCandidates_.find(15) : genCandidates_.find(-15);
+  int pdgV = 24;
   
-  for( int i = 0; i < abs(Vcand.size()) ; i++){
-    if( ((Vcand.at(i).p4).DeltaR(itE->second)) < 0.4 || ((Vcand.at(i).p4).DeltaR(itM->second)) < 0.4 || ((Vcand.at(i).p4).DeltaR(itT->second)) < 0.4) continue;
-    for( int it = 0; it < abs(W.size()) ; it++){
-      if( (Vcand.at(i).p4).DeltaR(W.at(it)->second) < 0.4 ){
-        
-        if(i==0)jet_mass_pruned_W1 = (Vcand.at(i)).prunedMass;
-        if(i==1)jet_mass_pruned_W2 = (Vcand.at(i)).prunedMass;
-        
-        Hist( "recoWTau21" )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-        Hist( "recoWPrunedMass" )->Fill( (Vcand.at(i)).prunedMass );
+  if( infile.Contains("BulkGravToZZ") or infile.Contains("WprimeToWZ") or infile.Contains("RadionToZZ") or infile.Contains("ZZ") ) pdgV = 23;
+  if( infile.Contains("WprimeToWhToWhadhbb") or infile.Contains("RSGravTohhTohbbhbb")) pdgV = 25;
+  // TLorentzVector genP_W;
+  // std::vector<TLorentzVector> genWs;
+  TLorentzVector genP;
+  std::vector<TLorentzVector> daus;
+  TLorentzVector hadW;
+
+  //Getting all gen jets     
+  for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+    // if( (*data_.genJetAK8_pt).at(j) <= 200.      )continue;
+    // if( fabs((*data_.genJetAK8_eta).at(j)) >= 2.4)continue;
+    TLorentzVector myGenJet;
+    myGenJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+    
+    JetCandidate jet(myGenJet);
+    jet.prunedMass		= (*data_.genJetAK8_prunedmass).at(j)    ;
+    jet.softdropMass	= (*data_.genJetAK8_softdropmass).at(j);
+    genJetCand.push_back(jet);
+  }
+      
+      
+  // //Getting all gen hadronic Ws
+  // for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+  //   bool isHad = false;
+  //   if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+  //   if( fabs((*data_.genParticle_pdgId).at(p)) != 24) continue;
+  //   if ((*data_.genParticle_dau)[p].size() < 2) continue;
+  //   for( unsigned int d = 0; d < (*data_.genParticle_dau)[p].size(); ++d ) {
+  //     if( fabs((*data_.genParticle_dau)[p][d]) > 9) continue;
+  //     isHad = true;
+  //   }
+  //   if (!isHad) continue;
+  //   genP_W.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+  //   genWs.push_back(genP_W);
+  // }
+  
+  for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+    bool isHad = false;
+    if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+    if( fabs((*data_.genParticle_pdgId).at(p)) > 9) continue;
+    for( unsigned int d = 0; d < (*data_.genParticle_mother)[p].size(); ++d ) {
+      if( fabs((*data_.genParticle_mother)[p][d]) != pdgV ) continue;
+      isHad = true;
+    }
+    if (!isHad) continue;
+    genP.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+    daus.push_back(genP);
+  }
+
+
+  //Finding AK8 CHS reco W-jets
+  for( int j = 0; j < data_.njetsAK8 ; ++j ){
+    TLorentzVector myJet;
+    if( (*data_.jetAK8_pt).at(j) <= 200.      )continue;
+    if( infile.Contains("WW_TuneCUETP8M1")  && (*data_.jetAK8_pt).at(j) > 250.      )continue;
+    if( fabs((*data_.jetAK8_eta).at(j)) >= 2.4)continue;
+    if( (*data_.jetAK8_IDTight).at(j) != 1    )continue;
+    myJet.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+    bool isW = false;
+    int isMatch = 0;
+    if(runOnMC_){
+      for( unsigned int p = 0; p < daus.size(); ++p ){
+        float dR = daus.at(p).DeltaR(myJet);
+        if (dR < 0.8 ) isMatch +=1;
       }
     }
-      for( int it = 0; it < abs(Z.size()) ; it++){
-        if( (Vcand.at(i).p4).DeltaR(Z.at(it)->second) < 0.4 ){
+    if(!runOnMC_)isMatch = 0;
+    if (isMatch > 1) isW = true;
+    if(isSignal_ and !isW ) continue;
+    Hist( "prunedJECvsPT")  ->Fill( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_pruned_jec).at(j) );
+    Hist( "gen_PrunedMass"    )  ->Fill( (*data_.jetAK8_prunedmass).at(j), weight_ );
+    Hist( "gen_Mass"    )  ->Fill( (*data_.jetAK8_mass).at(j), weight_ );
+    if( (*data_.jetAK8_prunedmass).at(j) <= 105.0 && (*data_.jetAK8_prunedmass).at(j) > 65.0 )Hist( "gen_Tau21"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j), weight_ );
+    
+    int jetIndex = 99 ;
+    float dRmin = 9999. ;
+    for( int jj = 0; jj < genJetCand.size(); ++jj ){
+      float dR = myJet.DeltaR(genJetCand[jj].p4);
+      if(dR > dRmin) continue;
+      dRmin = dR;
+      jetIndex = jj;
+    }
+    float massShift = ((*data_.jetAK8_prunedmass_unCorr).at(j) - genJetCand.at(jetIndex).prunedMass) / (*data_.jetAK8_prunedmass_unCorr).at(j) ;
+    Hist( "GenAK8PrunedMass"    )  ->Fill( genJetCand.at(jetIndex).prunedMass );
+    if( fabs( genJetCand[jetIndex].p4.Eta() ) <= 1.3 ) Hist( "GenAK8PrunedMass_eta1v3"    )  ->Fill( genJetCand.at(jetIndex).prunedMass );
+    if( fabs( genJetCand[jetIndex].p4.Eta() ) >  1.3 ) Hist( "GenAK8PrunedMass_etaUP1v3"    )  ->Fill( genJetCand.at(jetIndex).prunedMass );
+    Hist( "massShift_pruning"    )  ->Fill( massShift );
+    if( fabs((*data_.jetAK8_eta).at(j)) <= 1.3 ) Hist( "massShift_pruning_eta1v3"    )  ->Fill( massShift );
+    if( fabs((*data_.jetAK8_eta).at(j)) >  1.3 ) Hist( "massShift_pruning_etaUP1v3"  )  ->Fill( massShift );
+  }
+  
+  
+  
+  //Finding AK8 PUPPI reco W-jets 
+  for( int j = 0; j < (data_.jetAK8_puppi_pt)->size() ; ++j ){
+    TLorentzVector myJetPUPPI;
+    if( (*data_.jetAK8_puppi_pt).at(j) <= 200.      )continue;
+    if( infile.Contains("WW_TuneCUETP8M1")  && (*data_.jetAK8_puppi_pt).at(j) > 250.      )continue;
+    if( fabs((*data_.jetAK8_puppi_eta).at(j)) >= 2.4)continue;
+    myJetPUPPI.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_eta).at(j), (*data_.jetAK8_puppi_phi).at(j), (*data_.jetAK8_puppi_e).at(j) );
+    bool isW = false;
+    int isMatch = 0;
+    if(runOnMC_){
+      for( unsigned int p = 0; p < daus.size(); ++p ){
+        float dR = daus.at(p).DeltaR(myJetPUPPI);
+        if (dR < 0.8 ) isMatch +=1;
+      }
+    }
+    if(!runOnMC_)isMatch = 0;
+    if (isMatch > 1) isW = true;
+    if( isSignal_ && !isW ) continue;
+        
+        
+    int jetIndex = 99 ;
+    float dRmin = 9999. ;
+    for( int jj = 0; jj < data_.njetsAK8 ; ++jj ){
+      
+      TLorentzVector myJet;
+      myJet.SetPtEtaPhiE( (*data_.jetAK8_pt).at(jj), (*data_.jetAK8_eta).at(jj), (*data_.jetAK8_phi).at(jj), (*data_.jetAK8_e).at(jj) );
+      float dR = myJetPUPPI.DeltaR(myJet);
+      if(dR > dRmin) continue;
+      dRmin = dR;
+      jetIndex = jj;
+    }
+    Hist( "gen_SoftdropMassCHSCorr"  )->Fill ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)*(*data_.jetAK8_pruned_jec).at(jetIndex), weight_);
+    
+    float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(j) , (*data_.jetAK8_puppi_eta).at(j) );
+    Hist( "gen_SoftdropMass_NEWCORR"  )->Fill ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)*puppiCorr);  
+    Hist( "gen_SoftdropMassUnCorr"    )->Fill ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j));
+    Hist( "gen_SoftdropMass"          )->Fill ( (*data_.jetAK8_puppi_softdrop_massCorr).at(j));
+    
+    Hist( "PUPPISDvsNPV")->Fill ( data_.nPVs                     ,(*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)* puppiCorr);
+    Hist( "PUPPISDvsETA")->Fill ( (*data_.jetAK8_puppi_eta).at(j),(*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)* puppiCorr);  
+    Hist( "gen_eta")          ->Fill( (*data_.jetAK8_puppi_eta).at(j), weight_);  
+    if( fabs((*data_.jetAK8_puppi_eta).at(j)) <= 1.3 ) {
+      Hist( "gen_pt_eta1v3")          ->Fill( (*data_.jetAK8_puppi_pt).at(j), weight_);
+      Hist( "gen_nPV_eta1v3")          ->Fill( data_.nPVs, weight_);
+      Hist( "puppiJECvsPT_eta1v3")    ->Fill( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_softdrop_jec).at(j) );
+      Hist( "gen_SoftdropMass_eta1v3")->Fill( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j), weight_);
+      
+      Hist( "PUPPIcorr_eta1v3"  )->Fill( puppiCorr );
+      Hist( "gen_SoftdropMass_eta1v3_NEWCORR"  )->Fill ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)* puppiCorr);
+      
+      Hist( "gen_chsJEC_eta1v3"  )->Fill( (*data_.jetAK8_pt).at(jetIndex), (*data_.jetAK8_pruned_jec).at(jetIndex) );
+    }
+    
+    if( fabs((*data_.jetAK8_puppi_eta).at(j)) > 1.3 ){
+      Hist( "gen_pt_etaUP1v3")  ->Fill( (*data_.jetAK8_puppi_pt).at(j), weight_);
+      Hist( "gen_nPV_etaUP1v3")         ->Fill( data_.nPVs, weight_);
+      Hist( "puppiJECvsPT_etaUP1v3")    ->Fill( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_softdrop_jec).at(j) );
+      Hist( "gen_SoftdropMass_etaUP1v3")->Fill ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j), weight_);
+      
+      Hist( "PUPPIcorr_etaUP1v3"  )->Fill( puppiCorr );
+      Hist( "gen_SoftdropMass_etaUP1v3_NEWCORR"  )->Fill ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)* puppiCorr);
+      
+      Hist( "gen_chsJEC_etaUP1v3"  )->Fill ( (*data_.jetAK8_pt).at(jetIndex), (*data_.jetAK8_pruned_jec).at(jetIndex) );
+    }
+    Hist( "puppiJECvsPT")  ->Fill( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_softdrop_jec).at(j) );
+    
+    if( (*data_.jetAK8_puppi_pt).at(j) > 500.      )Hist( "gen_SoftdropMass_pt500"  )->Fill ( (*data_.jetAK8_puppi_softdrop_massCorr).at(j), weight_);
+    
+        
+        
+    if( (*data_.jetAK8_puppi_softdrop_massCorr).at(j) <= 105.0 && (*data_.jetAK8_puppi_softdrop_massCorr).at(j) >= 65.0 ){
+      float DDT = ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) ) + 0.063*log( ((*data_.jetAK8_puppi_softdrop_massCorr).at(j)*(*data_.jetAK8_puppi_softdrop_massCorr).at(j)) / ((*data_.jetAK8_puppi_pt).at(j)) );
+      Hist( "gen_PUPPITau21"    )     ->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j), weight_ );
+      Hist( "gen_DDT")                ->Fill ( DDT, weight_ );
+    }
+    jetIndex = 99 ;
+    dRmin = 9999. ;
+    for( int jj = 0; jj < genJetCand.size(); ++jj ){
+      float dR = myJetPUPPI.DeltaR(genJetCand[jj].p4);
+      if(dR > dRmin) continue;
+      dRmin = dR;
+      jetIndex = jj;
+    }
 
-          if(i==0)jet_mass_pruned_Z1 = (Vcand.at(i)).prunedMass;
-          if(i==1)jet_mass_pruned_Z2 = (Vcand.at(i)).prunedMass;
-          
-          Hist( "recoZTau21" )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          Hist( "recoZPrunedMass" )->Fill( (Vcand.at(i)).prunedMass );
-        }
+    float genCorr = (puppisd_corrGEN->Eval(  (*data_.jetAK8_puppi_pt).at(j) ));
+    float massShift = ( (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j) - (genJetCand.at(jetIndex).softdropMass*genCorr)) / (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j) ;
+    Hist( "GenAK8SoftdropMass"    )  ->Fill( genJetCand.at(jetIndex).softdropMass );
+    if(  fabs((*data_.jetAK8_puppi_eta).at(j)) <= 1.3 ) Hist( "GenAK8SoftdropMass_eta1v3"   )  ->Fill( genJetCand.at(jetIndex).softdropMass );
+    if(  fabs((*data_.jetAK8_puppi_eta).at(j)) >  1.3 ) Hist( "GenAK8SoftdropMass_etaUP1v3" )  ->Fill( genJetCand.at(jetIndex).softdropMass );
+    Hist( "massShift_softdrop"    )  ->Fill( massShift );
+    if( fabs((*data_.jetAK8_puppi_eta).at(j)) <= 1.3 ) Hist( "massShift_softdrop_eta1v3"    )  ->Fill( massShift );
+    if( fabs((*data_.jetAK8_puppi_eta).at(j)) >  1.3 ) Hist( "massShift_softdrop_etaUP1v3"  )  ->Fill( massShift );
+  }
+}
+
+////////////////////////////////////////////////////// GET PUPPI SOFTDROP CORRECTION ////////////////////////////////////////////////////////////////////////////
+
+float ExoDiBosonAnalysis::getPUPPIweight(float puppipt, float puppieta ){
+  
+  float genCorr  = 1.;
+  float recoCorr = 1.;
+  float totalWeight = 1.;
+        
+  genCorr =  puppisd_corrGEN->Eval( puppipt );
+  
+  // std::cout<< "for PUPPI jet pT = 300 GeV : 1./genCorr = " << 1./(puppisd_corrGEN->Eval( 300. )) << " recoCorr = " <<puppisd_corrRECO_cen->Eval( 300 ) << " Total corr = " << (1./(puppisd_corrGEN->Eval( 300. )))*puppisd_corrRECO_cen->Eval( 300 )<<  std::endl;
+
+  if( fabs(puppieta)  <= 1.3 ) recoCorr = puppisd_corrRECO_cen->Eval( puppipt );
+  else
+    if( fabs(puppieta) > 1.3 ) recoCorr = puppisd_corrRECO_for->Eval( puppipt );
+  
+  totalWeight = genCorr * recoCorr;
+  // std::cout<< "for PUPPI jet pT = " << puppipt << " and eta = " << puppieta << " my weight is: " << std::endl;
+  // std::cout<< "Gen corr = " << (1./genCorr) << " recoCorr = " << recoCorr << " Total = " << totalWeight << std::endl;
+  return totalWeight;
+}
+
+    
+  
+
+////////////////////////////////////////////////////// GEN STUDIES ////////////////////////////////////////////////////////////////////////////
+void ExoDiBosonAnalysis::doWTagEfficiency( TString infile ){
+  
+  TLorentzVector genP_W;
+  std::vector<TLorentzVector> genWs;
+  TLorentzVector genP;
+  std::vector<TLorentzVector> daus;
+  TLorentzVector hadW;
+
+  if(runOnMC_){
+    for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+      bool isHad = false;
+      if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+      if( fabs((*data_.genParticle_pdgId).at(p)) != 24) continue;
+      if ((*data_.genParticle_dau)[p].size() < 2) continue;
+      for( unsigned int d = 0; d < (*data_.genParticle_dau)[p].size(); ++d ) {
+        if( fabs((*data_.genParticle_dau)[p][d]) > 9) continue;
+        isHad = true;
+      }
+      if (!isHad) continue;
+      genP_W.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+      genWs.push_back(genP_W);
+    }
+    for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+      bool isHad = false;
+      if( (*data_.genParticle_pt).at(p) < 0.1) continue;
+      if( fabs((*data_.genParticle_pdgId).at(p)) > 9) continue;
+      for( unsigned int d = 0; d < (*data_.genParticle_mother)[p].size(); ++d ) {
+        if( fabs((*data_.genParticle_mother)[p][d]) != 24 ) continue;
+        isHad = true;
+      }
+      if (!isHad) continue;
+      genP.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+      daus.push_back(genP);
+    }
+  }
+
+  // if( (daus.size() > 1 && isSignal_) or (!isSignal_)){
+  for( int j = 0; j < data_.njetsAK8 ; ++j ){
+    TLorentzVector myJet;
+    if( (*data_.jetAK8_pt).at(j) <= 200.      )continue;
+    if( fabs((*data_.jetAK8_eta).at(j)) >= 2.4)continue;
+    if( (*data_.jetAK8_IDTight).at(j) != 1    )continue;
+    myJet.SetPtEtaPhiE( (*data_.jetAK8_pt).at(j), (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+    bool isW = false;
+    int isMatch = 0;
+    int jetID = 99;
+    if(runOnMC_){
+      for( unsigned int p = 0; p < daus.size(); ++p ){
+        float dR = daus.at(p).DeltaR(myJet);
+        if (dR < 0.8 ) isMatch +=1;
+      }   
+      
+      for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+        if( (*data_.genParticle_status).at(p) != 23) continue;
+        TLorentzVector myParton;
+        myParton.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+        float dR = myParton.DeltaR(myJet);
+        if (dR > 0.8) continue;
+        if( fabs((*data_.genParticle_pdgId).at(p)) < 9) jetID = (*data_.genParticle_pdgId).at(p);
+        else if ( fabs((*data_.genParticle_pdgId).at(p)) == 21 or fabs((*data_.genParticle_pdgId).at(p)) == 9) jetID = (*data_.genParticle_pdgId).at(p);
+        else jetID = 0;
+      }
+    }
+    
+    if(!runOnMC_)isMatch = 0;
+    if (isMatch > 1) isW = true;
+    if( isSignal_ && !isW ) continue;
+
+    Hist( "denNPV" )->Fill ( data_.nPVs);
+    Hist( "denPT" )->Fill ( (*data_.jetAK8_pt).at(j));
+    if( runOnMC_ && (fabs(jetID) == 21 or fabs(jetID) < 10) ) {
+      Hist( "denPT_QG" )->Fill ( (*data_.jetAK8_pt).at(j));
+    }
+    
+    Hist( "ForROC_Pruned_DEN" )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+
+    if( (*data_.jetAK8_pt).at(j) <= 400. )                                          Hist( "ForROC_Pruned_DEN_pt1"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+    else if( (*data_.jetAK8_pt).at(j) > 400. && (*data_.jetAK8_pt).at(j) <= 800. )  Hist( "ForROC_Pruned_DEN_pt2"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+    else if( (*data_.jetAK8_pt).at(j) > 800. && (*data_.jetAK8_pt).at(j) <= 1200. ) Hist( "ForROC_Pruned_DEN_pt3"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+    else if( (*data_.jetAK8_pt).at(j) > 1200.                                     ) Hist( "ForROC_Pruned_DEN_pt4"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+
+    if( (*data_.jetAK8_prunedmass).at(j) <= 105.0 && (*data_.jetAK8_prunedmass).at(j) > 65.0 ){
+      Hist( "numNPV_mj" )->Fill ( data_.nPVs);
+      Hist( "numPT_mj"  )->Fill ( (*data_.jetAK8_pt).at(j));
+      Hist( "ForROC_tau21"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+      if( (*data_.jetAK8_pt).at(j) <= 400. )                                          Hist( "ForROC_tau21_pt1"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+      else if( (*data_.jetAK8_pt).at(j) > 400. && (*data_.jetAK8_pt).at(j) <= 800. )  Hist( "ForROC_tau21_pt2"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+      else if( (*data_.jetAK8_pt).at(j) > 800. && (*data_.jetAK8_pt).at(j) <= 1200. ) Hist( "ForROC_tau21_pt3"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+      else if( (*data_.jetAK8_pt).at(j) > 1200.                                     ) Hist( "ForROC_tau21_pt4"  )->Fill ( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) );
+
+      if( (*data_.jetAK8_tau2).at(j)/(*data_.jetAK8_tau1).at(j) <= 0.45 ){
+        Hist( "numNPV_mjtau21" )->Fill ( data_.nPVs);
+        Hist( "numPT_mjtau21"  )->Fill ( (*data_.jetAK8_pt).at(j));
+        if( runOnMC_ &&  fabs(jetID)  <  9 )                      Hist( "numPT_mjtau21_Q" )->Fill ( (*data_.jetAK8_pt).at(j));
+        if( runOnMC_ && (fabs(jetID) == 21 or fabs(jetID) == 9) ) Hist( "numPT_mjtau21_G" )->Fill ( (*data_.jetAK8_pt).at(j));
       }
     }
   }
+
+  for( int j = 0; j < (data_.jetAK8_puppi_pt)->size() ; ++j ){
+    TLorentzVector myJetPUPPI;
+    if( (*data_.jetAK8_puppi_pt).at(j) <= 200.      )continue;
+    if( fabs((*data_.jetAK8_puppi_eta).at(j)) >= 2.4)continue;
+    myJetPUPPI.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_eta).at(j), (*data_.jetAK8_puppi_phi).at(j), (*data_.jetAK8_puppi_e).at(j) );
+    bool isW = false;
+    int isMatch = 0;
+    int jetID = 99;
+    if(runOnMC_){
+      for( unsigned int p = 0; p < daus.size(); ++p ){
+        float dR = daus.at(p).DeltaR(myJetPUPPI);
+        if (dR < 0.8 ) isMatch +=1;
+      }
+      
+      for( unsigned int p = 0; p < (data_.genParticle_pdgId)->size(); ++p ){
+        if( (*data_.genParticle_status).at(p) != 23) continue;
+        TLorentzVector myParton;
+        myParton.SetPtEtaPhiE( (*data_.genParticle_pt).at(p), (*data_.genParticle_eta).at(p), (*data_.genParticle_phi).at(p), (*data_.genParticle_e).at(p) );
+        float dR = myParton.DeltaR(myJetPUPPI);
+        if (dR > 0.8) continue;
+        if( fabs((*data_.genParticle_pdgId).at(p)) < 9) jetID = (*data_.genParticle_pdgId).at(p);
+        else if ( fabs((*data_.genParticle_pdgId).at(p)) == 21 or fabs((*data_.genParticle_pdgId).at(p)) == 9) jetID = (*data_.genParticle_pdgId).at(p);
+        else jetID = 0;
+      }
+    }
+    
+    if(!runOnMC_)isMatch = 0;
+    if (isMatch > 1) isW = true;
+    if( isSignal_ && !isW ) continue;
+
+    Hist( "denNPV_puppi" )->Fill ( data_.nPVs);
+    Hist( "denPT_puppi"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+    Hist( "ForROC_PUPPI_DEN"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+    if( runOnMC_ && (fabs(jetID) == 21 or fabs(jetID) < 10) ) Hist( "denPT_puppi_QG"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+    
+    if( (*data_.jetAK8_puppi_pt).at(j) <= 400. )                                           Hist( "ForROC_PUPPI_DEN_pt1"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+    if( (*data_.jetAK8_puppi_pt).at(j) > 400. && (*data_.jetAK8_puppi_pt).at(j) <= 800. )  Hist( "ForROC_PUPPI_DEN_pt2"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+    if( (*data_.jetAK8_puppi_pt).at(j) > 800. && (*data_.jetAK8_puppi_pt).at(j) <= 1200. ) Hist( "ForROC_PUPPI_DEN_pt3"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+    if( (*data_.jetAK8_puppi_pt).at(j) > 1200.                                           ) Hist( "ForROC_PUPPI_DEN_pt4"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+    
+    float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(j) , (*data_.jetAK8_puppi_eta).at(j) );
+    float puppiMass =  (*data_.jetAK8_puppi_softdrop_massUnCorr).at(j)* puppiCorr;  
+
+    if( puppiMass <= 105.0 && puppiMass > 65.0 ){
+
+      Hist( "numNPV_mj_puppi" )->Fill ( data_.nPVs);
+      Hist( "numPT_mj_puppi"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+      
+      Hist( "ForROC_PUPPItau21"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+      if( (*data_.jetAK8_puppi_pt).at(j) <= 400.      )                                            Hist( "ForROC_PUPPItau21_pt1"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+      else if( (*data_.jetAK8_puppi_pt).at(j) > 400. && (*data_.jetAK8_puppi_pt).at(j) <= 800. )   Hist( "ForROC_PUPPItau21_pt2"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+      else if( (*data_.jetAK8_puppi_pt).at(j) > 800. && (*data_.jetAK8_puppi_pt).at(j) <= 1200. )  Hist( "ForROC_PUPPItau21_pt3"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+      else if( (*data_.jetAK8_puppi_pt).at(j) > 1200.                                           )  Hist( "ForROC_PUPPItau21_pt4"  )->Fill ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) );
+
+      float DDT = ( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) ) + 0.063*log( ((*data_.jetAK8_puppi_softdrop_massCorr).at(j)*(*data_.jetAK8_puppi_softdrop_massCorr).at(j)) / ((*data_.jetAK8_puppi_pt).at(j)) );
+      Hist( "ForROC_DDT"  )->Fill ( DDT );
+      if( (*data_.jetAK8_puppi_pt).at(j) <= 400.      )                                            Hist( "ForROC_DDT_pt1"  )->Fill ( DDT );
+      else if( (*data_.jetAK8_puppi_pt).at(j) > 400. && (*data_.jetAK8_puppi_pt).at(j) <= 800. )   Hist( "ForROC_DDT_pt2"  )->Fill ( DDT );
+      else if( (*data_.jetAK8_puppi_pt).at(j) > 800. && (*data_.jetAK8_puppi_pt).at(j) <= 1200. )  Hist( "ForROC_DDT_pt3"  )->Fill ( DDT );
+      else if( (*data_.jetAK8_puppi_pt).at(j) > 1200.                                           )  Hist( "ForROC_DDT_pt4"  )->Fill ( DDT );
+
+      if( (*data_.jetAK8_puppi_tau2).at(j)/(*data_.jetAK8_puppi_tau1).at(j) <= 0.40 ){
+        Hist( "numNPV_mjtau21_puppi" )->Fill ( data_.nPVs);
+        Hist( "numPT_mjtau21_puppi"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+        if( runOnMC_ &&  fabs(jetID)  <  9 )                      Hist( "numPT_mjtau21_puppi_Q"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+        if( runOnMC_ && (fabs(jetID) == 21 or fabs(jetID) == 9) ) Hist( "numPT_mjtau21_puppi_G"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+      }
+
+      if( DDT <= 0.52 ){
+        Hist( "numNPV_mjDDT_puppi" )->Fill ( data_.nPVs);
+        Hist( "numPT_mjDDT_puppi"  )->Fill ( (*data_.jetAK8_puppi_pt).at(j));
+        if( runOnMC_ &&  fabs(jetID)  <  9 )                      Hist( "numPT_mjDDT_puppi_Q" )->Fill ( (*data_.jetAK8_pt).at(j));
+        if( runOnMC_ && (fabs(jetID) == 21 or fabs(jetID) == 9) ) Hist( "numPT_mjDDT_puppi_G" )->Fill ( (*data_.jetAK8_pt).at(j));
+      }
+    }
+  }
+}
+
+
+////////////////////////////////// SMEAR WITH JET ENERGY SCALE UNCETAINTY AND RESOLUTION /////////////////////////////////////////////////////////////////
+double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
   
+  if( !isSignal_ ) return (*data_.jetAK8_pt).at(ak8JetID);
+  float pt = 0;
+  
+  float ptold    = (*data_.jetAK8_pt).at(ak8JetID); 
+  float eta      = (*data_.jetAK8_eta).at(ak8JetID);
+  float phi      = (*data_.jetAK8_phi).at(ak8JetID);
+  float e        = (*data_.jetAK8_e).at(ak8JetID);   
+  
+  TLorentzVector AK8jet;
+  AK8jet.SetPtEtaPhiE( ptold , eta, phi , e );
+  
+  float corr     = (*data_.jetAK8_jec).at(ak8JetID);
+  float corrUp   = (*data_.jetAK8_jecUp).at(ak8JetID);
+  float corrDown = (*data_.jetAK8_jecDown).at(ak8JetID);
+  
+  float jerSF      = (*data_.jetAK8_jer_sf).at(ak8JetID);
+  float jerSigmaPt = (*data_.jetAK8_jer_sigma_pt).at(ak8JetID);
+  
+  
+  if( scaleUncPar_.find("JESup")   != std::string::npos  ){
+    pt = ptold/corr; 
+    pt = pt*corrUp;
+  }
+  else if( scaleUncPar_.find("JESdown") != std::string::npos  ){ 
+    pt = ptold/corr; 
+    pt = pt*corrDown;
+  }
+  
+  else if( scaleUncPar_.find("JER") != std::string::npos  ){
+  
+    //-----------------------------------------------------------------------------------------------------  
+    //JER: 
+    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#MC_truth_JER_at_13_TeV_new
+    //There are two different prescriptions available on how to over-smear reconstructed jets in simulated events so that their pT resolution would be the same as we measure it in data:
+  
+    // Scaling: Scale corrected reco jet pT based on the pT difference between matched reco and gen jets:
+    // pT->max[0.,pTgen+SF*(pT–pTgen)], where "SF" is the core resolution scaling factor, ie. the measured data/MC resolution ratio.
+    // This method only works for jets that are well matched to gen jet, otherwise it can produce large response shifts.
+    // The matching should require dR(reco jet, gen jet)<Rcone/2 and dpt=abs(pT-pTgen)<3*sigma_MC, where Rcone is the AK cone parameter, and sigma_MC_pT is jet pT absolute resolution.
+  
+    // Smearing: Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
+    // This method only allows one to worsen the resolution (SF>1).
+  
+    // We recommend using "hybrid" method: apply scaling for well matched jets; apply smearing for the rest.
+    //-----------------------------------------------------------------------------------------------------
+      
+    //First try scaling:   
+    for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+      TLorentzVector genJet;
+      genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+      if( AK8jet.DeltaR(genJet) > 0.4 || ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
+      pt = max(0., genJet.Pt() + ( jerSF*(AK8jet.Pt()-genJet.Pt()) ) );
+    }
+    //Scaling failed, move to smearing: 
+    if( pt == 0){
+      pt = tr_->Gaus( ptold, TMath::Sqrt(jerSF*jerSF-1)*(jerSigmaPt*AK8jet.Pt()) ); // Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
+    }
+  }
+  else{
+    std::cout << "  ::NOSMEARINGandNOSCALE::" << std::endl;
+  } 
+  return pt;
+}
 ////////////////////////////////////////////////////// RHO RATIO (Sal) ////////////////////////////////////////////////////////////////////////////
 // void ExoDiBosonAnalysis::setPredictedDistribution()
 // {

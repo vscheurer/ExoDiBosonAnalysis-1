@@ -9,7 +9,8 @@
 PUWeight::Scenario PUWeight::toScenario(const std::string& str) {
   PUWeight::Scenario sc = Winter15_25ns;
   if( str == "PUS25ns" ) sc = Winter15_25ns;
-  else if( str == "PUS25ns76X" )sc = Spring16_25ns;
+  else if( str == "PUS25ns76X" )sc = Fall15_25ns;
+  else if( str == "PUS25ns80X" )sc = Spring16_25ns;
   else {
     std::cerr << "\n\nERROR unknown scenario '" << str << "'" << std::endl;
     throw std::exception();
@@ -22,8 +23,9 @@ PUWeight::Scenario PUWeight::toScenario(const std::string& str) {
 // MC pile-up scenario to string representation
 std::string PUWeight::toString(const PUWeight::Scenario sc) {
   std::string str;
-  if     ( sc == Winter15_25ns ) str = "PUS25ns";
-  else if( sc == Spring16_25ns ) str = "PUS25ns76X";
+  if     ( sc == Winter15_25ns) str = "PUS25ns";
+  else if( sc == Fall15_25ns  ) str = "PUS25ns76X";
+  else if( sc == Spring16_25ns) str = "PUS25ns80X";
   else {
     std::cerr << "\n\nERROR unknown scenario '" << sc << "'" << std::endl;
     throw std::exception();
@@ -44,7 +46,7 @@ void PUWeight::initPUWeights(const std::string& nameOfDataDistribution, const PU
 
   if( isInit_ ) {
     std::cerr << "\n\nERROR in PUWeight: weights already initialised" << std::endl;
-    throw std::exception();
+    // throw std::exception();
   }
 
   // Get data distribution from file
@@ -158,11 +160,11 @@ std::vector<double> PUWeight::generateWeights(const PUWeight::Scenario sc, const
       std::cout<<"npuWinter15_25ns[0] = " << npuWinter15_25ns[0] <<"    npuProbs[0] = "<<npuProbs[0]<<std::endl;
     }
   
-    else if( sc == Spring16_25ns ) {   //from https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/SimGeneral/MixingModule/python/mix_2015_25ns_FallMC_matchData_PoissonOOTPU_cfi.py
-      std::cout<<"IN SPRING 16!!!!"<<std::endl;
+    else if( sc == Fall15_25ns ) {   //from https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/SimGeneral/MixingModule/python/mix_2015_25ns_FallMC_matchData_PoissonOOTPU_cfi.py
+      std::cout<<"IN FALL 15!!!!"<<std::endl;
   
       nPUMax = 50;
-      double npuSpring16_25ns[50] = {
+      double npuFall15_25ns[50] = {
         0.000108643,
         0.000388957,
         0.000332882,
@@ -213,10 +215,68 @@ std::vector<double> PUWeight::generateWeights(const PUWeight::Scenario sc, const
         4.84931e-08,
         2.6606e-08,
         1.433e-08}; 
-        npuProbs = npuSpring16_25ns;
-        std::cout<<"npuSpring16_25ns[0] = " << npuSpring16_25ns[0] <<"    npuProbs[0] = "<<npuProbs[0]<<std::endl;
+        npuProbs = npuFall15_25ns;
+        std::cout<<"npuFall15_25ns[0] = " << npuFall15_25ns[0] <<"    npuProbs[0] = "<<npuProbs[0]<<std::endl;
       }
- 
+      else if( sc == Spring16_25ns ) {   //from https://github.com/cms-sw/cmssw/blob/CMSSW_8_1_X/SimGeneral/MixingModule/python/mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py
+        std::cout<<"IN SPRING 16!!!!"<<std::endl;
+  
+        nPUMax = 50;
+        double npuSpring16_25ns[50] = {
+          0.000829312873542,
+           		0.00124276120498,
+           		0.00339329181587,
+           		0.00408224735376,
+           		0.00383036590008,
+          		0.00659159288946,
+           		0.00816022734493,
+           		0.00943640833116,
+           		0.0137777376066,
+           		0.017059392038,
+           		0.0213193035468,
+           		0.0247343174676,
+           		0.0280848773878,
+           		0.0323308476564,
+           		0.0370394341409,
+           		0.0456917721191,
+           		0.0558762890594,
+           		0.0576956187107,
+           		0.0625325287017,
+           		0.0591603758776,
+           		0.0656650815128,
+           		0.0678329011676,
+           		0.0625142146389,
+           		0.0548068448797,
+           		0.0503893295063,
+           		0.040209818868,
+           		0.0374446988111,
+           		0.0299661572042,
+           		0.0272024759921,
+           		0.0219328403791,
+           		0.0179586571619,
+           		0.0142926728247,
+           		0.00839941654725,
+           		0.00522366397213,
+           		0.00224457976761,
+           		0.000779274977993,
+           		0.000197066585944,
+           		7.16031761328e-05,
+           		0.0,
+          		0.0,
+          		0.0,
+          		0.0,
+          		0.0,
+          		0.0,
+          		0.0,
+          		0.0,
+          		0.0,
+           		0.0,
+           		0.0,
+           		0.0
+            }; 
+          npuProbs = npuSpring16_25ns;
+          std::cout<<"npuSpring16_25ns[0] = " << npuSpring16_25ns[0] <<"    npuProbs[0] = "<<npuProbs[0]<<std::endl;
+        } 
 
       // Check that binning of data-profile matches MC scenario
       if( nPUMax != static_cast<unsigned int>(data_npu_estimated->GetNbinsX()) ) {

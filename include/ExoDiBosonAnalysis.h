@@ -5,6 +5,8 @@
 
 #include "TLorentzVector.h"
 #include <string>
+#include "TF1.h"
+#include "TRandom3.h"
 // #include <algorithm>
 
 #include "../ExoDiBosonAnalysis/include/InputData.h"
@@ -39,6 +41,7 @@ public:
   virtual void ExecuteEvent	( const SInputData&, Double_t )	throw( SError );
    
   void setGenCandidates          ( void );
+  bool selectChannel             ( void );
    
   void setWeight                 ( TString infile );
   void initWeight                ( void );
@@ -76,10 +79,15 @@ public:
   bool findJetCandidates         ( TString infile );
   bool findJetCandidatesAK4      ( void );
 
-  void doJetTriggerEfficiency    	 ( void );
-  void doJetTriggerEfficiency2    	 ( void );
-  void doGenTTReco               ( void );
-  void doGroomingStudies         (  TString infile  );
+  void doJetTriggerEfficiency   ( void );
+  void doTriggerEfficiencyvsMass  ( void );
+  void do2DTriggerEfficiency  ( void );
+  
+  void doGenTTReco              ( void );
+  void doSubstructureStudies    ( TString infile );
+  void doWTagEfficiency         ( TString infile );
+  float getPUPPIweight          (float puppipt, float puppieta );
+  double getJetEnergyScale      ( int ak8JetID );
 
   void setPredictedDistribution();
      
@@ -133,7 +141,6 @@ private:
   bool           Trigger_         ;
   bool           applyFilters_  ;
    
-  bool           UsePruned_     ;
 
   /* leptonic selections */
   int    foundAEle              ;
@@ -171,9 +178,23 @@ private:
   std::string    BTagEff4vetoData_  ;
   std::string    BTagEff4fatjetData_;
   std::string    BTagEff4subjetData_;
+  std::string    PUPPIJEC_;
+  std::string    scaleUncPar_;
+  double JMS_   ;
+  double JMSunc_;
+  double JMR_   ;
+  double JMRunc_;
+  
+  
+  TRandom3*      tr_              ;
    
 
   // END OF XML CONFIGURATION //
+  
+  
+  TF1* puppisd_corrGEN     ;
+  TF1* puppisd_corrRECO_cen;
+  TF1* puppisd_corrRECO_for;
    
   int  channel		;
   int  category		;
@@ -189,6 +210,7 @@ private:
   float		weight			;
   float  genweight_   ;
   float		puweight_		;
+  float		ptweight_		;
   float		hltweight_		;
   float  btagweight_  ;
   float  lumiweight_  ;
@@ -197,6 +219,7 @@ private:
   float		Mjj				;
   float  	MWW				;
   float  	MVV				;
+  float  	MVV_reduced	  ;
   float  	MVVmethod2		;
   float  	Mj1				;
   float  	Mj2				;
@@ -209,12 +232,13 @@ private:
   float		jetsDeltaEta	;
   int		nBTags			;
   
-  int nSumGenWeights_;
+  float nSumGenWeights_;
   int    nPVs             ; 
-  int    nEvents_                ;
-  int    nPassedFilters_         ;  
-  int    nPassedTrigger_         ;  
-  int    nPassedChi2_         ;  
+  int    nEvents_         ;
+  int    nPassedJSON_     ;  
+  int    nPassedFilters_  ;  
+  int    nPassedTrigger_  ;  
+  int    nPassedChi2_     ;  
   
   int     nak4jets;
 
@@ -332,6 +356,23 @@ private:
   float jet_puppi_tau2;  
   float jet_puppi_tau3;
   float jet_puppi_pt;
+  
+  float jet1_puppi_softdrop ;
+  float jet1_puppi_pruned ;
+  float jet1_puppi_tau1;
+  float jet1_puppi_tau2;  
+  float jet1_puppi_tau3;
+  float jet1_puppi_pt;
+  float jet2_puppi_softdrop ;
+  float jet2_puppi_pruned ;
+  float jet2_puppi_tau1;
+  float jet2_puppi_tau2;  
+  float jet2_puppi_tau3;
+  float jet2_puppi_pt;
+  float jet_puppi_tau2tau1_jet1;
+  float jet_puppi_tau2tau1_jet2;
+  float jet_ddt_jet1;
+  float jet_ddt_jet2;
   
   float Wlept_pt ;
   float Wlept_mt ;

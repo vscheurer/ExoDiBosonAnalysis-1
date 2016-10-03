@@ -12,6 +12,7 @@ class PUWeight {
 public:
   enum Scenario { 
     Winter15_25ns,
+    Fall15_25ns,
     Spring16_25ns };
 
   static Scenario toScenario(const std::string& str);
