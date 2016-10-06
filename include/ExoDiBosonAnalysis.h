@@ -86,8 +86,9 @@ public:
   void doGenTTReco              ( void );
   void doSubstructureStudies    ( TString infile );
   void doWTagEfficiency         ( TString infile );
-  float getPUPPIweight          (float puppipt, float puppieta );
+  float getPUPPIweight          ( float puppipt, float puppieta );
   double getJetEnergyScale      ( int ak8JetID );
+  double getJetMassScale        ( float mass, float puppipt, float puppieta );
 
   void setPredictedDistribution();
      
@@ -179,11 +180,13 @@ private:
   std::string    BTagEff4fatjetData_;
   std::string    BTagEff4subjetData_;
   std::string    PUPPIJEC_;
+  std::string    PUPPIJMR_;
   std::string    scaleUncPar_;
   double JMS_   ;
   double JMSunc_;
   double JMR_   ;
   double JMRunc_;
+  
   
   
   TRandom3*      tr_              ;
@@ -195,7 +198,8 @@ private:
   TF1* puppisd_corrGEN     ;
   TF1* puppisd_corrRECO_cen;
   TF1* puppisd_corrRECO_for;
-   
+  TF1* puppisd_resolution_cen ; 
+  TF1* puppisd_resolution_for ; 
   int  channel		;
   int  category		;
   int run;

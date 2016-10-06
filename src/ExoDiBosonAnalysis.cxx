@@ -37,11 +37,11 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "applyFilters"     , applyFilters_   );
 	 
   /* leptonic selections */
-  DeclareProperty( "LeptPtCut"			, leptPtCut_			  );
-  DeclareProperty( "LeptEtaCut"			, leptEtaCut_			  );
-  DeclareProperty( "AleptPtCut"			, AleptPtCut_			  );
-  DeclareProperty( "AleptEtaCut"		, AleptEtaCut_		  );
-  DeclareProperty( "METCut"					, METCut_					  );
+  DeclareProperty( "LeptPtCut"			  , leptPtCut_			  );
+  DeclareProperty( "LeptEtaCut"			  , leptEtaCut_			  );
+  DeclareProperty( "AleptPtCut"			  , AleptPtCut_			  );
+  DeclareProperty( "AleptEtaCut"		  , AleptEtaCut_		  );
+  DeclareProperty( "METCut"					  , METCut_					  );
 
   /* jet selections */
   DeclareProperty( "MjjCut"						, MjjCut_					);
@@ -68,6 +68,7 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "PUdata"						, PUProfileData_  );
   DeclareProperty( "JSONfile"         , JSONfile_       );
   DeclareProperty( "PUPPIJEC"         , PUPPIJEC_       );
+  DeclareProperty( "PUPPIJMR"         , PUPPIJMR_       );
   
   DeclareProperty( "BTagEff4vetoData"  , BTagEff4vetoData_   );
   DeclareProperty( "BTagEff4fatjetData", BTagEff4fatjetData_ );
@@ -78,9 +79,7 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "JMSunc"           , JMSunc_         );
   DeclareProperty( "JMR"              , JMR_            );
   DeclareProperty( "JMRunc"           , JMRunc_         );
-  
-      
-            
+   
   theHistosManager_ = new HistosManager( this );
   theNtupleManager_ = new NtupleManager( this );
 
@@ -219,7 +218,9 @@ void ExoDiBosonAnalysis::initWeight( void ){
   puppisd_corrRECO_cen = (TF1*)file->Get("puppiJECcorr_reco_0eta1v3");
   puppisd_corrRECO_for = (TF1*)file->Get("puppiJECcorr_reco_1v3eta2v5");
   
-  
+  TFile* filejmr = TFile::Open( PUPPIJMR_.c_str(),"READ");
+  puppisd_resolution_cen = (TF1*)filejmr->Get("massResolution_0eta1v3");
+  puppisd_resolution_for = (TF1*)filejmr->Get("massResolution_1v3eta2v5");
 //   HLTWeight::Channel ch = HLTWeight_.toChannel(Channel_);
 //   HLTWeight_.initHLTWeights(ch);
 //   BTagWeight_.initBTagWeights(BTagEff4vetoData_,BTagEff4fatjetData_,BTagEff4subjetData_);
@@ -617,7 +618,7 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
           if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mZHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mZHigh_))  {
             category = 1;  //VVLP
 
-            if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mWHigh_))       channel = 3; //WWLP
+            if(      (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mWLow_   && groomedMass_jet2 <= mWHigh_))  channel = 3; //WWLP
             else if( (groomedMass_jet1 > mWLow_ && groomedMass_jet1 <= mWHigh_) && (groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_))  channel = 5; //WZLP
             else if( (groomedMass_jet2 > mWLow_ && groomedMass_jet2 <= mWHigh_) && (groomedMass_jet1 > mZLow_   && groomedMass_jet1 <= mZHigh_))  channel = 5; //ZWLP
             else if( (groomedMass_jet1 > mZLow_ && groomedMass_jet1 <= mZHigh_) && (groomedMass_jet2 > mZLow_   && groomedMass_jet2 <= mZHigh_))  channel = 7; //ZZLP
@@ -1166,43 +1167,43 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   Hist( "Pt_jet2"         )->Fill( Vcand.at(1).p4.Pt(), weight_ );
   
   for( int i = 0; i < abs(Vcand.size()) ; i++){
-    Hist( "Mass"          )  ->Fill( Vcand.at(i).p4.M(), weight_ );
-    Hist( "PrunedMass"    )  ->Fill( Vcand.at(i).prunedMass, weight_ );
-    Hist( "PuppiSoftdropMass")->Fill( Vcand.at(i).puppi_softdropMass, weight_ );
-    Hist( "Tau21"         )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1, weight_ );
-    Hist( "Pt"         )  ->Fill( Vcand.at(i).p4.Pt(), weight_ );
-    Hist( "Eta"         )  ->Fill( Vcand.at(i).p4.Eta(), weight_ );
-    Hist( "Phi"         )  ->Fill( Vcand.at(i).p4.Phi(), weight_ );
-    Hist( "Mass"         )  ->Fill( Vcand.at(i).p4.M(), weight_ );      
-    Hist( "cm"      )  ->Fill( Vcand.at(i).cm	   , weight_ );
-    Hist( "nm"      )  ->Fill( Vcand.at(i).nm	   , weight_ );
-    Hist( "muf"     )  ->Fill( Vcand.at(i).muf  , weight_ );
-    Hist( "phf"     )  ->Fill( Vcand.at(i).phf  , weight_ );
-    Hist( "emf"     )  ->Fill( Vcand.at(i).emf  , weight_ );
-    Hist( "nhf"     )  ->Fill( Vcand.at(i).nhf  , weight_ );
-    Hist( "chf"     )  ->Fill( Vcand.at(i).chf  , weight_ );
-    Hist( "area"    )  ->Fill( Vcand.at(i).area  , weight_ );
-    Hist( "tau1"    )  ->Fill( Vcand.at(i).tau1  , weight_ );
-    Hist( "tau2"    )  ->Fill( Vcand.at(i).tau2  , weight_ );
-    Hist( "tau3tau2"    )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau2  , weight_ );
-    Hist( "tau3tau1"    )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau1  , weight_ );
-    Hist( "tau2tau1"    )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1  , weight_ );
-    Hist( "puppi_tau3tau2"    )  ->Fill( Vcand.at(i).puppi_tau3/Vcand.at(i).puppi_tau2  , weight_ );
-    Hist( "puppi_tau3tau1"    )  ->Fill( Vcand.at(i).puppi_tau3/Vcand.at(i).puppi_tau1  , weight_ );
-    Hist( "puppi_tau2tau1"    )  ->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1  , weight_ );
-    Hist( "puppi_tau1"    )  ->Fill( Vcand.at(i).puppi_tau1  , weight_ );
-    Hist( "puppi_tau2"    )  ->Fill( Vcand.at(i).puppi_tau2  , weight_ );
-    Hist( "tau3"    )  ->Fill( Vcand.at(i).tau3  , weight_ );
-    Hist( "che"     )  ->Fill( Vcand.at(i).che  , weight_ );
-    Hist( "ne"      )  ->Fill( Vcand.at(i).ne  , weight_ );
-    Hist( "HFHadronEnergyFraction"     )  ->Fill( Vcand.at(i).hf_hf , weight_ ); //HFHadronEnergyFraction());
-    Hist( "HFEMEnergyFraction"     )  ->Fill( Vcand.at(i).hf_emf , weight_ ); //HFEMEnergyFraction());
-    Hist( "hoEnergyFraction"     )  ->Fill( Vcand.at(i).hof , weight_ ); //hoEnergyFraction());
+    Hist( "Mass"                          )  ->Fill( Vcand.at(i).p4.M(), weight_ );
+    Hist( "PrunedMass"                    )  ->Fill( Vcand.at(i).prunedMass, weight_ );
+    Hist( "PuppiSoftdropMass"             )->Fill( Vcand.at(i).puppi_softdropMass, weight_ );
+    Hist( "Tau21"                         )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1, weight_ );
+    Hist( "Pt"                            )  ->Fill( Vcand.at(i).p4.Pt(), weight_ );
+    Hist( "Eta"                           )  ->Fill( Vcand.at(i).p4.Eta(), weight_ );
+    Hist( "Phi"                           )  ->Fill( Vcand.at(i).p4.Phi(), weight_ );
+    Hist( "Mass"                          )  ->Fill( Vcand.at(i).p4.M(), weight_ );      
+    Hist( "cm"                            )  ->Fill( Vcand.at(i).cm	   , weight_ );
+    Hist( "nm"                            )  ->Fill( Vcand.at(i).nm	   , weight_ );
+    Hist( "muf"                           )  ->Fill( Vcand.at(i).muf  , weight_ );
+    Hist( "phf"                           )  ->Fill( Vcand.at(i).phf  , weight_ );
+    Hist( "emf"                           )  ->Fill( Vcand.at(i).emf  , weight_ );
+    Hist( "nhf"                           )  ->Fill( Vcand.at(i).nhf  , weight_ );
+    Hist( "chf"                           )  ->Fill( Vcand.at(i).chf  , weight_ );
+    Hist( "area"                          )  ->Fill( Vcand.at(i).area  , weight_ );
+    Hist( "tau1"                          )  ->Fill( Vcand.at(i).tau1  , weight_ );
+    Hist( "tau2"                          )  ->Fill( Vcand.at(i).tau2  , weight_ );
+    Hist( "tau3tau2"                      )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau2  , weight_ );
+    Hist( "tau3tau1"                      )  ->Fill( Vcand.at(i).tau3/Vcand.at(i).tau1  , weight_ );
+    Hist( "tau2tau1"                      )  ->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1  , weight_ );
+    Hist( "puppi_tau3tau2"                )  ->Fill( Vcand.at(i).puppi_tau3/Vcand.at(i).puppi_tau2  , weight_ );
+    Hist( "puppi_tau3tau1"                )  ->Fill( Vcand.at(i).puppi_tau3/Vcand.at(i).puppi_tau1  , weight_ );
+    Hist( "puppi_tau2tau1"                )  ->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1  , weight_ );
+    Hist( "puppi_tau1"                    )  ->Fill( Vcand.at(i).puppi_tau1  , weight_ );
+    Hist( "puppi_tau2"                    )  ->Fill( Vcand.at(i).puppi_tau2  , weight_ );
+    Hist( "tau3"                          )  ->Fill( Vcand.at(i).tau3  , weight_ );
+    Hist( "che"                           )  ->Fill( Vcand.at(i).che  , weight_ );
+    Hist( "ne"                            )  ->Fill( Vcand.at(i).ne  , weight_ );
+    Hist( "HFHadronEnergyFraction"        )  ->Fill( Vcand.at(i).hf_hf , weight_ ); //HFHadronEnergyFraction());
+    Hist( "HFEMEnergyFraction"            )  ->Fill( Vcand.at(i).hf_emf , weight_ ); //HFEMEnergyFraction());
+    Hist( "hoEnergyFraction"              )  ->Fill( Vcand.at(i).hof , weight_ ); //hoEnergyFraction());
     Hist( "chargedHadronMultiplicity"     )  ->Fill( Vcand.at(i).chm , weight_ ); //chargedHadronMultiplicity());
     Hist( "neutralHadronMultiplicity"     )  ->Fill( Vcand.at(i).neHadMult  , weight_ ); //neutralHadronMultiplicity());
-    Hist( "photonMultiplicity"     )  ->Fill( Vcand.at(i).phoMult , weight_ ); //photonMultiplicity());
-    Hist( "neutralEmEnergyFraction"     )  ->Fill( Vcand.at(i).nemf , weight_ ); //neutralEmEnergyFraction());
-    Hist( "chargedEmEnergyFraction"     )  ->Fill( Vcand.at(i).cemf  , weight_ ); //chargedEmEnergyFraction());
+    Hist( "photonMultiplicity"            )  ->Fill( Vcand.at(i).phoMult , weight_ ); //photonMultiplicity());
+    Hist( "neutralEmEnergyFraction"       )  ->Fill( Vcand.at(i).nemf , weight_ ); //neutralEmEnergyFraction());
+    Hist( "chargedEmEnergyFraction"       )  ->Fill( Vcand.at(i).cemf  , weight_ ); //chargedEmEnergyFraction());
     Hist( "charge"     )  ->Fill( Vcand.at(i).charge , weight_ ); //charge());
     if( Vcand.at(i).tau2/Vcand.at(i).tau1 >= Tau21HPLow_ && Vcand.at(i).tau2/Vcand.at(i).tau1 <= Tau21HPHigh_ ) Hist( "PrunedMass_afterTau21"    )  ->Fill( Vcand.at(i).prunedMass, weight_ );
     if( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1 >= Tau21HPLow_ && Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1 <= Tau21HPHigh_ ) Hist( "PuppiSoftdropMass_afterTau21")  ->Fill( Vcand.at(i).puppi_softdropMass, weight_ );
@@ -1373,7 +1374,8 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   TLorentzVector bestjet2_tlv;
   int    jetIndex = 999;
   int    jetIndex2 = 999;
-  float  jetmass  = -999;
+  float  jetmass1  = -999;
+  float  jetmass2  = -999;
 
   int    PUPPIjetMatchIndex = 999;
   int    PUPPIjetIndex1 = 999;
@@ -1389,10 +1391,12 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   
   //Make sure jets passes loose ID, pT and eta cuts
   TLorentzVector			TLV;
+   // std::cout<<""<<std::endl; std::cout<<"Start looping over njets = " <<data_.njetsAK8<<  std::endl;
   for( int j = 0; j < data_.njetsAK8 ; ++j ){
-    float jetPT = (*data_.jetAK8_pt).at(j) ;
-    if( scaleUncPar_.find("JES") != std::string::npos) jetPT = getJetEnergyScale( j );
-    if( scaleUncPar_.find("JER") != std::string::npos) jetPT = getJetEnergyScale( j );
+    // std::cout<<""<<std::endl; std::cout<<"For jet "<< j << std::endl; std::cout<<""<<std::endl;
+    // std::cout<<"Getting jet energy scale for jet with pt "<< (*data_.jetAK8_pt).at(j) << std::endl;
+    float jetPT = getJetEnergyScale( j );
+    // std::cout<<"Jet pt after scaling and smearing "<< jetPT << std::endl; std::cout<<""<<std::endl;
     TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
     if( Channel_.find("dijet")!= std::string::npos && j < 1 && (*data_.jetAK8_IDTight).at(j) != 1   )break;
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
@@ -1410,36 +1414,37 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
       dRmin = dR;
       PUPPIjetMatchIndex = jj;
     }
-    if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
+    
     if( !usePuppiSD_){
-      if ( (*data_.jetAK8_prunedmass)[j] < jetmass ) continue;
-      jetmass = (*data_.jetAK8_prunedmass)[j];
+      if ( (*data_.jetAK8_prunedmass)[j] < jetmass1 ) continue;
+      jetmass1 = (*data_.jetAK8_prunedmass)[j];
       bestjet_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
       foundJet = true;
       jetIndex = j;
       PUPPIjetIndex1 = PUPPIjetMatchIndex;
     }
-    else if( usePuppiSD_){
+    else if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
+    else{
       float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex) );
-      if ( (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr < jetmass ) continue;
-      jetmass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
+      float corrMass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
+      corrMass = getJetMassScale(corrMass,(*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex));
+      // std::cout<<"Found matching jet with mass = " << corrMass << " >/< jetmass so far = " << jetmass1 <<std::endl;
+      if ( corrMass < jetmass1 ) continue;
+       // std::cout<<"Found new jet with mass = " << corrMass << " > " << jetmass1 <<std::endl;
+      jetmass1 = corrMass;
       bestjet_tlv.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
-      
       foundJet = true;
       jetIndex = j;
       PUPPIjetIndex1 = PUPPIjetMatchIndex;
     }
   }
+  // std::cout<<""<<std::endl; std::cout<<"Done looping over jets! Selected jet with pt =  "<< bestjet_tlv.Pt() <<" and mass = "<< jetmass1<< std::endl; std::cout<<""<<std::endl;
  
   
-  jetmass  = -999;
   PUPPIjetMatchIndex = 999;
 
   for( int j = 0; j < data_.njetsAK8 ; ++j ){
-    float jetPT = (*data_.jetAK8_pt).at(j) ;
-    
-    if( scaleUncPar_.find("JES") != std::string::npos) jetPT = getJetEnergyScale( j );
-    if( scaleUncPar_.find("JER") != std::string::npos) jetPT = getJetEnergyScale( j );
+    float jetPT = getJetEnergyScale( j );
     TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
     if( Channel_.find("dijet")!= std::string::npos && TLV.Pt() <= JetPtCutTight_    )continue;    
@@ -1452,9 +1457,9 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
       PUPPIjetMatchIndex = jj;
     }
     if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
-    if( !usePuppiSD_){
-      if ( (*data_.jetAK8_prunedmass)[j] < jetmass or j == jetIndex) continue;
-      jetmass = (*data_.jetAK8_prunedmass)[j];
+    else if( !usePuppiSD_){
+      if ( (*data_.jetAK8_prunedmass)[j] < jetmass2 or j == jetIndex) continue;
+      jetmass2 = (*data_.jetAK8_prunedmass)[j];
       bestjet2_tlv.SetPtEtaPhiE(jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
       foundJet2 = true;
       jetIndex2 = j;
@@ -1462,8 +1467,10 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     }
     else if( usePuppiSD_){
       float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex) );
-      if ( (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr < jetmass  or PUPPIjetMatchIndex == PUPPIjetIndex1 ) continue;
-      jetmass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
+      float corrMass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
+      corrMass = getJetMassScale (corrMass,(*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex), (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex));
+      if ( corrMass < jetmass2  or PUPPIjetMatchIndex == PUPPIjetIndex1 ) continue;
+      jetmass2 = corrMass;
       bestjet2_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
       foundJet2 = true;
       jetIndex2 = j;
@@ -1489,8 +1496,6 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     nNopuppi_++;
     foundJet = false;
   }
-
-
   JetCandidate jet(bestjet_tlv);
   jet.csv					  = (*data_.jetAK8_csv).at(jetIndex)           ;
   jet.tau1					= (*data_.jetAK8_tau1).at(jetIndex)          ;
@@ -1523,14 +1528,14 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   jet.area = (*data_.jetAK8_area).at(jetIndex);
   jet.jec = (*data_.jetAK8_jec).at(jetIndex);
   jet.pruned_jec = (*data_.jetAK8_pruned_jec).at(jetIndex);
-  if( PUPPIjetIndex1 != 999 && ( !infile.Contains("Spring15")) ) {
-    float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1) , (*data_.jetAK8_puppi_eta).at(PUPPIjetIndex1) );
-    jet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massUnCorr).at(PUPPIjetIndex1)*puppiCorr;
-    jet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex1);
-    jet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex1);
-    jet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex1);
-    jet.puppi_pt   = (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1);
-  }
+  // float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1) , (*data_.jetAK8_puppi_eta).at(PUPPIjetIndex1) );
+  // jet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massUnCorr).at(PUPPIjetIndex1)*puppiCorr;
+  jet.puppi_softdropMass = jetmass1;
+  jet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex1);
+  jet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex1);
+  jet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex1);
+  jet.puppi_pt   = (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex1);
+
 
   Vcand.push_back( jet );
         
@@ -1554,29 +1559,30 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     secondJet.softdropMass  = (*data_.jetAK8_softdropmass).at(jetIndex2)  ;
     secondJet.mass          = (*data_.jetAK8_mass).at(jetIndex2)          ;
     secondJet.flavor        = -99                                         ;
-    secondJet.rcn            = (*data_.jetAK8_che).at(jetIndex2)/(*data_.jetAK8_ne).at(jetIndex2);
-    secondJet.cm = (*data_.jetAK8_cm).at(jetIndex2);
-    secondJet.nm = (*data_.jetAK8_nm).at(jetIndex2);
-    secondJet.muf = (*data_.jetAK8_muf).at(jetIndex2);
-    secondJet.phf = (*data_.jetAK8_phf).at(jetIndex2);
-    secondJet.emf = (*data_.jetAK8_emf).at(jetIndex2);
-    secondJet.nhf = (*data_.jetAK8_nhf).at(jetIndex2);
-    secondJet.chf = (*data_.jetAK8_chf).at(jetIndex2);
-    secondJet.che = (*data_.jetAK8_che).at(jetIndex2);
-    secondJet.ne = (*data_.jetAK8_ne).at(jetIndex2);  
-    secondJet.hf_hf = (*data_.jetAK8_hf_hf).at(jetIndex2);
-    secondJet.hf_emf = (*data_.jetAK8_hf_emf).at(jetIndex2);
-    secondJet.hof = (*data_.jetAK8_hof).at(jetIndex2);
-    secondJet.chm  = (*data_.jetAK8_chm).at(jetIndex2);
-    secondJet.neHadMult = (*data_.jetAK8_neHadMult).at(jetIndex2);
-    secondJet.phoMult = (*data_.jetAK8_phoMult).at(jetIndex2);
-    secondJet.nemf = (*data_.jetAK8_nemf).at(jetIndex2);
-    secondJet.cemf = (*data_.jetAK8_cemf).at(jetIndex2);
-    secondJet.charge = (*data_.jetAK8_charge).at(jetIndex2);
-    secondJet.area = (*data_.jetAK8_area).at(jetIndex2);
+    secondJet.rcn           = (*data_.jetAK8_che).at(jetIndex2)/(*data_.jetAK8_ne).at(jetIndex2);
+    secondJet.cm            = (*data_.jetAK8_cm).at(jetIndex2);
+    secondJet.nm            = (*data_.jetAK8_nm).at(jetIndex2);
+    secondJet.muf           = (*data_.jetAK8_muf).at(jetIndex2);
+    secondJet.phf           = (*data_.jetAK8_phf).at(jetIndex2);
+    secondJet.emf           = (*data_.jetAK8_emf).at(jetIndex2);
+    secondJet.nhf           = (*data_.jetAK8_nhf).at(jetIndex2);
+    secondJet.chf           = (*data_.jetAK8_chf).at(jetIndex2);
+    secondJet.che           = (*data_.jetAK8_che).at(jetIndex2);
+    secondJet.ne            = (*data_.jetAK8_ne).at(jetIndex2);  
+    secondJet.hf_hf         = (*data_.jetAK8_hf_hf).at(jetIndex2);
+    secondJet.hf_emf        = (*data_.jetAK8_hf_emf).at(jetIndex2);
+    secondJet.hof           = (*data_.jetAK8_hof).at(jetIndex2);
+    secondJet.chm           = (*data_.jetAK8_chm).at(jetIndex2);
+    secondJet.neHadMult     = (*data_.jetAK8_neHadMult).at(jetIndex2);
+    secondJet.phoMult       = (*data_.jetAK8_phoMult).at(jetIndex2);
+    secondJet.nemf          = (*data_.jetAK8_nemf).at(jetIndex2);
+    secondJet.cemf          = (*data_.jetAK8_cemf).at(jetIndex2);
+    secondJet.charge        = (*data_.jetAK8_charge).at(jetIndex2);
+    secondJet.area          = (*data_.jetAK8_area).at(jetIndex2);
     if( PUPPIjetIndex2 != 999 ){
-      float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex2) , (*data_.jetAK8_puppi_eta).at(PUPPIjetIndex2) );
-      secondJet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massUnCorr).at(PUPPIjetIndex2)*puppiCorr;
+      // float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetIndex2) , (*data_.jetAK8_puppi_eta).at(PUPPIjetIndex2) );
+//       secondJet.puppi_softdropMass = (*data_.jetAK8_puppi_softdrop_massUnCorr).at(PUPPIjetIndex2)*puppiCorr;
+      secondJet.puppi_softdropMass = jetmass2;
       secondJet.puppi_tau1 = (*data_.jetAK8_puppi_tau1).at(PUPPIjetIndex2);
       secondJet.puppi_tau2 = (*data_.jetAK8_puppi_tau2).at(PUPPIjetIndex2);
       secondJet.puppi_tau3 = (*data_.jetAK8_puppi_tau3).at(PUPPIjetIndex2);
@@ -2896,36 +2902,31 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
   float corrDown = (*data_.jetAK8_jecDown).at(ak8JetID);
   
   float jerSF      = (*data_.jetAK8_jer_sf).at(ak8JetID);
+  float jerSFUp    = (*data_.jetAK8_jer_sf_up).at(ak8JetID);
+  float jerSFDown  = (*data_.jetAK8_jer_sf_down).at(ak8JetID);
   float jerSigmaPt = (*data_.jetAK8_jer_sigma_pt).at(ak8JetID);
   
+  Hist( "JetPt_preSmearing" )->Fill(ptold);
   
-  if( scaleUncPar_.find("JESup")   != std::string::npos  ){
-    pt = ptold/corr; 
-    pt = pt*corrUp;
-  }
-  else if( scaleUncPar_.find("JESdown") != std::string::npos  ){ 
-    pt = ptold/corr; 
-    pt = pt*corrDown;
-  }
+  // std::cout<< "jet pt old = " << ptold << std::endl;
   
-  else if( scaleUncPar_.find("JER") != std::string::npos  ){
-  
-    //-----------------------------------------------------------------------------------------------------  
-    //JER: 
-    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#MC_truth_JER_at_13_TeV_new
-    //There are two different prescriptions available on how to over-smear reconstructed jets in simulated events so that their pT resolution would be the same as we measure it in data:
-  
-    // Scaling: Scale corrected reco jet pT based on the pT difference between matched reco and gen jets:
-    // pT->max[0.,pTgen+SF*(pT–pTgen)], where "SF" is the core resolution scaling factor, ie. the measured data/MC resolution ratio.
-    // This method only works for jets that are well matched to gen jet, otherwise it can produce large response shifts.
-    // The matching should require dR(reco jet, gen jet)<Rcone/2 and dpt=abs(pT-pTgen)<3*sigma_MC, where Rcone is the AK cone parameter, and sigma_MC_pT is jet pT absolute resolution.
-  
-    // Smearing: Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
-    // This method only allows one to worsen the resolution (SF>1).
-  
-    // We recommend using "hybrid" method: apply scaling for well matched jets; apply smearing for the rest.
-    //-----------------------------------------------------------------------------------------------------
-      
+  //JEC already applied!
+  //JER: Smear all jets by default (! NOT systematics)
+  //-----------------------------------------------------------------------------------------------------  
+  //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#MC_truth_JER_at_13_TeV_new
+  //There are two different prescriptions available on how to over-smear reconstructed jets in simulated events so that their pT resolution would be the same as we measure it in data:
+
+  // Scaling: Scale corrected reco jet pT based on the pT difference between matched reco and gen jets:
+  // pT->max[0.,pTgen+SF*(pT–pTgen)], where "SF" is the core resolution scaling factor, ie. the measured data/MC resolution ratio.
+  // This method only works for jets that are well matched to gen jet, otherwise it can produce large response shifts.
+  // The matching should require dR(reco jet, gen jet)<Rcone/2 and dpt=abs(pT-pTgen)<3*sigma_MC, where Rcone is the AK cone parameter, and sigma_MC_pT is jet pT absolute resolution.
+
+  // Smearing: Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
+  // This method only allows one to worsen the resolution (SF>1).
+
+  // We recommend using "hybrid" method: apply scaling for well matched jets; apply smearing for the rest.
+  //-----------------------------------------------------------------------------------------------------
+  if( ! (scaleUncPar_.find("JER") != std::string::npos)  ){  //Dont smear jets used when computing JER systematics!
     //First try scaling:   
     for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
       TLorentzVector genJet;
@@ -2937,12 +2938,109 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
     if( pt == 0){
       pt = tr_->Gaus( ptold, TMath::Sqrt(jerSF*jerSF-1)*(jerSigmaPt*AK8jet.Pt()) ); // Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
     }
+    AK8jet.SetPtEtaPhiE( pt , eta, phi , e );
   }
-  else{
-    std::cout << "  ::NOSMEARINGandNOSCALE::" << std::endl;
+  // std::cout<< "Gauss width  = " << TMath::Sqrt(jerSF*jerSF-1)*(jerSigmaPt*AK8jet.Pt()) << std::endl;
+  // std::cout<< "jet pt after smearing = " << pt << std::endl;
+  Hist( "JetPt_postSmearing" )->Fill(pt);
+  
+  // Now do systematics
+  if( scaleUncPar_.find("JESup")   != std::string::npos  ){
+    pt = pt/corr; 
+    pt = pt*corrUp;
+  }
+  else if( scaleUncPar_.find("JESdown") != std::string::npos  ){ 
+    pt = pt/corr; 
+    pt = pt*corrDown;
   } 
+  else if( scaleUncPar_.find("JERup") != std::string::npos  ){
+    //First try scaling:   
+    for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+      TLorentzVector genJet;
+      genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+      if( AK8jet.DeltaR(genJet) > 0.4 || ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
+      pt = max(0., genJet.Pt() + ( jerSFUp*(AK8jet.Pt()-genJet.Pt()) ) );
+    }
+    //Scaling failed, move to smearing: 
+    if( pt == 0){
+      pt = tr_->Gaus( ptold, TMath::Sqrt(jerSFUp*jerSFUp-1)*(jerSigmaPt*AK8jet.Pt()) ); // Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
+    }
+  }
+  else if( scaleUncPar_.find("JERdown") != std::string::npos  ){
+    //First try scaling:   
+    for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+      TLorentzVector genJet;
+      genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+      if( AK8jet.DeltaR(genJet) > 0.4 || ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
+      pt = max(0., genJet.Pt() + ( jerSFDown*(AK8jet.Pt()-genJet.Pt()) ) );
+    }
+    //Scaling failed, move to smearing: 
+    if( pt == 0){
+      pt = tr_->Gaus( ptold, TMath::Sqrt(jerSFDown*jerSFDown-1)*(jerSigmaPt*AK8jet.Pt()) ); // Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
+    }
+  }
+  
+  // std::cout<< "jet pt after systematic = " << pt << std::endl;
+
   return pt;
 }
+////////////////////////////////// SMEAR WITH JET ENERGY SCALE UNCETAINTY AND RESOLUTION /////////////////////////////////////////////////////////////////
+double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float puppipt, float puppieta ){
+  
+  float mass             = 0;             
+  float jms              = JMS_;
+  float jmsUnc           = JMSunc_;
+  float jmr              = JMR_;
+  float jmrUnc           = JMRunc_;
+  float massResolution   = 0;
+  
+  if( fabs(puppieta) <= 1.3 ){
+    massResolution = puppisd_resolution_cen->Eval( puppipt );
+  }
+  else{
+    massResolution = puppisd_resolution_for->Eval( puppipt );
+  }
+  
+  
+  
+  
+  
+  mass = oldmass*jms;
+  Hist( "SoftdropMass_preSmearing" )->Fill(mass);
+  // std::cout<< "------------ Start mass scaling ------------ " << std::endl;
+//   std::cout<< "1) Jet mass before    = " << oldmass << std::endl;
+//   std::cout<< "2) Jet mass after JMS = " << mass << std::endl;
+//
+//   std::cout<< "                      " << std::endl;
+//   std::cout<< "Jet mass resolution = " << massResolution << std::endl;
+//   std::cout<< "Smearing factor     = " << TMath::Sqrt(jmr*jmr-1)*(massResolution-1)*mass << std::endl;
+//   std::cout<< "                      " << std::endl;
+  
+  if( !(scaleUncPar_.find("JMR")!= std::string::npos) ) mass = tr_->Gaus( mass, TMath::Sqrt(jmr*jmr-1)*(massResolution-1)*mass);
+  // std::cout<< "3) Jet mass after JMR = " << mass << std::endl;
+  
+   Hist( "SoftdropMass_postSmearing" )->Fill(mass);
+  // Now do systematics
+  if( scaleUncPar_.find("JMSup")   != std::string::npos  ){
+    mass = mass/jms; 
+    mass = mass*(jms+jmsUnc);
+  }
+  else if( scaleUncPar_.find("JMSdown") != std::string::npos  ){ 
+    mass = mass/jms; 
+    mass = mass*(jms-jmsUnc);
+  } 
+  else if( scaleUncPar_.find("JMRup") != std::string::npos  ){
+    mass = tr_->Gaus( mass, TMath::Sqrt((jmr+jmrUnc)*(jmr+jmrUnc)-1)*massResolution*mass);
+  }
+  else if( scaleUncPar_.find("JMRdown") != std::string::npos  ){
+    mass = tr_->Gaus( mass, TMath::Sqrt((jmr-jmrUnc)*(jmr-jmrUnc)-1)*massResolution*mass);
+  }
+  // std::cout<< "4) Jet mass after sys = " << mass << std::endl;
+
+
+  return mass;
+}
+
 ////////////////////////////////////////////////////// RHO RATIO (Sal) ////////////////////////////////////////////////////////////////////////////
 // void ExoDiBosonAnalysis::setPredictedDistribution()
 // {
