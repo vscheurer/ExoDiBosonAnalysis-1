@@ -51,7 +51,7 @@ def calculateYields(sys):
     os.system('mkdir %s/%s' %(outpath,sys))
     
   masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
-  masses = [1000]
+  # masses = [1000]
   
   signals = ['%s'%opts.signal]
   if opts.signal == 'all':
@@ -155,6 +155,7 @@ if __name__ == '__main__':
   
   # Define which systematics to run
   doSys = []
+  
   if   opts.sys == 'JES': doSys = ['JESup','JESdown']  
   if   opts.sys == 'JER': doSys = ['JERup','JERdown']  
   elif opts.sys == 'JMS': doSys = ['JMSup','JMSdown']  
@@ -166,11 +167,13 @@ if __name__ == '__main__':
   #Compute central value. Neccessary first time you run
   if opts.doCV:  
     doSys.append('CV')
+    
   print "Doing systematics for: " ,doSys
   
-  # # Run SFrame for given systematics (+central value)
-  # for sys in doSys:
-  #   createOutfiles(sys,opts.channel)
+  # Run SFrame for given systematics (+central value)
+  for sys in doSys:
+    print "Creating output files for " ,sys
+    createOutfiles(sys,opts.channel)
   
   #Calculate yields 
   if opts.sys == 'ALL':
