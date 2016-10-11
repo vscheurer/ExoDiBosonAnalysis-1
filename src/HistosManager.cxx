@@ -20,9 +20,11 @@ HistosManager::~HistosManager( void ){
 
 ////////////////////////////////////////////////////////////////////
 void HistosManager::bookHistos( std::string Channel_ ){
- 
- theAnalysis_->Book( TH1F( "SoftdropMass_preSmearing", "SoftdropMass_preSmearing"       , 200, 0, 200 ) );
+
+ theAnalysis_->Book( TH1F( "SoftdropMass_preJMR", "SoftdropMass_preJMR"       , 200, 0, 200 ) );
+ theAnalysis_->Book( TH1F( "SoftdropMass_postJMR", "SoftdropMass_postJMR"       , 200, 0, 200 ) );
  theAnalysis_->Book( TH1F( "SoftdropMass_postSmearing", "SoftdropMass_postSmearing"     , 200, 0, 200 ) );
+ theAnalysis_->Book( TH1F( "SoftdropMass_postScaling", "SoftdropMass_postScaling"     , 200, 0, 200 ) );
  
  theAnalysis_->Book( TH1F( "JetPt_preSmearing", "JetPt_preSmearing"      , 200, 0, 2000 ) );
  theAnalysis_->Book( TH1F( "JetPt_postSmearing","JetPt_postSmearing"     , 200, 0, 2000 ) );

@@ -1366,6 +1366,7 @@ bool ExoDiBosonAnalysis::findJetCandidatesAK4( void ){
 }
 //==============================================================================================
 bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
+  
   bool foundJet = false;
   bool foundJet2 = false;
   bool foundJets = false;
@@ -1377,85 +1378,85 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   float  jetmass1  = -999;
   float  jetmass2  = -999;
 
-  int    PUPPIjetMatchIndex = 999;
+  
   int    PUPPIjetIndex1 = 999;
   int    PUPPIjetIndex2 = 999;
   
-  std::vector<TLorentzVector>	vpuppiJets;
-  for( int j = 0; j < (data_.jetAK8_puppi_softdrop_massUnCorr)->size() ; ++j ){  
-    if ((*data_.jetAK8_puppi_pt).at(j) < 0.001) continue;
-    TLorentzVector puppiJet;
-    puppiJet.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(j), (*data_.jetAK8_puppi_eta).at(j), (*data_.jetAK8_puppi_phi).at(j), (*data_.jetAK8_puppi_e).at(j) );
-    vpuppiJets.push_back(puppiJet);
-  }
-  
-  //Make sure jets passes loose ID, pT and eta cuts
+  //Make sure jet1 passes loose ID, pT and eta cuts
   TLorentzVector			TLV;
-   // std::cout<<""<<std::endl; std::cout<<"Start looping over njets = " <<data_.njetsAK8<<  std::endl;
   for( int j = 0; j < data_.njetsAK8 ; ++j ){
-    // std::cout<<""<<std::endl; std::cout<<"For jet "<< j << std::endl; std::cout<<""<<std::endl;
-    // std::cout<<"Getting jet energy scale for jet with pt "<< (*data_.jetAK8_pt).at(j) << std::endl;
     float jetPT = getJetEnergyScale( j );
-    // std::cout<<"Jet pt after scaling and smearing "<< jetPT << std::endl; std::cout<<""<<std::endl;
-    TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+    if( Channel_.find("dijet")!= std::string::npos && jetPT <= JetPtCutTight_    )continue;   
+    if( Channel_.find("WtagSF") != std::string::npos && jetPT <= 80.             )continue; //before used 80 here!!!
+    TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
     if( Channel_.find("dijet")!= std::string::npos && j < 1 && (*data_.jetAK8_IDTight).at(j) != 1   )break;
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
-    if( Channel_.find("dijet")!= std::string::npos && TLV.Pt() <= JetPtCutTight_    )continue;   
-    
     if( Channel_.find("WtagSF") != std::string::npos && (*data_.jetAK8_IDLoose).at(j) != 1          )continue;
-    if( Channel_.find("WtagSF") != std::string::npos && TLV.Pt() <= 80.                             )continue; //before used 80 here!!!
     if( Channel_.find("WtagSF") != std::string::npos && leptonCand_[0].p4.DeltaR(TLV) <= 1.0        )continue;   
     if( fabs(TLV.Eta()) >= JetEtaCut_ 	                                                          	)continue;	
     
-    float  dRmin  = 999;
-    for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
-      float dR = vpuppiJets[jj].DeltaR(TLV);
+    //Find PUPPI match
+    int PUPPIjetMatchIndex = 999;
+    float dRmin  = 999;
+    TLorentzVector puppijet_tlv1;
+    for( int jj = 0; jj < (data_.jetAK8_puppi_softdrop_massUnCorr)->size() ; ++jj ){  
+      if ((*data_.jetAK8_puppi_pt).at(jj) < 0.001 || (*data_.jetAK8_puppi_pt).at(jj) > 9999) continue;
+      TLorentzVector puppiJet;
+      puppiJet.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(jj), (*data_.jetAK8_puppi_eta).at(jj), (*data_.jetAK8_puppi_phi).at(jj), (*data_.jetAK8_puppi_e).at(jj) );
+      float dR = puppiJet.DeltaR(TLV);
       if(dR > dRmin) continue;
       dRmin = dR;
       PUPPIjetMatchIndex = jj;
+      puppijet_tlv1 = puppiJet;
     }
     
     if( !usePuppiSD_){
       if ( (*data_.jetAK8_prunedmass)[j] < jetmass1 ) continue;
       jetmass1 = (*data_.jetAK8_prunedmass)[j];
-      bestjet_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      bestjet_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
       foundJet = true;
       jetIndex = j;
       PUPPIjetIndex1 = PUPPIjetMatchIndex;
     }
     else if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
     else{
-      float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex) );
+      float puppiCorr = getPUPPIweight( puppijet_tlv1.Pt(), puppijet_tlv1.Eta() );
       float corrMass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
-      corrMass = getJetMassScale(corrMass,(*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex));
-      // std::cout<<"Found matching jet with mass = " << corrMass << " >/< jetmass so far = " << jetmass1 <<std::endl;
+      corrMass = getJetMassScale(corrMass, (*data_.jetAK8_jer_sigma_pt).at(j), puppijet_tlv1, TLV);
       if ( corrMass < jetmass1 ) continue;
-       // std::cout<<"Found new jet with mass = " << corrMass << " > " << jetmass1 <<std::endl;
       jetmass1 = corrMass;
-      bestjet_tlv.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      bestjet_tlv.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
       foundJet = true;
       jetIndex = j;
       PUPPIjetIndex1 = PUPPIjetMatchIndex;
     }
-  }
-  // std::cout<<""<<std::endl; std::cout<<"Done looping over jets! Selected jet with pt =  "<< bestjet_tlv.Pt() <<" and mass = "<< jetmass1<< std::endl; std::cout<<""<<std::endl;
- 
+  } 
   
-  PUPPIjetMatchIndex = 999;
-
+  
+  //Make sure jet2 passes loose ID, pT and eta cuts
   for( int j = 0; j < data_.njetsAK8 ; ++j ){
+    if( j == jetIndex ) continue;
     float jetPT = getJetEnergyScale( j );
+    if( Channel_.find("dijet")!= std::string::npos && jetPT <= JetPtCutTight_ )continue;    
     TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
-    if( Channel_.find("dijet")!= std::string::npos && TLV.Pt() <= JetPtCutTight_    )continue;    
     if( fabs( TLV.Eta())  >= JetEtaCut_ )continue;
+    
+    //Find PUPPI match
+    int PUPPIjetMatchIndex = 999;
     float dRmin  = 999;
-    for( int jj = 0; jj < vpuppiJets.size() ; ++jj ){  
-      float dR = vpuppiJets[jj].DeltaR(TLV);
+    TLorentzVector puppijet_tlv1;
+    for( int jj = 0; jj < (data_.jetAK8_puppi_softdrop_massUnCorr)->size() ; ++jj ){  
+      if ((*data_.jetAK8_puppi_pt).at(jj) < 0.001 || (*data_.jetAK8_puppi_pt).at(jj) > 9999 || jj == PUPPIjetIndex1 ) continue;
+      TLorentzVector puppiJet;
+      puppiJet.SetPtEtaPhiE( (*data_.jetAK8_puppi_pt).at(jj), (*data_.jetAK8_puppi_eta).at(jj), (*data_.jetAK8_puppi_phi).at(jj), (*data_.jetAK8_puppi_e).at(jj) );
+      float dR = puppiJet.DeltaR(TLV);
       if(dR > dRmin) continue;
       dRmin = dR;
       PUPPIjetMatchIndex = jj;
+      puppijet_tlv1 = puppiJet;
     }
+    
     if( usePuppiSD_ and PUPPIjetMatchIndex == 999) continue;
     else if( !usePuppiSD_){
       if ( (*data_.jetAK8_prunedmass)[j] < jetmass2 or j == jetIndex) continue;
@@ -1466,12 +1467,12 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
       PUPPIjetIndex2 = PUPPIjetMatchIndex;
     }
     else if( usePuppiSD_){
-      float puppiCorr = getPUPPIweight( (*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex) , (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex) );
+      float puppiCorr = getPUPPIweight(puppijet_tlv1.Pt(), puppijet_tlv1.Eta() );
       float corrMass = (*data_.jetAK8_puppi_softdrop_massUnCorr)[PUPPIjetMatchIndex]*puppiCorr;
-      corrMass = getJetMassScale (corrMass,(*data_.jetAK8_puppi_pt).at(PUPPIjetMatchIndex), (*data_.jetAK8_puppi_eta).at(PUPPIjetMatchIndex));
+      corrMass = getJetMassScale(corrMass, (*data_.jetAK8_jer_sigma_pt).at(j),puppijet_tlv1,TLV);
       if ( corrMass < jetmass2  or PUPPIjetMatchIndex == PUPPIjetIndex1 ) continue;
       jetmass2 = corrMass;
-      bestjet2_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      bestjet2_tlv.SetPtEtaPhiE( jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
       foundJet2 = true;
       jetIndex2 = j;
       PUPPIjetIndex2 = PUPPIjetMatchIndex;
@@ -2908,8 +2909,6 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
   
   Hist( "JetPt_preSmearing" )->Fill(ptold);
   
-  // std::cout<< "jet pt old = " << ptold << std::endl;
-  
   //JEC already applied!
   //JER: Smear all jets by default (! NOT systematics)
   //-----------------------------------------------------------------------------------------------------  
@@ -2926,7 +2925,7 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
 
   // We recommend using "hybrid" method: apply scaling for well matched jets; apply smearing for the rest.
   //-----------------------------------------------------------------------------------------------------
-  if( ! (scaleUncPar_.find("JER") != std::string::npos)  ){  //Dont smear jets used when computing JER systematics!
+  if(! (scaleUncPar_.find("JER") != std::string::npos)){  //Dont smear jets used when computing JER systematics!
     //First try scaling:   
     for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
       TLorentzVector genJet;
@@ -2940,8 +2939,6 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
     }
     AK8jet.SetPtEtaPhiE( pt , eta, phi , e );
   }
-  // std::cout<< "Gauss width  = " << TMath::Sqrt(jerSF*jerSF-1)*(jerSigmaPt*AK8jet.Pt()) << std::endl;
-  // std::cout<< "jet pt after smearing = " << pt << std::endl;
   Hist( "JetPt_postSmearing" )->Fill(pt);
   
   // Now do systematics
@@ -2961,22 +2958,14 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
       if( AK8jet.DeltaR(genJet) > 0.4 || ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
       pt = max(0., genJet.Pt() + ( jerSFUp*(AK8jet.Pt()-genJet.Pt()) ) );
     }
-    //Scaling failed, move to smearing: 
-    if( pt == 0){
-      pt = tr_->Gaus( ptold, TMath::Sqrt(jerSFUp*jerSFUp-1)*(jerSigmaPt*AK8jet.Pt()) ); // Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
-    }
   }
   else if( scaleUncPar_.find("JERdown") != std::string::npos  ){
     //First try scaling:   
     for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
       TLorentzVector genJet;
       genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
-      if( AK8jet.DeltaR(genJet) > 0.4 || ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
+      if( AK8jet.DeltaR(genJet) > 0.4) continue;
       pt = max(0., genJet.Pt() + ( jerSFDown*(AK8jet.Pt()-genJet.Pt()) ) );
-    }
-    //Scaling failed, move to smearing: 
-    if( pt == 0){
-      pt = tr_->Gaus( ptold, TMath::Sqrt(jerSFDown*jerSFDown-1)*(jerSigmaPt*AK8jet.Pt()) ); // Randomly smear corrected reco jet pT using a Gaussian of the width √(SF^2-1) * sigma_MC_PT.
     }
   }
   
@@ -2985,8 +2974,8 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
   return pt;
 }
 ////////////////////////////////// SMEAR WITH JET ENERGY SCALE UNCETAINTY AND RESOLUTION /////////////////////////////////////////////////////////////////
-double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float puppipt, float puppieta ){
-  
+double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float jerSigmaPt, TLorentzVector puppijet_tlv, TLorentzVector AK8jet_tlv ){
+
   float mass             = 0;             
   float jms              = JMS_;
   float jmsUnc           = JMSunc_;
@@ -2994,50 +2983,67 @@ double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float puppipt, float 
   float jmrUnc           = JMRunc_;
   float massResolution   = 0;
   
-  if( fabs(puppieta) <= 1.3 ){
-    massResolution = puppisd_resolution_cen->Eval( puppipt );
+  if( fabs(puppijet_tlv.Eta()) <= 1.3 ){
+    massResolution = puppisd_resolution_cen->Eval( puppijet_tlv.Pt() );
   }
   else{
-    massResolution = puppisd_resolution_for->Eval( puppipt );
+    massResolution = puppisd_resolution_for->Eval( puppijet_tlv.Pt() );
   }
-  
-  
-  
-  
   
   mass = oldmass*jms;
-  Hist( "SoftdropMass_preSmearing" )->Fill(mass);
-  // std::cout<< "------------ Start mass scaling ------------ " << std::endl;
-//   std::cout<< "1) Jet mass before    = " << oldmass << std::endl;
-//   std::cout<< "2) Jet mass after JMS = " << mass << std::endl;
-//
-//   std::cout<< "                      " << std::endl;
-//   std::cout<< "Jet mass resolution = " << massResolution << std::endl;
-//   std::cout<< "Smearing factor     = " << TMath::Sqrt(jmr*jmr-1)*(massResolution-1)*mass << std::endl;
-//   std::cout<< "                      " << std::endl;
-  
-  if( !(scaleUncPar_.find("JMR")!= std::string::npos) ) mass = tr_->Gaus( mass, TMath::Sqrt(jmr*jmr-1)*(massResolution-1)*mass);
-  // std::cout<< "3) Jet mass after JMR = " << mass << std::endl;
-  
-   Hist( "SoftdropMass_postSmearing" )->Fill(mass);
+  Hist( "SoftdropMass_preJMR"  )->Fill(mass);
+
+  bool scaled = false;
+  if( !(scaleUncPar_.find("JMR")!= std::string::npos) ){
+    //First try scaling:
+    for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+      if( (*data_.genJetAK8_pt).at(j) < 0.01 ) continue;
+      TLorentzVector genJet;
+      genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+      if( AK8jet_tlv.DeltaR(genJet) > 0.4 || ( fabs(AK8jet_tlv.Pt()-genJet.Pt()) > (3*AK8jet_tlv.Pt()*jerSigmaPt))) continue;
+      float genMass = (*data_.genJetAK8_softdropmass).at(j);
+      mass = max(float(0.), genMass + ((jmr-1)*(mass-genMass)));
+      Hist( "SoftdropMass_postScaling"  )->Fill( mass );
+      scaled = true; 
+      break;
+    }
+    //Scaling failed, move to smearing:
+    if( !scaled ){
+      mass = tr_->Gaus( mass, TMath::Sqrt(jmr*jmr-1)*(massResolution-1)*mass);
+      Hist( "SoftdropMass_postSmearing" )->Fill( mass );
+    }
+  }
   // Now do systematics
   if( scaleUncPar_.find("JMSup")   != std::string::npos  ){
-    mass = mass/jms; 
+    mass = mass/jms;
     mass = mass*(jms+jmsUnc);
   }
-  else if( scaleUncPar_.find("JMSdown") != std::string::npos  ){ 
-    mass = mass/jms; 
+  else if( scaleUncPar_.find("JMSdown") != std::string::npos  ){
+    mass = mass/jms;
     mass = mass*(jms-jmsUnc);
-  } 
+  }
   else if( scaleUncPar_.find("JMRup") != std::string::npos  ){
-    mass = tr_->Gaus( mass, TMath::Sqrt((jmr+jmrUnc)*(jmr+jmrUnc)-1)*massResolution*mass);
+    for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+      if( (*data_.genJetAK8_pt).at(j) < 0.01 ) continue;
+      float genMass = (*data_.genJetAK8_softdropmass).at(j);
+      TLorentzVector genJet;
+      genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+      if( AK8jet_tlv.DeltaR(genJet) > 0.4) continue;
+      mass = max(float(0.), genMass + ((jmr+jmrUnc-1)*(mass-genMass)));
+    }
   }
   else if( scaleUncPar_.find("JMRdown") != std::string::npos  ){
-    mass = tr_->Gaus( mass, TMath::Sqrt((jmr-jmrUnc)*(jmr-jmrUnc)-1)*massResolution*mass);
+    for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
+      if( (*data_.genJetAK8_pt).at(j) < 0.01 ) continue;
+      float genMass = (*data_.genJetAK8_softdropmass).at(j);
+      TLorentzVector genJet;
+      genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
+      if( AK8jet_tlv.DeltaR(genJet) > 0.4) continue;
+      mass = max(float(0.), genMass + ((jmr-jmrUnc-1)*(mass-genMass)));
+    }
   }
-  // std::cout<< "4) Jet mass after sys = " << mass << std::endl;
-
-
+  
+  Hist( "SoftdropMass_postJMR" )->Fill(mass);
   return mass;
 }
 

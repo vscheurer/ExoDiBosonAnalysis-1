@@ -88,7 +88,7 @@ public:
   void doWTagEfficiency         ( TString infile );
   float getPUPPIweight          ( float puppipt, float puppieta );
   double getJetEnergyScale      ( int ak8JetID );
-  double getJetMassScale        ( float mass, float puppipt, float puppieta );
+  double getJetMassScale        ( float mass, float jerSigmaPt, TLorentzVector puppijet_tlv, TLorentzVector AK8jet_tlv );
 
   void setPredictedDistribution();
      
