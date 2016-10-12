@@ -32,13 +32,13 @@ def drawMass(sys):
   outpath = '/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/forSystematics/'
     
   masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
-  masses = [1000]
   
   signals = ['%s'%opts.signal]
-  if opts.signal == 'all':
+  if opts.signal == 'ALL':
     signals = ['BulkWW','BulkZZ','WprimeWZ',"ZprimeWW"]
   
   for signal in signals:
+    if signal.find("BulkZZ")!=-1: masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000]
   
     fout = ['%s/%s/%ssys_HPVV_%s.txt'%(outpath,sys,sys,signal),'%s/%s/%ssys_LPVV_%s.txt'%(outpath,sys,sys,signal),
             '%s/%s/%ssys_HPWW_%s.txt'%(outpath,sys,sys,signal),'%s/%s/%ssys_LPWW_%s.txt'%(outpath,sys,sys,signal),
@@ -146,13 +146,62 @@ def drawMass(sys):
         gPad.Update()
         
         gPad.GetListOfPrimitives().Print()
-        c1.Print(outpath+"/control-plots/%s%s_%s_%s.pdf"%(signal,mass,sys,debugs[f].replace(" category","").replace(" ","")))
+        c1.Print(outpath+"/control-plots/%s%s_%s_%s_jet1.pdf"%(signal,mass,sys,debugs[f].replace(" category","").replace(" ","")))
         tfileDOWN.Close()
         tfileDOWN.Delete()
         tfileCV.Close()
         tfileCV.Delete()
         tfileUP.Close()
         tfileUP.Delete()
+        
+        
+        l = TLegend(0.7550336,0.7692308,0.9060403,0.9090909)
+        l.SetTextSize(0.035)
+        l.SetLineColor(0)
+        l.SetShadowColor(0)
+        l.SetLineStyle(1)
+        l.SetLineWidth(1)
+        l.SetFillColor(0)
+        l.SetFillStyle(0)
+        l.SetMargin(0.35)
+        
+        #Scale up value
+        fnameUP = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
+        tfileUP = ROOT.TFile.Open(fnameUP,'READ')
+        treeUP = tfileUP.Get("tree")
+        treeUP.Draw("jet_puppi_softdrop_jet2",cuts[f],"")
+        gPad.GetListOfPrimitives().At(0).SetLineColor(kRed)
+        l.AddEntry(gPad.GetListOfPrimitives().At(0) ,"%s up"%sys,"l")
+        
+        #Scale down value
+        fnameDOWN = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
+        tfileDOWN = ROOT.TFile.Open(fnameDOWN,'READ')
+        treeDOWN = tfileDOWN.Get("tree")
+        treeDOWN.Draw("jet_puppi_softdrop_jet2",cuts[f],"same")
+        gPad.GetListOfPrimitives().At(1).SetLineColor(kGreen)
+        l.AddEntry(gPad.GetListOfPrimitives().At(1) ,"%s down"%sys,"l")
+        
+        fnameCV = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
+        tfileCV = ROOT.TFile.Open(fnameCV,'READ')
+        treeCV  = tfileCV.Get("tree")
+        treeCV.Draw("jet_puppi_softdrop_jet2",cuts[f],"same")
+        gPad.GetListOfPrimitives().At(2).SetLineColor(kBlack)
+        l.AddEntry(gPad.GetListOfPrimitives().At(2) ,"%s CV"%sys,"l")
+        # htemp.SetLineColor(kRed)
+        
+        gPad.Update()
+        l.Draw("same")
+        gPad.Update()
+        
+        gPad.GetListOfPrimitives().Print()
+        c1.Print(outpath+"/control-plots/%s%s_%s_%s_jet2.pdf"%(signal,mass,sys,debugs[f].replace(" category","").replace(" ","")))
+        tfileDOWN.Close()
+        tfileDOWN.Delete()
+        tfileCV.Close()
+        tfileCV.Delete()
+        tfileUP.Close()
+        tfileUP.Delete()
+        
        
 
        

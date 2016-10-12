@@ -8,6 +8,7 @@
   <Package Name="ExoDiBosonAnalysis.par" />
       
   <Cycle Name="ExoDiBosonAnalysis" OutputDirectory="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/forSystematics/" PostFix="" ProofServer="lite" ProofWorkDir="" RunMode="LOCAL" TargetLumi="1.0">
+    
 
     <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkWW_13TeV_1000GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToWW_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToWW_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
@@ -15,7 +16,7 @@
       <OutputTree Name="tree" />
     </InputData>
 
-    <!-- <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkWW_13TeV_1200GeV">
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkWW_13TeV_1200GeV">
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToWW_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToWW_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
@@ -73,8 +74,203 @@
       <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToWW_narrow_M-4500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToWW_narrow_M-4500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
       <InputTree Name="ntuplizer/tree" />
       <OutputTree Name="tree" />
-    </InputData> -->
+    </InputData>
 
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_1000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_1200GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_1400GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-1400_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-1400_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_1600GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-1600_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-1600_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_1800GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-1800_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-1800_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_2000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-2000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-2000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_2500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-2500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-2500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_3000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-3000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-3000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_3500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-3500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-3500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="BulkZZ_13TeV_4000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/BulkGravToZZToZhadZhad_narrow_M-4000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_BulkGravToZZToZhadZhad_narrow_M-4000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_1000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_1200GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_1400GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-1400_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-1400_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_1600GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-1600_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-1600_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_1800GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-1800_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-1800_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_2000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-2000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-2000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_2500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-2500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-2500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_3000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-3000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-3000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_3500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-3500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-3500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_4000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-4000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-4000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="WprimeWZ_13TeV_4500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/WprimeToWZToWhadZhad_narrow_M-4500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_WprimeToWZToWhadZhad_narrow_M-4500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_1000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-1000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_1200GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-1200_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_1400GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-1400_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-1400_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_1600GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-1600_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-1600_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_1800GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-1800_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-1800_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_2000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-2000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-2000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_2500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-2500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-2500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_3000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-3000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-3000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_3500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-3500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-3500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+
+    </InputData>
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_4000GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-4000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-4000_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
+
+    <InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="VV" Type="ZprimeWW_13TeV_4500GeV">
+      <In FileName="root://t3dcachedb.psi.ch:1094//pnfs/psi.ch/cms/trivcat/store/t3groups/uniz-higgs/Spring16/ZprimeToWW_narrow_M-4500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/EXOVVTree_ZprimeToWW_narrow_M-4500_13TeV-madgraph_RunIISpring16MiniAODv2_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_1.root" Lumi="1.0"/>
+      <InputTree Name="ntuplizer/tree" />
+      <OutputTree Name="tree" />
+    </InputData>
     
     <UserConfig>                    
                    
@@ -124,6 +320,7 @@
       <Item Name="BTagEff4fatjetData" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/BtagEfficienciesMap_fatjets_Wp.root" />
       <Item Name="BTagEff4subjetData" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/btag-efficiency-maps.root" />
       <Item Name="PUPPIJEC" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/puppiCorr.root" />
+      <Item Name="PUPPIJMR" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/jetmassResolution.root" />
       
       <Item Name="scaleUncPar" Value="JMSup" />
       <Item Name="JMS" Value="0.999" />

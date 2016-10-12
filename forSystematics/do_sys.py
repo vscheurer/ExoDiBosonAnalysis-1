@@ -5,6 +5,7 @@ import sys
 from optparse import OptionParser
 import ROOT
 from ROOT import *
+import math
 
 argv = sys.argv
 parser = OptionParser()
@@ -14,6 +15,25 @@ parser.add_option('-c', '--channel',action="store",type="string",dest="channel",
 parser.add_option('-S', '--signal',action="store",type="string",dest="signal",default="BulkWW")  #VBulkWW BulkZZ WprimeWZ ZprimeWW QstarQW QstarQZ
 (opts, args) = parser.parse_args(argv)
 
+
+unc_yield_jes_up = []
+unc_yield_jer_up = []
+unc_yield_jms_up = []
+unc_yield_jmr_up = []
+unc_migration_jes_up = []
+unc_migration_jer_up = []
+unc_migration_jms_up = []
+unc_migration_jmr_up = []
+
+unc_yield_jes_down = []
+unc_yield_jer_down = []
+unc_yield_jms_down = []
+unc_yield_jmr_down = []
+unc_migration_jes_down = []
+unc_migration_jer_down = []
+unc_migration_jms_down = []
+unc_migration_jmr_down = []
+  
 def createOutfiles(sys, channel):
   xmlfile = '/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/config/sys/%s_sys.xml' %channel
   tree = ET.parse(xmlfile)
@@ -54,10 +74,14 @@ def calculateYields(sys):
   # masses = [1000]
   
   signals = ['%s'%opts.signal]
-  if opts.signal == 'all':
+  if opts.signal == 'ALL':
     signals = ['BulkWW','BulkZZ','WprimeWZ',"ZprimeWW"]
   
+  
+  
+  
   for signal in signals:
+    if signal.find("BulkZZ")!=-1: masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000]
   
     fout = ['%s/%s/%ssys_HPVV_%s.txt'%(outpath,sys,sys,signal),'%s/%s/%ssys_LPVV_%s.txt'%(outpath,sys,sys,signal),
             '%s/%s/%ssys_HPWW_%s.txt'%(outpath,sys,sys,signal),'%s/%s/%ssys_LPWW_%s.txt'%(outpath,sys,sys,signal),
@@ -144,11 +168,40 @@ def calculateYields(sys):
        sup = up-cv
        sdown = down-cv
        if sup < 0 and sdown < 0: sdown = -sdown
-    
+       
+       if f == 0 or f == 1:
+         if sys.find("JES")!= -1: 
+           unc_yield_jes_up.append(math.fabs(sup*100/cv))
+           unc_yield_jes_down.append(math.fabs(sdown*100/cv))
+         elif sys.find("JER")!= -1: 
+           unc_yield_jer_up.append(math.fabs(sup*100/cv))
+           unc_yield_jer_down.append(math.fabs(sdown*100/cv))
+         elif sys.find("JMS")!= -1: 
+           unc_yield_jms_up.append(math.fabs(sup*100/cv))
+           unc_yield_jms_down.append(math.fabs(sdown*100/cv))
+         elif sys.find("JMR")!= -1: 
+           unc_yield_jmr_up.append(math.fabs(sup*100/cv))
+           unc_yield_jmr_down.append(math.fabs(sdown*100/cv))
+           
+       else:
+         if sys.find("JES")!= -1: 
+           unc_migration_jes_up.append(math.fabs(sup*100/cv))
+           unc_migration_jes_down.append(math.fabs(sdown*100/cv))
+         elif sys.find("JER")!= -1: 
+           unc_migration_jer_up.append(math.fabs(sup*100/cv))
+           unc_migration_jer_down.append(math.fabs(sdown*100/cv))
+         elif sys.find("JMS")!= -1: 
+           unc_migration_jms_up.append(math.fabs(sup*100/cv))
+           unc_migration_jms_down.append(math.fabs(sdown*100/cv))
+         elif sys.find("JMR")!= -1: 
+           unc_migration_jmr_up.append(math.fabs(sup*100/cv))
+           unc_migration_jmr_down.append(math.fabs(sdown*100/cv))
+           
        print '%s_M%i %.3f %.3f\n' %(signal,mass,sup*100/cv,sdown*100/cv)
        outfile.write('%s_M%i %.3f %.3f\n' %(signal,mass,sup*100/cv,sdown*100/cv))
      
       outfile.close()
+  
        
 ### Start  main
 if __name__ == '__main__':
@@ -183,4 +236,24 @@ if __name__ == '__main__':
   else:
     calculateYields(opts.sys)
   
+  print " Max and min uncertainties"
+  unc_yield_jes_up.sort();         unc_yield_jes_down.sort()
+  unc_yield_jer_up.sort();         unc_yield_jer_down.sort()
+  unc_yield_jms_up.sort();         unc_yield_jms_down.sort()
+  unc_yield_jmr_up.sort();         unc_yield_jmr_down.sort()
+  unc_migration_jes_up.sort();     unc_migration_jes_down.sort()
+  unc_migration_jer_up.sort();     unc_migration_jer_down.sort()
+  unc_migration_jms_up.sort();     unc_migration_jms_down.sort()
+  unc_migration_jmr_up.sort();     unc_migration_jmr_down.sort()
+  
+  print "                  UP            DOWN"
+  print "               min/max        min/max"
+  print "yield_jes     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jes_up[0],unc_yield_jes_up[-1], unc_yield_jes_down[0], unc_yield_jes_down[-1])
+  print "yield_jer     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jer_up[0],unc_yield_jer_up[-1], unc_yield_jer_down[0], unc_yield_jer_down[-1])
+  print "yield_jms     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jms_up[0],unc_yield_jms_up[-1], unc_yield_jms_down[0], unc_yield_jms_down[-1])
+  print "yield_jmr     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jmr_up[0],unc_yield_jmr_up[-1], unc_yield_jmr_down[0], unc_yield_jmr_down[-1])
+  print "migration_jes %.1f/%.1f      %.1f/%.1f" %(unc_migration_jes_up[0],unc_migration_jes_up[-1], unc_migration_jes_down[0], unc_migration_jes_down[-1])
+  print "migration_jer %.1f/%.1f      %.1f/%.1f" %(unc_migration_jer_up[0],unc_migration_jer_up[-1], unc_migration_jer_down[0], unc_migration_jer_down[-1])
+  print "migration_jms %.1f/%.1f      %.1f/%.1f" %(unc_migration_jms_up[0],unc_migration_jms_up[-1], unc_migration_jms_down[0], unc_migration_jms_down[-1])
+  print "migration_jmr %.1f/%.1f      %.1f/%.1f" %(unc_migration_jmr_up[0],unc_migration_jmr_up[-1], unc_migration_jmr_down[0], unc_migration_jmr_down[-1])
         
