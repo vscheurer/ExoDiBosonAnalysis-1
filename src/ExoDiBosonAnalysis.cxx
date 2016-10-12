@@ -513,7 +513,7 @@ void ExoDiBosonAnalysis::ExecuteEvent( const SInputData&, Double_t ) throw( SErr
     
     Hist( "runNumber" )->Fill(data_.EVENT_run);
     
-    if( isSignal_ && runOnMC_){
+    if( isSignal_ && runOnMC_ && GenStudies_){
       TLorentzVector genP;
       std::vector<TLorentzVector> daus;
       std::vector<TLorentzVector> myJets;
@@ -1223,69 +1223,69 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
   if( MET > 0. ) Hist( "METsumET" )->Fill(MET/SumEt, weight_ );
   if( MET > 0. ) Hist( "MET" )->Fill(MET, weight_ );
   
-  if(!usePuppiSD_){
-    if( Channel_ == "VVdijet"){
-      
-      if( Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_ && Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_){
-            
-        passedGroomedMassCut = true;
-        Hist( "Tau21_punzi1"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
-        Hist( "Tau21_punzi2"	)->Fill( Vcand.at(1).tau2/Vcand.at(1).tau1,weight_ );
-      
-        float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
-        for( int i = 0; i < abs(Vcand.size()) ; i++){
-          Hist( "Tau21_punzi"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
-          if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ ); 
-          if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          if(MJJ > 0.8*1800 && MJJ < 1.2*1800)Hist( "Tau21_punzi1v8TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          if(MJJ > 0.8*2000 && MJJ < 1.2*2000)Hist( "Tau21_punzi2TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          if(MJJ > 0.8*2500 && MJJ < 1.2*2500)Hist( "Tau21_punzi2v5TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          if(MJJ > 0.8*3000 && MJJ < 1.2*3000)Hist( "Tau21_punzi3TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-          if(MJJ > 0.8*4000 && MJJ < 1.2*4000)Hist( "Tau21_punzi4TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
-        }
-      }
-    }
-        
-    if (Channel_ == "qVdijet"){
-      for( int i = 0; i < abs(Vcand.size()) ; i++){
-        if(!(Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_) ) continue;
-        passedGroomedMassCut = true;
-        jetINDXPunzi=i;
-        Hist( "Tau21_punzi"	)->Fill( Vcand.at(jetINDXPunzi).tau2/Vcand.at(jetINDXPunzi).tau1,weight_ );
-      }
-    }
-  }
-      
-  else if(usePuppiSD_){
-    if(Channel_ == "VVdijet" && Vcand.at(0).puppi_softdropMass > mWLow_ && Vcand.at(0).puppi_softdropMass <= mZHigh_ && Vcand.at(1).puppi_softdropMass > mWLow_ && Vcand.at(1).puppi_softdropMass <= mZHigh_ ){
-      passedGroomedMassCut = true;
-      Hist( "Tau21_punzi1"	)->Fill( Vcand.at(0).puppi_tau2/Vcand.at(0).puppi_tau1,weight_ );
-      Hist( "Tau21_punzi2"	)->Fill( Vcand.at(1).puppi_tau2/Vcand.at(1).puppi_tau1,weight_ );
-      
-      float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
-      for( int i = 0; i < abs(Vcand.size()) ; i++){
-        Hist( "Tau21_punzi"	)->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
-        if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*1800 && MJJ < 1.2*1800)Hist( "Tau21_punzi1v8TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*2000 && MJJ < 1.2*2000)Hist( "Tau21_punzi2TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*2500 && MJJ < 1.2*2500)Hist( "Tau21_punzi2v5TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*3000 && MJJ < 1.2*3000)Hist( "Tau21_punzi3TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-        if(MJJ > 0.8*4000 && MJJ < 1.2*4000)Hist( "Tau21_punzi4TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ ); 
-      }
-    }
-
-      if (Channel_ == "qVdijet"){
-        for( int i = 0; i < abs(Vcand.size()) ; i++){
-          if(!(Vcand.at(i).puppi_softdropMass > mWLow_ && Vcand.at(i).puppi_softdropMass <= mZHigh_) ) continue;
-          passedGroomedMassCut = true;
-          jetINDXPunzi=i;
-          Hist( "Tau21_punzi"	)->Fill( Vcand.at(jetINDXPunzi).puppi_tau1/Vcand.at(jetINDXPunzi).puppi_tau1,weight_ );
-        }
-      }
-    }
+  // if(!usePuppiSD_){
+  //   if( Channel_ == "VVdijet"){
+  //
+  //     if( Vcand.at(0).prunedMass > mWLow_ && Vcand.at(0).prunedMass <= mZHigh_ && Vcand.at(1).prunedMass > mWLow_ && Vcand.at(1).prunedMass <= mZHigh_){
+  //
+  //       passedGroomedMassCut = true;
+  //       Hist( "Tau21_punzi1"  )->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+  //       Hist( "Tau21_punzi2"  )->Fill( Vcand.at(1).tau2/Vcand.at(1).tau1,weight_ );
+  //
+  //       float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
+  //       for( int i = 0; i < abs(Vcand.size()) ; i++){
+  //         Hist( "Tau21_punzi"  )->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+  //         if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*1800 && MJJ < 1.2*1800)Hist( "Tau21_punzi1v8TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*2000 && MJJ < 1.2*2000)Hist( "Tau21_punzi2TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*2500 && MJJ < 1.2*2500)Hist( "Tau21_punzi2v5TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*3000 && MJJ < 1.2*3000)Hist( "Tau21_punzi3TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //         if(MJJ > 0.8*4000 && MJJ < 1.2*4000)Hist( "Tau21_punzi4TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
+  //       }
+  //     }
+  //   }
+  //
+  //   if (Channel_ == "qVdijet"){
+  //     for( int i = 0; i < abs(Vcand.size()) ; i++){
+  //       if(!(Vcand.at(i).prunedMass > mWLow_ && Vcand.at(i).prunedMass <= mZHigh_) ) continue;
+  //       passedGroomedMassCut = true;
+  //       jetINDXPunzi=i;
+  //       Hist( "Tau21_punzi"  )->Fill( Vcand.at(jetINDXPunzi).tau2/Vcand.at(jetINDXPunzi).tau1,weight_ );
+  //     }
+  //   }
+  // }
+  //
+  // else if(usePuppiSD_){
+  //   if(Channel_ == "VVdijet" && Vcand.at(0).puppi_softdropMass > mWLow_ && Vcand.at(0).puppi_softdropMass <= mZHigh_ && Vcand.at(1).puppi_softdropMass > mWLow_ && Vcand.at(1).puppi_softdropMass <= mZHigh_ ){
+  //     passedGroomedMassCut = true;
+  //     Hist( "Tau21_punzi1"  )->Fill( Vcand.at(0).puppi_tau2/Vcand.at(0).puppi_tau1,weight_ );
+  //     Hist( "Tau21_punzi2"  )->Fill( Vcand.at(1).puppi_tau2/Vcand.at(1).puppi_tau1,weight_ );
+  //
+  //     float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
+  //     for( int i = 0; i < abs(Vcand.size()) ; i++){
+  //       Hist( "Tau21_punzi"  )->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+  //       if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*1800 && MJJ < 1.2*1800)Hist( "Tau21_punzi1v8TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*2000 && MJJ < 1.2*2000)Hist( "Tau21_punzi2TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*2500 && MJJ < 1.2*2500)Hist( "Tau21_punzi2v5TeV")->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*3000 && MJJ < 1.2*3000)Hist( "Tau21_punzi3TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //       if(MJJ > 0.8*4000 && MJJ < 1.2*4000)Hist( "Tau21_punzi4TeV"  )->Fill( Vcand.at(i).puppi_tau2/Vcand.at(i).puppi_tau1,weight_ );
+  //     }
+  //   }
+  //
+  //     if (Channel_ == "qVdijet"){
+  //       for( int i = 0; i < abs(Vcand.size()) ; i++){
+  //         if(!(Vcand.at(i).puppi_softdropMass > mWLow_ && Vcand.at(i).puppi_softdropMass <= mZHigh_) ) continue;
+  //         passedGroomedMassCut = true;
+  //         jetINDXPunzi=i;
+  //         Hist( "Tau21_punzi"  )->Fill( Vcand.at(jetINDXPunzi).puppi_tau1/Vcand.at(jetINDXPunzi).puppi_tau1,weight_ );
+  //       }
+  //     }
+  //   }
 
 
   // //Cut flow
@@ -1378,14 +1378,13 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   float  jetmass1  = -999;
   float  jetmass2  = -999;
 
-  
   int    PUPPIjetIndex1 = 999;
   int    PUPPIjetIndex2 = 999;
   
   //Make sure jet1 passes loose ID, pT and eta cuts
   TLorentzVector			TLV;
   for( int j = 0; j < data_.njetsAK8 ; ++j ){
-    float jetPT = getJetEnergyScale( j );
+    float jetPT = getJetEnergyScale( j );  
     if( Channel_.find("dijet")!= std::string::npos && jetPT <= JetPtCutTight_    )continue;   
     if( Channel_.find("WtagSF") != std::string::npos && jetPT <= 80.             )continue; //before used 80 here!!!
     TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
@@ -1432,13 +1431,14 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     }
   } 
   
-  
+  if ( Channel_.find("dijet")!= std::string::npos && !foundJet) return false;
+
   //Make sure jet2 passes loose ID, pT and eta cuts
-  for( int j = 0; j < data_.njetsAK8 ; ++j ){
+ for( int j = 0; j < data_.njetsAK8 ; ++j ){
     if( j == jetIndex ) continue;
     float jetPT = getJetEnergyScale( j );
     if( Channel_.find("dijet")!= std::string::npos && jetPT <= JetPtCutTight_ )continue;    
-    TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+    TLV.SetPtEtaPhiE( jetPT , (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
     if( Channel_.find("dijet")!= std::string::npos && (*data_.jetAK8_IDTight).at(j)    != 1         )continue;
     if( fabs( TLV.Eta())  >= JetEtaCut_ )continue;
     
@@ -1461,7 +1461,7 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     else if( !usePuppiSD_){
       if ( (*data_.jetAK8_prunedmass)[j] < jetmass2 or j == jetIndex) continue;
       jetmass2 = (*data_.jetAK8_prunedmass)[j];
-      bestjet2_tlv.SetPtEtaPhiE(jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (*data_.jetAK8_e).at(j) );
+      bestjet2_tlv.SetPtEtaPhiE(jetPT, (*data_.jetAK8_eta).at(j), (*data_.jetAK8_phi).at(j), (jetPT/(*data_.jetAK8_pt).at(j))*(*data_.jetAK8_e).at(j) );
       foundJet2 = true;
       jetIndex2 = j;
       PUPPIjetIndex2 = PUPPIjetMatchIndex;
@@ -1479,7 +1479,9 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
     }
   }
   
-  if( Channel_.find("dijet")!= std::string::npos && foundJet && foundJet2) foundJets = true;
+  if ( Channel_.find("dijet")!= std::string::npos && !foundJet2) return false;
+  
+  else if( Channel_.find("dijet")!= std::string::npos && foundJet && foundJet2) foundJets = true;
   else if( Channel_.find("WtagSF")!= std::string::npos && foundJet) foundJets = true;
   
   if( !foundJets) return false;
@@ -2925,12 +2927,15 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
 
   // We recommend using "hybrid" method: apply scaling for well matched jets; apply smearing for the rest.
   //-----------------------------------------------------------------------------------------------------
+  
   if(! (scaleUncPar_.find("JER") != std::string::npos)){  //Dont smear jets used when computing JER systematics!
     //First try scaling:   
     for( int j = 0; j < data_.ngenJetsAK8 ; ++j ){
       TLorentzVector genJet;
       genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
-      if( AK8jet.DeltaR(genJet) > 0.4 || ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
+      if( AK8jet.DeltaR(genJet) > 0.4) continue;
+      if( jerSF < 1.) pt = max(0., genJet.Pt() + ( jerSF*(AK8jet.Pt()-genJet.Pt()) ) );
+      if( ( fabs(AK8jet.Pt()-genJet.Pt()) > (3*AK8jet.Pt()*jerSigmaPt) ) ) continue;
       pt = max(0., genJet.Pt() + ( jerSF*(AK8jet.Pt()-genJet.Pt()) ) );
     }
     //Scaling failed, move to smearing: 
@@ -2965,7 +2970,7 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
       TLorentzVector genJet;
       genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
       if( AK8jet.DeltaR(genJet) > 0.4) continue;
-      pt = max(0., genJet.Pt() + ( jerSFDown*(AK8jet.Pt()-genJet.Pt()) ) );
+      pt = max(0., genJet.Pt() + (jerSFDown*(AK8jet.Pt()-genJet.Pt()) ) );
     }
   }
   
@@ -2975,6 +2980,8 @@ double ExoDiBosonAnalysis::getJetEnergyScale( int ak8JetID ){
 }
 ////////////////////////////////// SMEAR WITH JET ENERGY SCALE UNCETAINTY AND RESOLUTION /////////////////////////////////////////////////////////////////
 double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float jerSigmaPt, TLorentzVector puppijet_tlv, TLorentzVector AK8jet_tlv ){
+  
+  if( !isSignal_ ) return oldmass;
 
   float mass             = 0;             
   float jms              = JMS_;
@@ -3002,7 +3009,7 @@ double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float jerSigmaPt, TLo
       genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
       if( AK8jet_tlv.DeltaR(genJet) > 0.4 || ( fabs(AK8jet_tlv.Pt()-genJet.Pt()) > (3*AK8jet_tlv.Pt()*jerSigmaPt))) continue;
       float genMass = (*data_.genJetAK8_softdropmass).at(j);
-      mass = max(float(0.), genMass + ((jmr-1)*(mass-genMass)));
+      mass = max(float(0.), genMass + (jmr*(mass-genMass)));
       Hist( "SoftdropMass_postScaling"  )->Fill( mass );
       scaled = true; 
       break;
@@ -3029,7 +3036,7 @@ double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float jerSigmaPt, TLo
       TLorentzVector genJet;
       genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
       if( AK8jet_tlv.DeltaR(genJet) > 0.4) continue;
-      mass = max(float(0.), genMass + ((jmr+jmrUnc-1)*(mass-genMass)));
+      mass = max(float(0.), genMass + ((jmr+jmrUnc)*(mass-genMass)));
     }
   }
   else if( scaleUncPar_.find("JMRdown") != std::string::npos  ){
@@ -3039,7 +3046,7 @@ double ExoDiBosonAnalysis::getJetMassScale( float oldmass, float jerSigmaPt, TLo
       TLorentzVector genJet;
       genJet.SetPtEtaPhiE( (*data_.genJetAK8_pt).at(j), (*data_.genJetAK8_eta).at(j), (*data_.genJetAK8_phi).at(j), (*data_.genJetAK8_e).at(j) );
       if( AK8jet_tlv.DeltaR(genJet) > 0.4) continue;
-      mass = max(float(0.), genMass + ((jmr-jmrUnc-1)*(mass-genMass)));
+      mass = max(float(0.), genMass + ((jmr-jmrUnc)*(mass-genMass)));
     }
   }
   
