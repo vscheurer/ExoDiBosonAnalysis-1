@@ -6,6 +6,7 @@ from optparse import OptionParser
 import ROOT
 from ROOT import *
 import math
+import multiprocessing
 
 argv = sys.argv
 parser = OptionParser()
@@ -58,9 +59,35 @@ def createOutfiles(sys, channel):
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE JobConfiguration PUBLIC "" "/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/config/JobConfig.dtd">\n')
     tree.write(f, 'utf-8')
 
-  cmd = 'sframe_main %s' %(fname)
+def runSFrame(xml): 
+  cmd = 'sframe_main %s' %(xml)
   print cmd
   os.system(cmd)
+  
+def runMultiprocess(doSys, channel): 
+  
+  print "start multiprocess"
+  #gROOT.SetBatch(True)
+  #parallelProcesses = multiprocessing.cpu_count()
+  
+  files = []
+  for sys in doSys:
+    fname = '/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/config/sys/%s_%s.xml' %(channel,sys)
+    files.append(fname)
+
+  ## create Pool
+  #p = multiprocessing.Pool(parallelProcesses)
+  #print "Using %i parallel processes" %parallelProcesses
+
+  for f in files:
+    cmd = 'sframe_main %s &' %(f)
+    print cmd
+    os.system(cmd)
+    # run jobs
+    # p.apply_async(runSFrame, args = (f))
+
+ # p.close()
+  #p.join()
 
 def calculateYields(sys):
   
@@ -71,17 +98,16 @@ def calculateYields(sys):
     os.system('mkdir %s/%s' %(outpath,sys))
     
   masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
-  # masses = [1000]
+
   
   signals = ['%s'%opts.signal]
   if opts.signal == 'ALL':
     signals = ['BulkWW','BulkZZ','WprimeWZ',"ZprimeWW"]
   
-  
-  
-  
   for signal in signals:
-    if signal.find("BulkZZ")!=-1: masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000]
+    if signal.find("BulkZZ")!=-1: 
+      masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000]
+
   
     fout = ['%s/%s/%ssys_HPVV_%s.txt'%(outpath,sys,sys,signal),'%s/%s/%ssys_LPVV_%s.txt'%(outpath,sys,sys,signal),
             '%s/%s/%ssys_HPWW_%s.txt'%(outpath,sys,sys,signal),'%s/%s/%ssys_LPWW_%s.txt'%(outpath,sys,sys,signal),
@@ -223,20 +249,23 @@ if __name__ == '__main__':
     
   print "Doing systematics for: " ,doSys
   
-  # Run SFrame for given systematics (+central value)
-  for sys in doSys:
-    print "Creating output files for " ,sys
-    createOutfiles(sys,opts.channel)
-  
-  #Calculate yields 
+  # # Create XMLs for given systematics (+central value)
+  # for sys in doSys:
+  #   print "Creating output files for " ,sys
+  #   createOutfiles(sys,opts.channel)
+
+  # # Run SFrame for given systematics (+central value)
+  # runMultiprocess(doSys,opts.channel)
+  #
+  #Calculate yields
   if opts.sys == 'ALL':
     systematics = ['JES','JER','JMS','JMR']
     for s in systematics:
       calculateYields(s)
   else:
     calculateYields(opts.sys)
-  
-  print " Max and min uncertainties"
+
+  print "For %s:" %opts.signal
   unc_yield_jes_up.sort();         unc_yield_jes_down.sort()
   unc_yield_jer_up.sort();         unc_yield_jer_down.sort()
   unc_yield_jms_up.sort();         unc_yield_jms_down.sort()
@@ -245,15 +274,14 @@ if __name__ == '__main__':
   unc_migration_jer_up.sort();     unc_migration_jer_down.sort()
   unc_migration_jms_up.sort();     unc_migration_jms_down.sort()
   unc_migration_jmr_up.sort();     unc_migration_jmr_down.sort()
-  
+
   print "                  UP            DOWN"
   print "               min/max        min/max"
-  print "yield_jes     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jes_up[0],unc_yield_jes_up[-1], unc_yield_jes_down[0], unc_yield_jes_down[-1])
-  print "yield_jer     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jer_up[0],unc_yield_jer_up[-1], unc_yield_jer_down[0], unc_yield_jer_down[-1])
-  print "yield_jms     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jms_up[0],unc_yield_jms_up[-1], unc_yield_jms_down[0], unc_yield_jms_down[-1])
-  print "yield_jmr     %.1f/%.1f      %.1f/%.1f" %(unc_yield_jmr_up[0],unc_yield_jmr_up[-1], unc_yield_jmr_down[0], unc_yield_jmr_down[-1])
-  print "migration_jes %.1f/%.1f      %.1f/%.1f" %(unc_migration_jes_up[0],unc_migration_jes_up[-1], unc_migration_jes_down[0], unc_migration_jes_down[-1])
-  print "migration_jer %.1f/%.1f      %.1f/%.1f" %(unc_migration_jer_up[0],unc_migration_jer_up[-1], unc_migration_jer_down[0], unc_migration_jer_down[-1])
-  print "migration_jms %.1f/%.1f      %.1f/%.1f" %(unc_migration_jms_up[0],unc_migration_jms_up[-1], unc_migration_jms_down[0], unc_migration_jms_down[-1])
-  print "migration_jmr %.1f/%.1f      %.1f/%.1f" %(unc_migration_jmr_up[0],unc_migration_jmr_up[-1], unc_migration_jmr_down[0], unc_migration_jmr_down[-1])
-        
+  print "yield_jes     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jes_up[0],unc_yield_jes_up[-1], unc_yield_jes_down[0], unc_yield_jes_down[-1])
+  print "yield_jer     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jer_up[0],unc_yield_jer_up[-1], unc_yield_jer_down[0], unc_yield_jer_down[-1])
+  print "yield_jms     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jms_up[0],unc_yield_jms_up[-1], unc_yield_jms_down[0], unc_yield_jms_down[-1])
+  print "yield_jmr     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jmr_up[0],unc_yield_jmr_up[-1], unc_yield_jmr_down[0], unc_yield_jmr_down[-1])
+  print "migration_jes %.6f/%.6f      %.6f/%.6f" %(unc_migration_jes_up[0],unc_migration_jes_up[-1], unc_migration_jes_down[0], unc_migration_jes_down[-1])
+  print "migration_jer %.6f/%.6f      %.6f/%.6f" %(unc_migration_jer_up[0],unc_migration_jer_up[-1], unc_migration_jer_down[0], unc_migration_jer_down[-1])
+  print "migration_jms %.6f/%.6f      %.6f/%.6f" %(unc_migration_jms_up[0],unc_migration_jms_up[-1], unc_migration_jms_down[0], unc_migration_jms_down[-1])
+  print "migration_jmr %.6f/%.6f      %.6f/%.6f" %(unc_migration_jmr_up[0],unc_migration_jmr_up[-1], unc_migration_jmr_down[0], unc_migration_jmr_down[-1])
