@@ -690,7 +690,7 @@ double LumiWeight::getLumiWeight( TString sample ){
     }
     else if( sample.Contains("QCD_HT200to300" ) ){
       xSec_ = 1712000.;
-      genEvents_ = 38816436.;
+      genEvents_ = 38500860.; //Old? Dont know why this is different: 38816436. Used for VV an!;
     }
     else if( sample.Contains("QCD_HT500to700" ) ){
       xSec_ = 32100.;
@@ -702,12 +702,12 @@ double LumiWeight::getLumiWeight( TString sample ){
     }
     else if( sample.Contains("QCD_HT300to500" ) ){
       xSec_ = 347700.;
-      genEvents_ = 37875592.;
+      genEvents_ = 37221432.; ////Old? Dont know why this is different: .;
     }
     
     else if( sample.Contains( "TT" ) && sample.Contains("powheg")){
       xSec_ = 831.76;
-      genEvents_ = 92683848.; // Without ext samples!
+      genEvents_ = 32103976.; // !!Old? Dont know why this is different: 92683848.; // Without ext samples!
     }
     else if( sample.Contains("TTJets_HT-1200to2500")){
       xSec_ = 0.12;
@@ -735,12 +735,12 @@ double LumiWeight::getLumiWeight( TString sample ){
     }    
     else if( sample.Contains( "ST_t-channel_antitop" )  && sample.Contains("leptonDecays") ){
       xSec_ = 80.95*0.3272;
-      genEvents_ = 1682398.;
+      genEvents_ = 1632598; //1682398.;
     }       
 
     else if( sample.Contains( "ST_s-channel" ) ){ 
       xSec_ = 11.36*0.3272;
-      genEvents_ = 622986.;
+      genEvents_ = 593375; //622986.;
     }	  
     else if( sample.Contains( "ST_tW_top" ) ){ 
       xSec_ = 35.6;
@@ -752,7 +752,7 @@ double LumiWeight::getLumiWeight( TString sample ){
     }   
     else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){ 
       xSec_ = 1.21*1345.;//1292.;
-      genEvents_ = 27488666.;
+      genEvents_ = 26747710;// 27488666.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
       xSec_ = 1.21*359.7;//385.9;
@@ -764,7 +764,7 @@ double LumiWeight::getLumiWeight( TString sample ){
     } 
     else if( sample.Contains( "WJetsToLNu_HT-600To800" ) ){
       xSec_ = 1.21*12.05;//47.9;
-      genEvents_ = 3722340.;
+      genEvents_ = 3676840.;//3722340.;
     } 
     else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){ 
       xSec_ = 1.21*5.501;//47.9;
@@ -1040,135 +1040,158 @@ double LumiWeight::getLumiWeight( TString sample ){
     }
      
   }
-  if( sample.Contains( "QstarToQW_M-600" ) ){
-    xSec_ = 1.; //346.200000
-    genEvents_ = 30000.;
-  }  
-  else if( sample.Contains( "QstarToQW_M-800" ) ){
-    xSec_ = 1.; //108.700000
-    genEvents_ = 29999.;
-  }    
-  else if( sample.Contains( "QstarToQW_M-1000" ) ){
-    xSec_ = 1.; //108.700000
-    genEvents_ = 30000.;
-  }  
-  else if( sample.Contains( "QstarToQW_M-1200" ) ){
-    xSec_ = 1.; //65.840000
-    genEvents_ = 29999.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-1400" ) ){
-    xSec_ = 1.; //41.760000
-    genEvents_ = 29994.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-1600" ) ){
-    xSec_ = 1.; //108.700000
-    genEvents_ = 29997.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-1800" ) ){
-    xSec_ = 1.; //18.120000
-    genEvents_ = 29173.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-2000" ) ){
-    xSec_ = 1.; // 12.190000
-    genEvents_ = 29801.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-2500" ) ){
-    xSec_ = 1.; //4.835000
-    genEvents_ = 29987.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-3000" ) ){
-    xSec_ = 1.; //2.016000
-    genEvents_ = 29986.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-3500" ) ){
-    xSec_ = 1.; // 0.873300
-    genEvents_ = 29595.;
-  } 
-  else if( sample.Contains( "QstarToQW_M-4000" ) ){
-    xSec_ = 1.; // 0.425500
-    genEvents_ = 29837.;
-  }
-  else if( sample.Contains( "QstarToQW_M-4500" ) ){
-    xSec_ = 1.; //0.219900
-    genEvents_ = 29631.;
-  }
-  else if( sample.Contains( "QstarToQW_M-5000" ) ){
-    xSec_ = 1.; //0.124400
-    genEvents_ = 29980.;
-  }   
-  else if( sample.Contains( "QstarToQW_M-6000" ) ){
-    xSec_ = 1.; //0.048910
-    genEvents_ = 28130.;
-  }  
-  else if( sample.Contains( "QstarToQW_M-7000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29971.;
-  }
-
-  else if( sample.Contains( "QstarToQZ_M-600" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 30000.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-800" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 30000.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-1000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29862.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-1200" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29999.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-1400" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29537.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-1600" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29690.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-1800" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29994.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-2000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29716.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-2500" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29720.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-3000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29790.;
-  }  
-  else if( sample.Contains( "QstarToQZ_M-3500" ) ){
-    xSec_ = 1.; //0.316400
-    genEvents_ = 29879.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-4000" ) ){
-    xSec_ = 1.; //0.152600
-    genEvents_ = 29893.;
-  } 
-  else if( sample.Contains( "QstarToQZ_M-4500" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29499.;
-  }   
-  else if( sample.Contains( "QstarToQZ_M-5000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29848.;
-  }     
-  else if( sample.Contains( "QstarToQZ_M-6000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29965.;
-  }  
-  else if( sample.Contains( "QstarToQZ_M-7000" ) ){
-    xSec_ = 1.; //
-    genEvents_ = 29970.;
-  }   
+  if( sample.Contains( "QstarToQW_M_1000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 33000.;
+      }
+  else if( sample.Contains( "QstarToQW_M_1200" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32997.;
+      }
+  else if( sample.Contains( "QstarToQW_M_1400" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32999.;
+      }
+  else if( sample.Contains( "QstarToQW_M_1600" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32994.;
+      }
+  else if( sample.Contains( "QstarToQW_M_1800" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32994.;
+      }
+  else if( sample.Contains( "QstarToQW_M_2000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32991.;
+      }
+  else if( sample.Contains( "QstarToQW_M_2500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32984.;
+      }
+  else if( sample.Contains( "QstarToQW_M_3000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32979.;
+      }
+  else if( sample.Contains( "QstarToQW_M_3500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32973.;
+      }
+  else if( sample.Contains( "QstarToQW_M_4000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32965.;
+      }
+  else if( sample.Contains( "QstarToQW_M_4500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 19168.;
+      }
+  else if( sample.Contains( "QstarToQW_M_5000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32551.;
+      }
+  else if( sample.Contains( "QstarToQW_M_5500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32938.;
+      }
+  else if( sample.Contains( "QstarToQW_M_6000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32742.;
+      }
+  else if( sample.Contains( "QstarToQW_M_600"  ) ){
+      xSec_ = 1.;
+      genEvents_ =32800.;
+      }
+  else if( sample.Contains( "QstarToQW_M_6500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32934.;
+      }
+  else if( sample.Contains( "QstarToQW_M_7000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32136.;
+      }
+  else if( sample.Contains( "QstarToQW_M_7500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32945.;
+      }
+  else if( sample.Contains( "QstarToQW_M_800"  ) ){
+      xSec_ = 1.;
+      genEvents_ =32997.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_1000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32997.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_1200" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32997.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_1400" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32998.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_1600" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32993.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_1800" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32995.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_2000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 6200.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_2500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32983.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_3000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32780.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_3500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32978.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_4000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32960.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_4500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32966.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_5000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32759.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_5500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32949.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_6000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32948.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_600"  ) ){
+      xSec_ = 1.;
+      genEvents_ =33000.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_6500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32939.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_7000" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32943.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_7500" ) ){
+      xSec_ = 1.;
+      genEvents_ = 32940.;
+      }
+  else if( sample.Contains( "QstarToQZ_M_800"  ) ){
+      xSec_ = 1.;
+      genEvents_ =32999.;
+      }
   
   // std::cout<< "Crosssection = " << xSec_ << "genEvents = " << genEvents_ << "Weight = " << xSec_/genEvents_ <<std::endl;
   return xSec_/genEvents_;

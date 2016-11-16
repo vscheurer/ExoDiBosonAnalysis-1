@@ -129,7 +129,7 @@ void NtupleManager::ConnectVariables( std::string treeName, TString sample, bool
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_tau3"    , theData_.jetAK8_tau3    );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_IDLoose" , theData_.jetAK8_IDLoose );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_IDTight" , theData_.jetAK8_IDTight );
-  
+    
   
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_cm"      , theData_.jetAK8_cm	    ); //chargedMultiplicity
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_nm"      , theData_.jetAK8_nm	    ); //neutralMultiplicity
@@ -141,15 +141,15 @@ void NtupleManager::ConnectVariables( std::string treeName, TString sample, bool
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_area"    , theData_.jetAK8_area		); //jetArea
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_che"     , theData_.jetAK8_che     ); //fj.chargedHadronEnergy()+fj.electronEnergy()+fj.muonEnergy()
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_ne"      , theData_.jetAK8_ne      ); //fj.neutralHadronEnergy()+fj.photonEnergy()
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_hf_hf"     , theData_.jetAK8_hf_hf     ); //HFHadronEnergyFraction());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_hf_emf"     , theData_.jetAK8_hf_emf     ); //HFEMEnergyFraction());
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_hf_hf"   , theData_.jetAK8_hf_hf     ); //HFHadronEnergyFraction());
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_hf_emf"  , theData_.jetAK8_hf_emf     ); //HFEMEnergyFraction());
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_hof"     , theData_.jetAK8_hof     ); //hoEnergyFraction());
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_chm"     , theData_.jetAK8_chm     ); //chargedHadronMultiplicity());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_neHadMult"     , theData_.jetAK8_neHadMult     ); //neutralHadronMultiplicity());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_phoMult"     , theData_.jetAK8_phoMult     ); //photonMultiplicity());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_nemf"     , theData_.jetAK8_nemf     ); //neutralEmEnergyFraction());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_cemf"     , theData_.jetAK8_cemf     ); //chargedEmEnergyFraction());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_charge"     , theData_.jetAK8_charge     ); //charge());		
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_neHadMult" , theData_.jetAK8_neHadMult     ); //neutralHadronMultiplicity());
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_phoMult"   , theData_.jetAK8_phoMult     ); //photonMultiplicity());
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_nemf"      , theData_.jetAK8_nemf     ); //neutralEmEnergyFraction());
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_cemf"      , theData_.jetAK8_cemf     ); //chargedEmEnergyFraction());
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_charge"    , theData_.jetAK8_charge     ); //charge());		
   
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_jec"         , theData_.jetAK8_jec          );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_jecUp"       , theData_.jetAK8_jecUp        );

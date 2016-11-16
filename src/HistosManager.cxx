@@ -20,7 +20,20 @@ HistosManager::~HistosManager( void ){
 
 ////////////////////////////////////////////////////////////////////
 void HistosManager::bookHistos( std::string Channel_ ){
-
+  
+  theAnalysis_->Book( TH1F( "PrunedMass_200GeV"       ,   "PrunedMass_200GeV"       , 200, 0, 200 ) );
+  theAnalysis_->Book( TH1F( "PuppiPrunedMass_200GeV"  ,   "PuppiPrunedMass_200GeV"  , 200, 0, 200 ) );
+  theAnalysis_->Book( TH1F( "PuppiSoftdropMass_200GeV",   "PuppiSoftdropMass_200GeV", 200, 0, 200 ) );
+  
+  theAnalysis_->Book( TH1F( "PrunedMass_500GeV"       ,   "PrunedMass_500GeV"       , 200, 0, 200 ) );
+  theAnalysis_->Book( TH1F( "PuppiPrunedMass_500GeV"  ,   "PuppiPrunedMass_500GeV"  , 200, 0, 200 ) );
+  theAnalysis_->Book( TH1F( "PuppiSoftdropMass_500GeV",   "PuppiSoftdropMass_500GeV", 200, 0, 200 ) );
+  
+  theAnalysis_->Book( TH1F( "PrunedMass_1000GeV"       ,   "PrunedMass_1000GeV"       , 200, 0, 200 ) );
+  theAnalysis_->Book( TH1F( "PuppiPrunedMass_1000GeV"  ,   "PuppiPrunedMass_1000GeV"  , 200, 0, 200 ) );
+  theAnalysis_->Book( TH1F( "PuppiSoftdropMass_1000GeV",   "PuppiSoftdropMass_1000GeV", 200, 0, 200 ) );
+  
+     
  theAnalysis_->Book( TH1F( "SoftdropMass_preJMR", "SoftdropMass_preJMR"       , 200, 0, 200 ) );
  theAnalysis_->Book( TH1F( "SoftdropMass_postJMR", "SoftdropMass_postJMR"       , 200, 0, 200 ) );
  theAnalysis_->Book( TH1F( "SoftdropMass_postSmearing", "SoftdropMass_postSmearing"     , 200, 0, 200 ) );
@@ -123,7 +136,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
    theAnalysis_->Book( TH1F( "ForROC_DDT_pt3", "DDT" , 100	, 0.	, 1.	) );
    theAnalysis_->Book( TH1F( "ForROC_DDT_pt4", "DDT" , 100	, 0.	, 1.	) );
    
-   theAnalysis_->Book( TH1F( "ForROC_tau21", "#tau_{21}" , 100	, 0.	, 1.	) );
+   theAnalysis_->Book( TH1F( "ForROC_tau21", "#tau_{21}"     , 100	, 0.	, 1.	) );
    theAnalysis_->Book( TH1F( "ForROC_tau21_pt1", "#tau_{21}" , 100	, 0.	, 1.	) );
    theAnalysis_->Book( TH1F( "ForROC_tau21_pt2", "#tau_{21}" , 100	, 0.	, 1.	) );
    theAnalysis_->Book( TH1F( "ForROC_tau21_pt3", "#tau_{21}" , 100	, 0.	, 1.	) );
@@ -157,6 +170,19 @@ void HistosManager::bookHistos( std::string Channel_ ){
    theAnalysis_->Book( TH1F( "numPT_mjDDT_puppi_Q"  , " AK8 jet pt" , 23	, 0.	, 2300.	) );
    theAnalysis_->Book( TH1F( "numPT_mjDDT_puppi_G"  , " AK8 jet pt" , 23	, 0.	, 2300.	) );
    theAnalysis_->Book( TH1F( "numNPV_mjDDT_puppi" , "nPVs"        , 20	, 0.	, 40.	) );
+   
+   theAnalysis_->Book( TH1F( "numNPV_mj_puppi_pruning"      ,"numNPV_mj_puppi_pruning"       , 20	  , 0.	, 40.	  ) );
+   theAnalysis_->Book( TH1F( "numPT_mj_puppi_pruning"       ,"numPT_mj_puppi_pruning"        , 23	  , 0.	, 2300.	) );
+   theAnalysis_->Book( TH1F( "numNPV_mjtau21_puppi_pruning" ,"numNPV_mjtau21_puppi_pruning"  , 20	  , 0.	, 40.	  ) );
+   theAnalysis_->Book( TH1F( "numPT_mjtau21_puppi_pruning"  ,"numPT_mjtau21_puppi_pruning"   , 23	  , 0.	, 2300.	) );
+   theAnalysis_->Book( TH1F( "ForROC_PUPPItau21_pruning"    ,"ForROC_PUPPItau21_pruning"     , 100	, 0.	, 1.	  ) );
+   theAnalysis_->Book( TH1F( "ForROC_PUPPItau21_pt1_pruning","ForROC_PUPPItau21_pt1_pruning" , 100	, 0.	, 1.	  ) );
+   theAnalysis_->Book( TH1F( "ForROC_PUPPItau21_pt2_pruning","ForROC_PUPPItau21_pt2_pruning" , 100	, 0.	, 1.	  ) );
+   theAnalysis_->Book( TH1F( "ForROC_PUPPItau21_pt3_pruning","ForROC_PUPPItau21_pt3_pruning" , 100	, 0.	, 1.	  ) );
+   theAnalysis_->Book( TH1F( "ForROC_PUPPItau21_pt4_pruning","ForROC_PUPPItau21_pt4_pruning" , 100	, 0.	, 1.	  ) );
+   
+   theAnalysis_->Book( TH1F( "gen_PuppiPrunedMass_Uncorr", "gen_PuppiPrunedMass_Uncorr", 200	, 0.	, 200.) );
+   theAnalysis_->Book( TH1F( "gen_PuppiPrunedMass_Corr"  , "gen_PuppiPrunedMass_Corr"  , 200	, 0.	, 200.) );     
 
 	
   theAnalysis_->Book( TH1F( "METsumET", "MET/sumEt"      , 100	, 0.	, 1.	) );

@@ -330,6 +330,59 @@ private:
   float jet_tau2tau1_jet2; 
   
   
+  float jet1_rcn        ;
+  float jet1_cm         ;
+  float jet1_nm         ;
+  float jet1_muf        ;
+  float jet1_phf        ;
+  float jet1_emf        ;
+  float jet1_nhf        ;
+  float jet1_chf        ;
+  float jet1_che        ;
+  float jet1_ne         ;
+  float jet1_hf_hf      ;
+  float jet1_hf_emf     ;
+  float jet1_hof        ;
+  float jet1_chm        ;
+  float jet1_neHadMult  ;
+  float jet1_phoMult    ;
+  float jet1_nemf       ;
+  float jet1_cemf       ;
+  float jet1_charge     ;
+  float jet1_area       ;
+  float jet2_rcn        ;
+  float jet2_cm         ;
+  float jet2_nm         ;
+  float jet2_muf        ;
+  float jet2_phf        ;
+  float jet2_emf        ;
+  float jet2_nhf        ;
+  float jet2_chf        ;
+  float jet2_che        ;
+  float jet2_ne         ;
+  float jet2_hf_hf      ;
+  float jet2_hf_emf     ;
+  float jet2_hof        ;
+  float jet2_chm        ;
+  float jet2_neHadMult  ;
+  float jet2_phoMult    ;
+  float jet2_nemf       ;
+  float jet2_cemf       ;
+  float jet2_charge     ;
+  float jet2_area       ;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   float sum_genweights; 
   float jet_rho; 
 
