@@ -59,12 +59,12 @@
       <Item Name="genEvents" Value="1." />
       <Item Name="Lumi" Value="1." />
       <Item Name="PUdata" Value="data/biasXsec_69200.root" />
-      <Item Name="JSONfile" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt" />
+      <Item Name="JSONfile" Value="data/Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt" />
       <Item Name="BTagEff4vetoData" Value="data/TT_CT10_TuneZ2star_8TeV-powheg-tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root" />
       <Item Name="BTagEff4fatjetData" Value="data/BtagEfficienciesMap_fatjets_Wp.root" />
       <Item Name="BTagEff4subjetData" Value="data/btag-efficiency-maps.root" />
-      <Item Name="PUPPIJEC" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/puppiCorr.root" />
-      <Item Name="PUPPIJMR" Value="/mnt/t3nfs01/data01/shome/thaarres//EXOVVAnalysisRunII/ExoDiBosonAnalysis/data/jetmassResolution.root" />
+      <Item Name="PUPPIJEC" Value="data/puppiCorr.root" />
+      <Item Name="PUPPIJMR" Value="data/jetmassResolution.root" />
       
       <Item Name="scaleUncPar" Value="" /> <!-- -1 = NoScaling   0/1 = JMS UP/DOWN   2/3 =JMR UP/DOWN 4/5 = JES UP/DOWN 6/7 = JER UP/DOWN  -->
       <Item Name="JMS" Value="0.999" />
