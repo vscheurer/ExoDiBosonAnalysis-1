@@ -38,6 +38,9 @@ void HistosManager::bookHistos( std::string Channel_ ){
  theAnalysis_->Book( TH1F( "SoftdropMass_postJMR", "SoftdropMass_postJMR"       , 200, 0, 200 ) );
  theAnalysis_->Book( TH1F( "SoftdropMass_postSmearing", "SoftdropMass_postSmearing"     , 200, 0, 200 ) );
  theAnalysis_->Book( TH1F( "SoftdropMass_postScaling", "SoftdropMass_postScaling"     , 200, 0, 200 ) );
+ //theAnalysis_->Book( TH1F("PUPPI_SoftdopMass_NOCorr", 200, 0, 200 ) );
+ //theAnalysis_->Book( TH1F("PUPPI_SoftdopMass_eta1v3_NOCorr", 200, 0, 200 ) );
+ //theAnalysis_->Book( TH1F("PUPPI_SoftdopMass_etaUPv1v3_NOCorr", 200, 0, 200 ) );
  
  theAnalysis_->Book( TH1F( "JetPt_preSmearing", "JetPt_preSmearing"      , 200, 0, 2000 ) );
  theAnalysis_->Book( TH1F( "JetPt_postSmearing","JetPt_postSmearing"     , 200, 0, 2000 ) );
@@ -48,8 +51,8 @@ void HistosManager::bookHistos( std::string Channel_ ){
  theAnalysis_->Book( TH1F( "PV_rho", "PV Rho"    ,  60, 0.1 ,  0.25 ) );
  theAnalysis_->Book( TH1F( "sumGenWeight"                  , "sumGenWeight", 1	, 0.5, 1.5		) );
  
- if( Channel_ == "VVdijet" || Channel_ == "qVdijet" ){
-   theAnalysis_->Book( TH1F( "Mjj_genMatched"           , "M_{jj} "	   								  , 7000	, 0.	, 7000.	) );
+ if( Channel_.find("VVdijet")!=std::string::npos || Channel_.find("qVdijet")!=std::string::npos ){
+   theAnalysis_->Book( TH1F( "Mjj_genMatched"           , "M_{jj} ", 7000	, 0.	, 7000.	) );
    
    // theAnalysis_->Book( TH2F( "prunedJECvsPT" , "Pruned JEC vs. p_{T}" , 23  , 0.  , 2300., 40, 0.,2.  ) );
    // theAnalysis_->Book( TH2F( "puppiJECvsPT"  , " PUPPI JEC vs. p_{T}" , 23  , 0.  , 2300., 40, 0.,2.  ) );
@@ -87,6 +90,9 @@ void HistosManager::bookHistos( std::string Channel_ ){
    theAnalysis_->Book( TH1F( "gen_SoftdropMass_eta1v3_NEWCORR"  , "Softdrop mass (GeV)" , 200	, 0.	, 200.) );
    theAnalysis_->Book( TH1F( "gen_SoftdropMass_etaUP1v3_NEWCORR", "Softdrop mass (GeV)" , 200	, 0.	, 200.) ); 
    
+//    theAnalysis_->Book( TH1F( "rec_SoftdropMass_eta1v3_NEWCORR"  , "Softdrop mass (GeV)" , 200	, 0.	, 200.) );
+//    theAnalysis_->Book( TH1F( "rec_SoftdropMass_etaUP1v3_NEWCORR", "Softdrop mass (GeV)" , 200	, 0.	, 200.) ); 
+   
    
    theAnalysis_->Book( TH1F( "gen_SoftdropMass_pt500"  , "Softdrop mass (GeV) (p_{T} > 500)" , 40	, 0.	, 200.) );
    theAnalysis_->Book( TH1F( "gen_SoftdropMassCHSCorr"  , "Softdrop mass (GeV) (CHS L2L3)" , 40	, 0.	, 200.) );     
@@ -99,6 +105,10 @@ void HistosManager::bookHistos( std::string Channel_ ){
    theAnalysis_->Book( TH1F( "GenAK8SoftdropMass"  , "Gen AK8 Softdrop mass (GeV)" , 200	, 0.	, 200.) );
    theAnalysis_->Book( TH1F( "GenAK8SoftdropMass_eta1v3"  , "Gen AK8 Softdrop mass (GeV)" , 200	, 0.	, 200.) );
    theAnalysis_->Book( TH1F( "GenAK8SoftdropMass_etaUP1v3"  , "Gen AK8 Softdrop mass (GeV)" , 200	, 0.	, 200.) );
+   
+   theAnalysis_->Book( TH1F( "GenAK8SoftdropMass_CORR"  , "Gen AK8 Softdrop mass (GeV)" , 200	, 0.	, 200.) );
+   theAnalysis_->Book( TH1F( "GenAK8SoftdropMass_eta1v3_CORR"  , "Gen AK8 Softdrop mass (GeV)" , 200	, 0.	, 200.) );
+   theAnalysis_->Book( TH1F( "GenAK8SoftdropMass_etaUP1v3_CORR"  , "Gen AK8 Softdrop mass (GeV)" , 200	, 0.	, 200.) );
    
    theAnalysis_->Book( TH1F( "GenAK8PrunedMass"  , "Gen AK8 Pruned mass (GeV)" , 200	, 0.	, 200.) );
    theAnalysis_->Book( TH1F( "GenAK8PrunedMass_eta1v3"  , "Gen AK8 Pruned mass (GeV)" , 200	, 0.	, 200.) );
@@ -211,6 +221,20 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "Eta"	  																, " AK8 jet eta"						, 50	, -2.5, 2.5		) );
   theAnalysis_->Book( TH1F( "Phi"	  																, " AK8 jet phi"						, 64	, -3.2, 3.2		) );
   theAnalysis_->Book( TH1F( "Mass" 	  															, " AK8 jet mass"					, 60	, 0. , 300.	) );
+  theAnalysis_->Book( TH1F( "Weight", "Weight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "PUWeight", "PUWeight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "LumiWeight", "LumiWeight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "GenWeight", "GenWeight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "PtWeight", "PtWeight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "BtagWeight", "BtagWeight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "HLTWeight", "HLTWeight", 100, 0, 5));
+  
+  theAnalysis_->Book( TH1F( "nPUVtxTrue", "nPUVtxTrue", 70, 0, 70) ); 
+  theAnalysis_->Book( TH1F( "nPUVtx", "nPUVtx", 140, 0, 140) );
+  theAnalysis_->Book( TH1F( "nPUVtx2", "nPUVtx2", 140, 0, 140) );
+  theAnalysis_->Book( TH1F( "nPUVtx_rew",   "nPUVtx_rew",140,0,140) );
+  theAnalysis_->Book( TH1F( "nPUVtx2_rew",   "nPUVtx2_rew",140,0,140) );
+  theAnalysis_->Book( TH1F( "nPUVtxTrue_rew",   "nPUVtxTrue_rew",140,0,140) );
   
   theAnalysis_->Book( TH1F( "cm"   ,"(*data_.jetAK8_cm	 )",20,0.,100. ) );
   theAnalysis_->Book( TH1F( "nm"   ,"(*data_.jetAK8_nm	 )",20,0.,90. ) );
@@ -293,6 +317,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "HT650_MJJ900"   , "HT650_MJJ900"    , 5000, 0.	, 5000.	) ); 
   theAnalysis_->Book( TH1F( "HT" , "OR (HT only)"    , 5000, 0.	, 5000.	) ); 
   theAnalysis_->Book( TH1F( "ALL" , "ALL" , 5000, 0.	, 5000.	) ); 
+  //theAnalysis_->Book( TH1F( "", "", 5000, 0.	, 5000.	);
   
   
   theAnalysis_->Book( TH2F( "PtvsMSD_num" , "PtvsMSD_num" , 1000	, 0. , 1000. , 200	, 0. , 200.	) ); 
@@ -332,10 +357,13 @@ void HistosManager::bookHistos( std::string Channel_ ){
   
  
   theAnalysis_->Book( TH1F( "PFJet320_SD"  , "PFJet320", 200, 0.	, 200.	) ); 
+  theAnalysis_->Book( TH1F( "PFHT650_SD"  , "PFHT650", 200, 0.	, 200.	) ); 
   theAnalysis_->Book( TH1F( "PFJet360_Trim_SD", "AK8PFJet360_TrimMass30"   , 200, 0.	, 200.	) ); 
   theAnalysis_->Book( TH1F( "HT700_Trim_SD" , "HT700_Trim50"     , 200 , 0. , 200. ) );  
   theAnalysis_->Book( TH1F( "DiPFJet280_200_TrimMass30_SD" , "DiPFJet280_200_TrimMass30"    , 200 , 0. , 200. ) );  
-  theAnalysis_->Book( TH1F( "Substructure_SD", "OR (substructure only)"      , 200 , 0. , 200. ) );  
+  theAnalysis_->Book( TH1F( "Substructure_SD", "OR (substructure only)"      , 200 , 0. , 200. ) );
+  theAnalysis_->Book( TH1F( "Base_SD", "Base_SD", 200 , 0. , 200. )	);
+  
  
   theAnalysis_->Book( TH1F( "PFJet320_P"    , "PFHT650", 200, 0.	, 200.	) ); 
   theAnalysis_->Book( TH1F( "PFJet360_Trim_P", "AK8PFJet360_TrimMass30"   , 200, 0.	, 200.	) ); 
@@ -453,14 +481,21 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "nNopuppi" 													, "nNopuppi"									 	, 1	, 0.5, 1.5		) );
    
  }
- 
-
+//  else if(Channel_.find("PU")!=std::string::npos or Channel_.find("VVdijet")!=std::string::npos or Channel_.find("qVdijet")!=std::string::npos)
+//  {
+//      
+//    theAnalysis_->Book( TH1F( "nPUVtxTrue", "nPUVtxTrue", 70, 0, 70) ); 
+//    theAnalysis_->Book( TH1F( "nPUVtx", "nPUVtx", 140, 0, 140) );
+//    theAnalysis_->Book( TH1F( "nPUVtx_rew",   "nPUVtx_rew",140,0,140) );
+//    theAnalysis_->Book( TH1F( "nPUVtxTrue_rew",   "nPUVtxTrue_rew",140,0,140) );
+//      
+//  }
 }
 
 ////////////////////////////////////////////////////////////////////
 void HistosManager::formatHistos( std::string Channel_ ){
   
- if( Channel_ == "VVdijet" || Channel_ == "qVdijet" ){
+ if( Channel_.find("VVdijet")!=std::string::npos || Channel_.find("qVdijet")!=std::string::npos ){
    
     
   theAnalysis_->Hist( "DiBosonInvMass"			)->GetXaxis()->SetTitle( "M_{G} (GeV)");
@@ -654,6 +689,14 @@ void HistosManager::formatHistos( std::string Channel_ ){
   Utilities::OverflowToLast( theAnalysis_->Hist( "HadronicbCSV" 	 ) );
   Utilities::OverflowToLast( theAnalysis_->Hist( "HadronicbFlavor" ) );
    
+ }
+ 
+ else if(Channel_.find("PU")!=std::string::npos)
+ {
+     
+    theAnalysis_->Hist( "nPUVtxTrue")->GetXaxis()->SetTitle("# PU vertices true");  
+    theAnalysis_->Hist( "nPUVtx")->GetXaxis()->SetTitle("# PU vertices");
+     
  }
 
  // theAnalysis_->setPredictedDistribution();

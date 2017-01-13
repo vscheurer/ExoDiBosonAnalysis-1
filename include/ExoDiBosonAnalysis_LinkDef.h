@@ -17,6 +17,7 @@
 #pragma link C++ class std::vector< std::vector<int> >+;
 #pragma link C++ class std::vector< std::vector<float> >+;
 #pragma link C++ class std::vector< TLorentzVector >+;
+//#pragma link C++ class LHAPDF::xfx(int, double, double, int);
 
 #pragma link C++ class ExoDiBosonAnalysis+;
 

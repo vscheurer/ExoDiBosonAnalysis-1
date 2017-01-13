@@ -36,9 +36,14 @@ void NtupleManager::ConnectVariables( std::string treeName, TString sample, bool
     theAnalysis_->ConnectVariable( treeName.c_str(), "lheNj"                 , theData_.lheNj               );
     theAnalysis_->ConnectVariable( treeName.c_str(), "genWeight"             , theData_.genWeight           );
     theAnalysis_->ConnectVariable( treeName.c_str(), "qScale"                , theData_.qScale              );
+    theAnalysis_->ConnectVariable( treeName.c_str(), "PDF_x"                 , theData_.PDF_x               );
+    theAnalysis_->ConnectVariable( treeName.c_str(), "PDF_xPDF"              , theData_.PDF_xPDF            );
+    theAnalysis_->ConnectVariable( treeName.c_str(), "PDF_id"                , theData_.PDF_id              );
     
     theAnalysis_->ConnectVariable( treeName.c_str(), "nPuVtxTrue"	      , theData_.nPUTrue     );
-    theAnalysis_->ConnectVariable( treeName.c_str(), "bX"		            , theData_.bX          );
+    theAnalysis_->ConnectVariable( treeName.c_str(), "nPuVtxTrue"             , theData_.nPuVtxTrue  );
+    theAnalysis_->ConnectVariable( treeName.c_str(), "nPuVtx"                 , theData_.nPuVtx      );
+    theAnalysis_->ConnectVariable( treeName.c_str(), "bX"		      , theData_.bX          );
     
     theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK4_hadronFlavour" , theData_.jetAK4_flavor  );
     

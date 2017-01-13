@@ -7,6 +7,7 @@
 #include <string>
 #include "TF1.h"
 #include "TRandom3.h"
+#include "LHAPDF/LHAPDF.h"
 // #include <algorithm>
 
 #include "../ExoDiBosonAnalysis/include/InputData.h"
@@ -89,6 +90,13 @@ public:
   float getPUPPIweight          ( float puppipt, float puppieta );
   double getJetEnergyScale      ( int ak8JetID );
   double getJetMassScale        ( float mass, float jerSigmaPt, TLorentzVector puppijet_tlv, TLorentzVector AK8jet_tlv );
+  void  InitPDFSet(int pdfset);
+  std::vector<double> PDFweight( int pdfset );
+  void calcPDFweight(bool all);
+  bool passedTau21Selections(std::string cat);
+  bool preparationOfHistosForPUreweighting();
+  float getPUPPIweight_gen(float puppipt, float puppieta );
+  float getPUPPIweight_rec(float puppipt, float puppieta );
 
   void setPredictedDistribution();
      
@@ -187,6 +195,8 @@ private:
   double JMR_   ;
   double JMRunc_;
   
+  int PDFSET_;
+  std::string wPDFname_;
   
   
   TRandom3*      tr_              ;
@@ -243,6 +253,9 @@ private:
   int    nPassedFilters_  ;  
   int    nPassedTrigger_  ;  
   int    nPassedChi2_     ;  
+  
+  std::vector<double> nEvents_wPDF_;
+  std::vector<double> nPassed_wPDF_;
   
   int     nak4jets;
 
@@ -435,6 +448,15 @@ private:
   float Wlept_mt ;
   int   realW_def1 ;
   int   realW_def2 ;
+  
+  float wmax_  =0;
+  float wmaxpu_ =0;
+  float wmaxlumi_ =0;
+  float wmaxpt_ =0;
+  float wmaxhlt_=0;
+  float wmaxbtag_=0;
+  float wmaxgen_=0;
+  int numEvents_=0;
   
 
 }; // class ExoDiBosonAnalysis

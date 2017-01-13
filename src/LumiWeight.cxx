@@ -23,7 +23,27 @@ double LumiWeight::getLumiWeight( TString sample ){
     if( sample.Contains( "ST_t-channel_top" ) ){ //DONE
       xSec_ = 136.02*0.3272;
       genEvents_ = 3299200.;
-    }  
+    } 
+    else if( sample.Contains( "QCD_HT500to700" ) ){
+      xSec_ = 29370.0;
+      genEvents_ =19664159.;
+    }
+    else if( sample.Contains( "QCD_HT700to1000" ) ){
+      xSec_ = 6524.0;
+      genEvents_ = 15356448.;
+    }
+    else if( sample.Contains( "QCD_HT1000to1500" ) ){
+      xSec_ = 1064.0;
+      genEvents_ = 4963895.;
+    } 
+    else if( sample.Contains( "QCD_HT1500to2000" ) ){
+      xSec_ = 121.5;
+      genEvents_ = 3868886.;
+    }
+    else if( sample.Contains( "QCD_HT2000toInf" ) ){
+      xSec_ = 25.42;
+      genEvents_ = 1912529.;
+    }    
     else if( sample.Contains( "ST_t-channel_antitop" ) ){ //DONE
       xSec_ = 80.95*0.3272;
       genEvents_ = 1630900.;
@@ -1040,7 +1060,7 @@ double LumiWeight::getLumiWeight( TString sample ){
     }
      
   }
-  if( sample.Contains( "QstarToQW_M_1000" ) ){
+  else if( sample.Contains( "QstarToQW_M_1000" ) ){
       xSec_ = 1.;
       genEvents_ = 33000.;
       }
@@ -1191,7 +1211,208 @@ double LumiWeight::getLumiWeight( TString sample ){
   else if( sample.Contains( "QstarToQZ_M_800"  ) ){
       xSec_ = 1.;
       genEvents_ =32999.;
-      }
+      } 
+  else if (sample.Contains("Summer16") ) {
+//     if( sample.Contains( "ST_t-channel_top" ) ){
+//       xSec_ = 136.02*0.3272;
+//       genEvents_ = 3299800.;
+//     }  
+//     else if( sample.Contains( "ST_t-channel_antitop" ) ){
+//       xSec_ = 80.95*0.3272;
+//       genEvents_ = 1680200.;
+//     }         
+//     else if( sample.Contains( "ST_t-channel" ) && sample.Contains( "ext" ) ){
+//       xSec_ = 216.99*0.322;
+//       //genEvents_ = 29954054.; //das
+//       genEvents_ =  6456052.; //gen weights
+//     }  
+//     else if( sample.Contains( "ST_s-channel" ) ){
+//       xSec_ = 11.36*0.3272;
+//       //genEvents_ = 984400.; //das
+//       genEvents_ = 613384.; //genweights
+//     }	  
+//     else if( sample.Contains( "ST_tW_top" ) ){
+//       xSec_ = 35.6;
+//       genEvents_ = 995600.;
+//     } 
+//     else if( sample.Contains( "ST_tW_antitop" ) ){
+//       xSec_ = 35.6;
+//       genEvents_ = 988500.;
+//     }   
+//     else if( sample.Contains( "TT" ) && sample.Contains("herwig") ){
+//       xSec_ = 831.76;
+//       genEvents_ = 16640209;  //DAS 17520956.
+//     }
+//     else if( sample.Contains( "TT" ) && sample.Contains("pythia8") && !sample.Contains("Fall15")){
+//       xSec_ = 831.76;
+//       genEvents_ = 19757192.; //LOWMASS 17427174
+//     }
+//     else if( sample.Contains( "_WW_" ) && !sample.Contains( "powheg" ) ){
+//       xSec_ = 118.7;
+//       genEvents_ = 993640.;
+//     }
+//     else if( sample.Contains( "_WW" ) && sample.Contains( "powheg" ) ){
+//       xSec_ = 49.997;
+//       genEvents_ = 1951600.;
+//     }
+//     else if( sample.Contains( "_WZ_" ) && !sample.Contains( "amcatnlo" ) ){
+//       xSec_ = 47.13;
+//       genEvents_ = 978512.;
+//     }
+//     else if( sample.Contains( "_WZ" ) && sample.Contains( "amcatnlo" ) ){
+//       xSec_ = 10.71;
+//       //genEvents_ = 978512.;//das
+//       genEvents_ = 14346866; //gen weights
+//     }
+//     else if( sample.Contains( "_ZZ_" ) && !sample.Contains( "amcatnlo" ) ){
+//       xSec_ = 16.5;
+//       genEvents_ = 996944.;
+//     }      
+//     else if( sample.Contains( "_ZZ" ) && sample.Contains( "amcatnlo" ) ){
+//       xSec_ = 3.22;
+//       //genEvents_ = 18790122.;//das
+//       genEvents_ = 11863244.;//gen weights
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-100To200" ) ){
+//       xSec_ = 1.21*1345.;//1292.;
+//       genEvents_ = 10152718.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-200To400" ) ){
+//       xSec_ = 1.21*359.7;//385.9;
+//       genEvents_ = 5221599.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-400To600" ) ){
+//       xSec_ = 1.21*48.91;//47.9;
+//       genEvents_ = 1745914.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-600To800" ) ){
+//       xSec_ = 1.21*12.05;//47.9;
+//       genEvents_ = 4041997.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-800To1200" ) ){
+//       xSec_ = 1.21*5.501;//47.9;
+//       genEvents_ = 1574633.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-1200To2500" ) ){
+//       xSec_ = 1.21*1.329;//47.9;
+//       genEvents_ = 255637.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-2500ToInf" ) ){
+//       xSec_ = 1.21*0.03216;//47.9;
+//       genEvents_ = 253036.;
+//     } 
+//     else if( sample.Contains( "WJetsToLNu_HT-600ToInf" ) ){
+//       xSec_ = 1.21*18.77;//19.9;
+//       genEvents_ = 1039152.;
+//     } 
+//     else if( sample.Contains( "_DYJetsToLL_" ) && sample.Contains("-madgraphMLM-")){
+//       xSec_ = 4895.0;
+//       genEvents_ = 9042031.;
+//     }
+    if( sample.Contains( "QCD_Pt_170to300_" ) ){
+      xSec_ = 117276.;     //                    \\ should have in v1:  6958708 & 117276          do have:    6596736
+      // genEvents_ = 3364368.;                \\ should have in ext-v1:  7838066 & 117276       do have:     7508444
+      genEvents_ = 14105180; //OK!!!            \\ -> all pythia samples
+    }
+    else if( sample.Contains( "QCD_Pt_300to470_" ) ){
+      xSec_ = 7823.; //OK                      \\ should have in v1:    18253032 &7823        do have:      4150584
+      // genEvents_ = 2933611.;                \\ should have in ext-v1: 4150588 & 7823        do have:      15647833
+      genEvents_ = 19798417; //OK!              \\ -> all pythia samples
+    }
+    else if( sample.Contains( "QCD_Pt_470to600_" ) ){
+      xSec_ = 648.2; //OK                        \\ should have in v1:   3959986 & 648.2         do have:  3959966
+      // genEvents_ = 1936832.;                  \\ should have in ext-v1: 15458074 & 648.2       do have:  not existing
+      genEvents_ = 3959966;   //OK!!             \\ -> all pythia samples
+    }
+    else if( sample.Contains( "QCD_Pt_600to800_" ) ){
+      xSec_ = 186.9; //OK                          \\ should have in v1:  3896412 & 186.9          do have:    3730760
+      // genEvents_ = 1964128.;                    \\ should have in ext-v1: 9622896 & 186.9       do have:    9539427
+      genEvents_ = 13270187; //OK!                  \\ -> all pythia samples
+     
+    }
+    else if( sample.Contains( "QCD_Pt_800to1000_" ) ){
+      xSec_ = 32.293; //OK                               \\ should have in v1: 3992112 & 32.293         do have:   3651423
+      // genEvents_ = 1937216.;                          \\  should have in ext-v1: 15704980 & 32.293   do have:   15623555
+      genEvents_ = 19274978; //OK!                       \\ -> all 800to1000 pythia samples   3651423+15623555
+    
+    }
+     else if( sample.Contains( "QCD_Pt_1000to1400_" ) ){
+       xSec_ = 9.4183; //OK                        \\ should have in v1: 2999069 & 9.4183         do have:   2998947
+       // genEvents_ = 1487136.;                   \\  should have in ext-v1: 6982586 &9.4183     do have:   6511034
+       genEvents_ = 9509981;   //OK!               \\ -> all pythia samples
+    }  
+    else if( sample.Contains( "QCD_Pt_1400to1800_" ) ){
+      xSec_ = 0.84265; //OK                       \\ should have in v1: 396409 & 0.84265            do have:   396364   
+      // genEvents_ = 197959.;                    \\  should have in ext-v1: 2477018  & 0.84265     do have:   2416320
+      genEvents_ = 2812684;   //OK!!               \\ -> all pythia samples
+    }
+    else if( sample.Contains( "QCD_Pt_1800to2400_" ) ){
+      xSec_ = 0.114943; //OK                       \\ should have in v1:  397660 & 0.114943          do have: 397595     
+      // genEvents_ = 193608.;                     \\ should have in ext-v1: 1552064 & 0.114943       do have: 1551842  
+      genEvents_ = 1949437;    //OK!!!!             \\ -> all pythia samples                   397595+1551842
+    
+    }
+    else if( sample.Contains( "QCD_Pt_2400to3200_" ) ){
+      xSec_ = 0.006830; //OK                       \\ should have in v1:    399226 & 0.00682981        do have:  399131
+                                                 // \\ should have in ext-v1: 596904 & 0.00682981       do have: 596747
+      genEvents_ = 995878.;   //OK!!!!             \\ -> all pythia samples          399131+596747
+    }
+    else if( sample.Contains( "QCD_Pt_3200toInf_" ) ){
+      xSec_ = 0.000165445; //OK                    \\ should have in v1:   391735 & 0.000165445         do have:  391583
+      // genEvents_ = 192944.;                     \\ should have in ext-v1:        do have: 
+      genEvents_ = 391583;   //ok!                 \\ -> all pythia samples
+    }
+//     else if( sample.Contains( "WJetsToQQ_HT-600ToInf" ) ){
+//       xSec_ = 95.14;                                \\ should have in v1:            do have: 
+  //                                                   \\ should have in ext-v1:        do have: 
+//       genEvents_ = 1006060.;                        \\ -> all pythia samples
+//     }
+//     else if( sample.Contains( "ZJetsToQQ_HT600toInf" ) ){
+//                                                     \\ should have in v1:            do have: 
+//          xSec_ = 5.670000;                          \\ should have in ext-v1:        do have: 
+//       genEvents_ = 982095.;                         \\ -> all pythia samples
+//     }
+     else if( sample.Contains( "QCD_HT100to200" ) ){
+       xSec_ = 2.785e07;
+       genEvents_ = 64946232.;
+     }
+
+     else if( sample.Contains( "QCD_HT200to300" ) ){
+       xSec_ = 1717000.;
+       genEvents_ = (15905943. + 38857975.);
+     }
+     else if( sample.Contains( "QCD_HT300to500" ) ){
+       xSec_ = 351300.0;
+       genEvents_ = (15342964. + 37200176.);
+     }
+     else if( sample.Contains( "QCD_HT500to700" ) ){
+       xSec_ = 31630.;
+       genEvents_ = (17708091.0 + 35112474.0);
+     }
+     else if( sample.Contains( "QCD_HT700to1000" ) ){
+       xSec_ = 6802.;
+       genEvents_ = (14857714. + 29338024.);
+     }
+     else if( sample.Contains( "QCD_HT1000to1500" ) ){
+       xSec_ = 1206.0;
+       genEvents_ = (4767084. + 10049239.);
+     } 
+     else if( sample.Contains( "QCD_HT1500to2000" ) ){
+       xSec_ = 120.4;
+       genEvents_ = (3970787. + 7855817.);
+     }
+     else if( sample.Contains( "QCD_HT2000toInf" ) ){
+       xSec_ = 25.25;
+       genEvents_ = 1991583.;
+     }    
+      
+   if( sample.Contains( "QCD_Pt-15to7000" ) or sample.Contains( "QCD_Pt_15to7000" )){
+      xSec_ =  2.022100000e+09;//3.095141e+09;
+      genEvents_ = 8093024.;//259420.;
+    }   
+      
+  
+}
   
   // std::cout<< "Crosssection = " << xSec_ << "genEvents = " << genEvents_ << "Weight = " << xSec_/genEvents_ <<std::endl;
   return xSec_/genEvents_;

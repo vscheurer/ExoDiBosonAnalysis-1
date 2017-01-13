@@ -27,9 +27,15 @@ public:
   std::vector<int  >*					genParticle_nMoth    ;
   float                       lheV_pt              ;
   float                       lheHT                ;
-  float                       lheNj                ;
+  
+  //for samples for Moriond 2017 this has to be an int -> in the data MC this has to be set to float => Problem???
+  int                         lheNj;
+  //float                       lheNj;
   float                       genWeight            ;
   float                       qScale               ;
+  std::vector<float>   *PDF_x;
+  std::vector<float>   *PDF_xPDF;
+  std::vector<int>     *PDF_id;
   
   int                             el_N              	 ;
   std::vector<float>*    	   el_e 	    	 ;
@@ -87,14 +93,14 @@ public:
    
    
   int                        njetsAK4 	     			;
-  std::vector<float>*		   jetAK4_pt 	     			;
-  std::vector<float>*		   jetAK4_eta 	     			;
-  std::vector<float>*		   jetAK4_phi 	     			;
-  std::vector<float>*		   jetAK4_e 	     			;
-  std::vector<float>*		   jetAK4_csv 	     			;
-  std::vector<int  >*		   jetAK4_flavor 	     		;
-  std::vector<bool >*  	   jetAK4_IDLoose 	     	; 
-  std::vector<bool >*  	   jetAK4_IDTight 	     	;  
+  std::vector<float>*	     jetAK4_pt 	     			;
+  std::vector<float>*	     jetAK4_eta 	     			;
+  std::vector<float>*	     jetAK4_phi 	     			;
+  std::vector<float>*	     jetAK4_e 	     			;
+  std::vector<float>*	     jetAK4_csv 	     			;
+  std::vector<int  >*	     jetAK4_flavor 	     		;
+  std::vector<bool >*  	     jetAK4_IDLoose 	     	; 
+  std::vector<bool >*  	     jetAK4_IDTight 	     	;  
    
   int                      njetsAK8 	     			;
   std::vector<float>*		   jetAK8_pt 	     			;
@@ -204,6 +210,11 @@ public:
   int                             EVENT_run             ;
   int                             EVENT_lumi            ;
   bool                            PV_filter             ;
+  
+  // try including PU variables 
+  std::vector<int>*               nPuVtxTrue;
+  std::vector<int>*               nPuVtx;
+  int                             PV_N;
    
   std::map<std::string,bool>*         HLT_isFired;
 
