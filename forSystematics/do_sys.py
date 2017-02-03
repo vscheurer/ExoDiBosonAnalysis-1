@@ -91,13 +91,14 @@ def runMultiprocess(doSys, channel):
 
 def calculateYields(sys):
   
-  outpath = '/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/forSystematics/'
+  outpath = '/mnt/t3nfs01/data01/shome/dschafer/ExoDiBosonAnalysis/forSystematics/'
+  inpath  = '/mnt/t3nfs01/data01/shome/dschafer//AnalysisOutput/80X/SignalMC/Summer16/Sys/'
   
   status,ls_la = commands.getstatusoutput( 'ls -l %s' %sys )													      
   if status:																				      
     os.system('mkdir %s/%s' %(outpath,sys))
     
-  masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
+  masses = [1200,1400,1800,2000,3000,3500,4000,4500]
 
   
   signals = ['%s'%opts.signal]
@@ -165,7 +166,7 @@ def calculateYields(sys):
        
        #Central value
        print "######## Mass = %i #########" %mass
-       fname = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
+       fname = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
        tfile = ROOT.TFile.Open(fname,'READ')
        tree = tfile.Get("tree")
        cv = float(tree.GetEntries(cuts[f]))
@@ -174,7 +175,7 @@ def calculateYields(sys):
        tfile.Delete()
        
        #Scale up value
-       fname = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
+       fname = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
        tfile = ROOT.TFile.Open(fname,'READ')
        tree = tfile.Get("tree")
        up = float(tree.GetEntries(cuts[f]))
@@ -183,7 +184,7 @@ def calculateYields(sys):
        tfile.Delete()
        
        #Scale down value
-       fname = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
+       fname = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
        tfile = ROOT.TFile.Open(fname,'READ')
        tree = tfile.Get("tree")
        down = float(tree.GetEntries(cuts[f]))
@@ -257,9 +258,9 @@ if __name__ == '__main__':
   # # Run SFrame for given systematics (+central value)
   # runMultiprocess(doSys,opts.channel)
   #
-  #Calculate yields
+  #======================= Calculate yields ========================================================================================================
   if opts.sys == 'ALL':
-    systematics = ['JES','JER','JMS','JMR']
+    systematics = ['JES','JER']#,'JMS','JMR']
     for s in systematics:
       calculateYields(s)
   else:
@@ -274,14 +275,15 @@ if __name__ == '__main__':
   unc_migration_jer_up.sort();     unc_migration_jer_down.sort()
   unc_migration_jms_up.sort();     unc_migration_jms_down.sort()
   unc_migration_jmr_up.sort();     unc_migration_jmr_down.sort()
+  
 
   print "                  UP            DOWN"
   print "               min/max        min/max"
   print "yield_jes     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jes_up[0],unc_yield_jes_up[-1], unc_yield_jes_down[0], unc_yield_jes_down[-1])
   print "yield_jer     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jer_up[0],unc_yield_jer_up[-1], unc_yield_jer_down[0], unc_yield_jer_down[-1])
-  print "yield_jms     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jms_up[0],unc_yield_jms_up[-1], unc_yield_jms_down[0], unc_yield_jms_down[-1])
-  print "yield_jmr     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jmr_up[0],unc_yield_jmr_up[-1], unc_yield_jmr_down[0], unc_yield_jmr_down[-1])
+  #print "yield_jms     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jms_up[0],unc_yield_jms_up[-1], unc_yield_jms_down[0], unc_yield_jms_down[-1])
+  #print "yield_jmr     %.6f/%.6f      %.6f/%.6f" %(unc_yield_jmr_up[0],unc_yield_jmr_up[-1], unc_yield_jmr_down[0], unc_yield_jmr_down[-1])
   print "migration_jes %.6f/%.6f      %.6f/%.6f" %(unc_migration_jes_up[0],unc_migration_jes_up[-1], unc_migration_jes_down[0], unc_migration_jes_down[-1])
   print "migration_jer %.6f/%.6f      %.6f/%.6f" %(unc_migration_jer_up[0],unc_migration_jer_up[-1], unc_migration_jer_down[0], unc_migration_jer_down[-1])
-  print "migration_jms %.6f/%.6f      %.6f/%.6f" %(unc_migration_jms_up[0],unc_migration_jms_up[-1], unc_migration_jms_down[0], unc_migration_jms_down[-1])
-  print "migration_jmr %.6f/%.6f      %.6f/%.6f" %(unc_migration_jmr_up[0],unc_migration_jmr_up[-1], unc_migration_jmr_down[0], unc_migration_jmr_down[-1])
+  #print "migration_jms %.6f/%.6f      %.6f/%.6f" %(unc_migration_jms_up[0],unc_migration_jms_up[-1], unc_migration_jms_down[0], unc_migration_jms_down[-1])
+  #print "migration_jmr %.6f/%.6f      %.6f/%.6f" %(unc_migration_jmr_up[0],unc_migration_jmr_up[-1], unc_migration_jmr_down[0], unc_migration_jmr_down[-1])

@@ -29,9 +29,10 @@ parser.add_option('-S', '--signal',action="store",type="string",dest="signal",de
 
 def drawMass(sys):
   
-  outpath = '/mnt/t3nfs01/data01/shome/thaarres/EXOVVAnalysisRunII/ExoDiBosonAnalysis/forSystematics/'
+  outpath = '/mnt/t3nfs01/data01/shome/dschafer/ExoDiBosonAnalysis/forSystematics/'
+  inpath  = '/mnt/t3nfs01/data01/shome/dschafer//AnalysisOutput/80X/SignalMC/Summer16/'
     
-  masses = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
+  masses = [2000]
   
   signals = ['%s'%opts.signal]
   if opts.signal == 'ALL':
@@ -118,7 +119,7 @@ def drawMass(sys):
         l.SetMargin(0.35)
         
         #Scale up value
-        fnameUP = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
+        fnameUP = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
         tfileUP = ROOT.TFile.Open(fnameUP,'READ')
         treeUP = tfileUP.Get("tree")
         treeUP.Draw("jet_puppi_softdrop_jet1",cuts[f],"")
@@ -126,14 +127,14 @@ def drawMass(sys):
         l.AddEntry(gPad.GetListOfPrimitives().At(0) ,"%s up"%sys,"l")
         
         #Scale down value
-        fnameDOWN = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
+        fnameDOWN = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
         tfileDOWN = ROOT.TFile.Open(fnameDOWN,'READ')
         treeDOWN = tfileDOWN.Get("tree")
         treeDOWN.Draw("jet_puppi_softdrop_jet1",cuts[f],"same")
         gPad.GetListOfPrimitives().At(1).SetLineColor(kGreen)
         l.AddEntry(gPad.GetListOfPrimitives().At(1) ,"%s down"%sys,"l")
         
-        fnameCV = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
+        fnameCV = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
         tfileCV = ROOT.TFile.Open(fnameCV,'READ')
         treeCV  = tfileCV.Get("tree")
         treeCV.Draw("jet_puppi_softdrop_jet1",cuts[f],"same")
@@ -166,7 +167,7 @@ def drawMass(sys):
         l.SetMargin(0.35)
         
         #Scale up value
-        fnameUP = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
+        fnameUP = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sup.root' %(signal,mass,sys)
         tfileUP = ROOT.TFile.Open(fnameUP,'READ')
         treeUP = tfileUP.Get("tree")
         treeUP.Draw("jet_puppi_softdrop_jet2",cuts[f],"")
@@ -174,14 +175,14 @@ def drawMass(sys):
         l.AddEntry(gPad.GetListOfPrimitives().At(0) ,"%s up"%sys,"l")
         
         #Scale down value
-        fnameDOWN = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
+        fnameDOWN = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.%sdown.root' %(signal,mass,sys)
         tfileDOWN = ROOT.TFile.Open(fnameDOWN,'READ')
         treeDOWN = tfileDOWN.Get("tree")
         treeDOWN.Draw("jet_puppi_softdrop_jet2",cuts[f],"same")
         gPad.GetListOfPrimitives().At(1).SetLineColor(kGreen)
         l.AddEntry(gPad.GetListOfPrimitives().At(1) ,"%s down"%sys,"l")
         
-        fnameCV = outpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
+        fnameCV = inpath + 'ExoDiBosonAnalysis.%s_13TeV_%sGeV.CV.root' %(signal,mass)
         tfileCV = ROOT.TFile.Open(fnameCV,'READ')
         treeCV  = tfileCV.Get("tree")
         treeCV.Draw("jet_puppi_softdrop_jet2",cuts[f],"same")
