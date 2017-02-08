@@ -156,6 +156,10 @@ private:
   int    foundAMu               ;
   double         leptPtCut_	   ;
   double         leptEtaCut_	   ;
+  double         elePtCut_	   ;
+  double         eleEtaCut_	   ;
+  double         muPtCut_	   ;
+  double         muEtaCut_	   ;
   double         AleptPtCut_	   ;
   double         AleptEtaCut_	;
   double         METCut_  	   ;

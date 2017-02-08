@@ -1379,27 +1379,53 @@ double LumiWeight::getLumiWeight( TString sample ){
 
      else if( sample.Contains( "QCD_HT200to300" ) ){
        xSec_ = 1717000.;
-       genEvents_ = (15905943. + 38857975.);
+       genEvents_ = (15905943.);
+     }
+     else if( sample.Contains( "QCD_HT200to300" ) and  sample.Contains( "ext")){
+       xSec_ = 1717000.;
+       genEvents_ = (38857975.);
      }
      else if( sample.Contains( "QCD_HT300to500" ) ){
        xSec_ = 351300.0;
-       genEvents_ = (15342964. + 37200176.);
+       genEvents_ = (15342964.);
+     }
+     else if( sample.Contains( "QCD_HT300to500" ) and sample.Contains( "ext" ) )
+     {
+         xSec_ = 351300.0;
+       genEvents_ = ( 37200176.);
      }
      else if( sample.Contains( "QCD_HT500to700" ) ){
        xSec_ = 31630.;
-       genEvents_ = (17708091.0 + 35112474.0);
+       genEvents_ = (17708091.0);
+     }
+     else if( sample.Contains( "QCD_HT500to700" ) and sample.Contains( "ext" ) )
+     {
+       xSec_ = 31630.;
+       genEvents_ = (35112474.0);  
      }
      else if( sample.Contains( "QCD_HT700to1000" ) ){
        xSec_ = 6802.;
-       genEvents_ = (14857714. + 29338024.);
+       genEvents_ = (14857714.);
+     }
+     else if( sample.Contains( "QCD_HT700to1000" ) and sample.Contains( "ext" )){
+         xSec_ = 6802.;
+       genEvents_ = (29338024.);
      }
      else if( sample.Contains( "QCD_HT1000to1500" ) ){
        xSec_ = 1206.0;
-       genEvents_ = (4767084. + 10049239.);
+       genEvents_ = (4767084.);
      } 
+     else if( sample.Contains( "QCD_HT1000to1500" )  and sample.Contains( "ext" )){
+         xSec_ = 1206.0;
+       genEvents_ = ( 10049239.);
+     }
      else if( sample.Contains( "QCD_HT1500to2000" ) ){
        xSec_ = 120.4;
-       genEvents_ = (3970787. + 7855817.);
+       genEvents_ = ( 3970787.);
+     }
+     else if( sample.Contains( "QCD_HT1500to2000" )  and sample.Contains( "ext" )){
+       xSec_ = 120.4;
+       genEvents_ = (7855817.); 
      }
      else if( sample.Contains( "QCD_HT2000toInf" ) ){
        xSec_ = 25.25;

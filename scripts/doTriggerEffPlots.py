@@ -158,13 +158,13 @@ if __name__== '__main__':
     print isMC
     
     inputdir = "../../AnalysisOutput/80X/Data/"
-    
+    inputdir = "/mnt/t3nfs01/data01/shome/dschafer/AnalysisOutput/80X/Data/SingleMuon/"
     f = openRootFile(fname,inputdir)
     
-    e = getTriggerEff("HT800_VV",f)
+    #e = getTriggerEff("HT800_noTag",f)
     
-    #denom = f.Get("PFHT650_VV");
-    #num = f.Get("HT800_VV");
+    #denom = f.Get("PFHT650_noTag");
+    #num = f.Get("HT800_noTag");
     
     
     
@@ -186,6 +186,7 @@ if __name__== '__main__':
     #time.sleep(10)
     
     outpath="../results/plots/trigger/"
+    outpath="../results/plots/trigger/SingleMuon/BaseHLT_Mu50/"
     file = TFile.Open(inputdir+fname, 'READ')   
     palette = get_palette('gv')
     col = ROOT.TColor()
@@ -379,29 +380,29 @@ if __name__== '__main__':
         binnum = len(bins)-1
 
         
-        denom = f.Get("PFHT650_noTag");
-        num = f.Get("HT800_noTag");
+        #denom = f.Get("PFHT650_noTag");
+        #num = f.Get("HT800_noTag");
         
-        denom.Rebin(binnum,"denom",runArray)
-        num.Rebin(binnum,"num",runArray)
-        bla = num.Clone("bla")
-        
-        
+        #denom.Rebin(binnum,"denom",runArray)
+        #num.Rebin(binnum,"num",runArray)
+        #bla = num.Clone("bla")
         
         
         
-        c = TCanvas("c1","c1",800,800)
-        c.Divide(2,2)
-        c.cd(1)
-        denom.Draw("HIST")
-        c.cd(2)
-        num.Draw("HIST")
-        c.cd(3)
-        e.Draw("HIST")
-        c.cd(4)
-        bla.Divide(denom)
-        bla.Draw("HIST")
-        time.sleep(1)
+        
+        
+        #c = TCanvas("c1","c1",800,800)
+        #c.Divide(2,2)
+        #c.cd(1)
+        #denom.Draw("HIST")
+        #c.cd(2)
+        #num.Draw("HIST")
+        #c.cd(3)
+        ##e.Draw("HIST")
+        #c.cd(4)
+        #bla.Divide(denom)
+        #bla.Draw("HIST")
+        #time.sleep(10)
     
     
     #============================ No tag =========================================================================================
@@ -424,7 +425,14 @@ if __name__== '__main__':
         l=getLegend()
         i=0
         mg =  TMultiGraph()
+        print hden
         for h in histonames3:
+            print h
+            print  TH1F(file.Get(h))
+            
+        
+        for h in histonames3:
+            print h
             histtmp = TH1F(file.Get(h))
             histtmp.GetXaxis().SetRangeUser(bin1,bin2)
             name = 'hnew%i'%i
@@ -439,7 +447,7 @@ if __name__== '__main__':
                 histtmp.SetTitle("OR (SU)")
             myfit = doFit(eff,l,histtmp,1300.)
             mg.Add(eff)
-            #l.AddEntry(eff, histtmp.GetTitle(), "lep" )
+            l.AddEntry(eff, histtmp.GetTitle(), "lep" )
             i += 1
 
         c = getCanvas()
@@ -663,7 +671,7 @@ if __name__== '__main__':
                     histtmp.SetTitle("OR (SU)")
                 myfit = doFit(eff,l,histtmp,1250.)
                 mg.Add(eff)
-                #l.AddEntry(eff, histtmp.GetTitle(), "lep" )
+                l.AddEntry(eff, histtmp.GetTitle(), "lep" )
                 i += 1
 
         c = getCanvas()

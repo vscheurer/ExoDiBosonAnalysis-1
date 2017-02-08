@@ -14,10 +14,11 @@ def getCanvas():
 gStyle.SetOptTitle(0)
 gStyle.SetOptStat(0)
 
-fname = "ExoDiBosonAnalysis.TEST.VV.root"
+fname = "/mnt/t3nfs01/data01/shome/dschafer/AnalysisOutput/80X/SignalMC/Summer16/Sys/ExoDiBosonAnalysis.ZprimeWW_13TeV_1200GeV.JERdown.root"#"ExoDiBosonAnalysis.TEST.VV.root"
 tfile = TFile.Open(fname,'READ')
+print tfile
 
-hPRE  =tfile.Get("SoftdropMass_preSmearing")
+hPRE  =tfile.Get("SoftdropMass_preSmearingJ") #"SoftdropMass_preSmearing"
 hPOST =tfile.Get("SoftdropMass_postSmearing")
 hPRE .Scale(1./hPRE.Integral())
 hPOST.Scale(1./hPOST.Integral())
@@ -66,4 +67,4 @@ l.AddEntry(hPOST,"Post-smear: #sigma = %.2f"%gPOST.GetParameter(2),"lp")
 l.AddEntry(0,"Ratio_{#sigma} = %.2f %%" % ((gPOST.GetParameter(2)/gPRE.GetParameter(2)-1)*100),"")
 l.Draw("same")
 canv.SaveAs("preVsPostSmearing.pdf")
-time.sleep(200)
+time.sleep(20)

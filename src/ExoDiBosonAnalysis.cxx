@@ -38,11 +38,15 @@ ExoDiBosonAnalysis::ExoDiBosonAnalysis()
   DeclareProperty( "applyFilters"     , applyFilters_   );
 	 
   /* leptonic selections */
-  DeclareProperty( "LeptPtCut"		, leptPtCut_			  );
-  DeclareProperty( "LeptEtaCut"		, leptEtaCut_			  );
-  DeclareProperty( "AleptPtCut"		, AleptPtCut_			  );
-  DeclareProperty( "AleptEtaCut"	, AleptEtaCut_		  );
-  DeclareProperty( "METCut"		, METCut_					  );
+  DeclareProperty( "LeptPtCut"		, leptPtCut_		);
+  DeclareProperty( "LeptEtaCut"		, leptEtaCut_		);
+  DeclareProperty( "elePtCut"		, elePtCut_	= 35	);
+  DeclareProperty( "eleEtaCut"		, eleEtaCut_	= 2.5	);
+  DeclareProperty( "muPtCut"		, muPtCut_	= 30	);
+  DeclareProperty( "muEtaCut"		, muEtaCut_	= 2.4	);
+  DeclareProperty( "AleptPtCut"		, AleptPtCut_		);
+  DeclareProperty( "AleptEtaCut"	, AleptEtaCut_		);
+  DeclareProperty( "METCut"		, METCut_		);
 
   /* jet selections */
   DeclareProperty( "MjjCut"		, MjjCut_					);
@@ -1294,6 +1298,7 @@ bool ExoDiBosonAnalysis::passedTrigger( void ){
  
   //Make sure event is triggered
   if( !Trigger_ ) return true;
+  TString infile = TString(this->GetHistInputFile()->GetName());
   
   std::vector<std::string> trignames;
 	
@@ -1307,7 +1312,17 @@ bool ExoDiBosonAnalysis::passedTrigger( void ){
     trignames.push_back("PFHT800_v") ;
     trignames.push_back("PFHT900");
     trignames.push_back("PFJet450");
+    if( infile.Contains("Run2016H")!=std::string::npos )
+    {
+    trignames.push_back("HLT_PFHT500"); 
+    trignames.push_back("HLT_AK8PFJet450"); 
+    trignames.push_back("HLT_AK8PFJet500");
+    trignames.push_back("HLT_PFJet450");
+      
+    }
+    
   }
+  
   
   else if( Channel_ == "SFmuJets"){
     trignames.push_back("Mu45_eta2p1_") ;
@@ -1586,7 +1601,7 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
 
         float MJJ =  (Vcand.at(0).p4 + Vcand.at(1).p4).M();
         for( int i = 0; i < abs(Vcand.size()) ; i++){
-          Hist( "Tau21_punzi"  )->Fill( Vcand.at(0).tau2/Vcand.at(0).tau1,weight_ );
+          Hist( "Tau21_punzi"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
           if(MJJ > 0.8*1000 && MJJ < 1.2*1000)Hist( "Tau21_punzi1TeV"  )->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
           if(MJJ > 0.8*1200 && MJJ < 1.2*1200)Hist( "Tau21_punzi1v2TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
           if(MJJ > 0.8*1600 && MJJ < 1.2*1600)Hist( "Tau21_punzi1v6TeV")->Fill( Vcand.at(i).tau2/Vcand.at(i).tau1,weight_ );
@@ -1655,9 +1670,9 @@ bool ExoDiBosonAnalysis::passedDijetSelections(  TString infile  ){
         if((Vcand.at(0).puppi_softdropMass > 20 && Vcand.at(0).puppi_softdropMass < mWLow_ && Vcand.at(1).puppi_softdropMass > 105 && Vcand.at(1).puppi_softdropMass < 200 ) or (Vcand.at(1).puppi_softdropMass > 20 && Vcand.at(1).puppi_softdropMass < mWLow_ && Vcand.at(0).puppi_softdropMass > 105 && Vcand.at(0).puppi_softdropMass < 200 ) )
             passedGroomedMassCut = true;
         //=================================================================================
-        if( (20 < Vcand.at(0).puppi_softdropMass < mWLow_ ) && (20 < Vcand.at(1).puppi_softdropMass < mWLow_ ))  
+        if( ((20 < Vcand.at(0).puppi_softdropMass) && (Vcand.at(0).puppi_softdropMass < mWLow_) ) && ((20 < Vcand.at(1).puppi_softdropMass) && (Vcand.at(1).puppi_softdropMass < mWLow_) ))  
            passedGroomedMassCut = true; 
-        if( ( mZHigh_ < Vcand.at(0).puppi_softdropMass < 200 ) && (mZHigh_ < Vcand.at(1).puppi_softdropMass < 200 ))
+        if( ( (mZHigh_ < Vcand.at(0).puppi_softdropMass) && ( Vcand.at(0).puppi_softdropMass< 200) ) && ((mZHigh_ < Vcand.at(1).puppi_softdropMass) && (Vcand.at(1).puppi_softdropMass < 200 )))
             passedGroomedMassCut = true;
       }
     }
@@ -1859,6 +1874,7 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
   else if( Channel_.find("WtagSF")!= std::string::npos && foundJet) foundJets = true;
   
   if( !foundJets) return false;
+    
 
   bool foundOverlap = false;
   if ( Channel_.find("dijet")!= std::string::npos && (findMuonCandidate() || findElectronCandidate()) ){
@@ -1866,7 +1882,7 @@ bool ExoDiBosonAnalysis::findJetCandidates( TString infile ){
       if( bestjet_tlv.DeltaR(leptonCand_.at(i).p4) < 0.8 ) foundOverlap = true;
     }
   }
-  if( Channel_.find("dijet")!= std::string::npos && foundOverlap ) return false;
+  if( Channel_.find("dijet")!= std::string::npos && foundOverlap ) {std::cout << "rejected due to overlap" << std::endl; return false;}
   
   
   if (usePuppiSD_ && foundJet && PUPPIjetIndex1 == 999){
@@ -2089,9 +2105,9 @@ bool ExoDiBosonAnalysis::findMuonCandidate( void ){
     scale = getMuonScale((*data_.mu_pt)[l]);
     newpt = (*data_.mu_pt)[l]+scale;
     if( (*data_.mu_trackIso)[l]/newpt >= 0.1 ) continue;
-    if( newpt <= leptPtCut_ ) continue;
-    if( fabs((*data_.mu_eta)[l]) >= leptEtaCut_ ) continue;
-    if( fabs((*data_.mu_eta)[l]) > 1.2 && newpt > 500 ) continue;
+    if( newpt <= muPtCut_ ) continue;
+    if( fabs((*data_.mu_eta)[l]) >= muEtaCut_ ) continue;
+    //if( fabs((*data_.mu_eta)[l]) > 1.2 && newpt > 500 ) continue;
     foundLept = true;
     if( newpt > ptMu ){  
       ptMu = newpt;
@@ -2169,9 +2185,9 @@ bool ExoDiBosonAnalysis::findElectronCandidate( void ){
    double ptEle = -999;
    int eleIndex = 999;
    for( int l = 0; l < data_.el_N; ++l ){
-      if( (*data_.el_pt)[l] <= leptPtCut_ ) continue;
+      if( (*data_.el_pt)[l] <= elePtCut_ ) continue;
       if( fabs((*data_.el_eta)[l]) >= 1.4442 && fabs((*data_.el_eta)[l]) <= 1.566 ) continue;
-      if( fabs((*data_.el_eta)[l]) >= leptEtaCut_ ) continue;
+      if( fabs((*data_.el_eta)[l]) >= eleEtaCut_ ) continue;
       if( (*data_.el_isHEEP)[l] != 1 ) continue;
       // if(  isLowMass && (*data_.el_isTightElectron)[l] != 1 ) continue;
       
@@ -2587,37 +2603,56 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
   }
   Mjj = ( Vcand.at(0).p4 + Vcand.at(1).p4 ).M();
   
-  int fill=0;
-  int fill_noTag=0;
-  int fill_VV=0;
-  int fill2=0;
+  int fill =0;
+  bool recoverL1 =false;
+
   
+  for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
+      std::string iter = it2->first;
+      bool value = it2->second;
+  if( ((iter).find("HLT_PFHT500")!= std::string::npos && value) 
+          || ((iter).find("HLT_AK8PFJet450")!= std::string::npos && value) 
+          || ((iter).find("HLT_AK8PFJet500")!= std::string::npos && value)
+           || ((iter).find("HLT_PFJet450")!=std::string::npos && value) ){ recoverL1= true;}
+        
+  }
+   //recoverL1=false;
+   //std::cout << "passed L1 " << recoverL1 << std::endl;
+
   for( std::map<std::string,bool>::iterator it = (data_.HLT_isFired)->begin(); it != (data_.HLT_isFired)->end(); it++){
     
     std::string trigName = it->first;
     bool decision = it->second;
-    if( !(((trigName).find("PFHT650_v") != std::string::npos && decision) or ((trigName).find("PFJet320") != std::string::npos && decision)) ) continue;
-     
+    //std::cout << trigName <<std::endl;
+    // ============== for testing of the triggers in a single muon dataset: no baseline triggers sould be applied ===========================================
+    //  for simplicity we still want to reuse the same histos (since the names are needen in the plotting script)
+    //if( !((trigName).find("HLT_Mu50") != std::string::npos && decision) ) continue;
+    if( !(((trigName).find("PFHT650_v") != std::string::npos && decision) or ((trigName).find("HLT_PFJet320_v") != std::string::npos && decision)) ) continue;
     // Start no tag
     fill+=1;
     if(fill==1)
     {
     Hist( "PFHT650_noTag" )->Fill( Mjj);
+
     
     bool passedHT = false;
     bool passedSubstructure = false;
     bool passedALL = false;
+    bool passedHT800 =false;
+    bool passedHT650MJJ900=false;
+    bool passedHT650MJJ950=false;
+    bool passedHT700Trim =false;
         
     for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
       std::string iter = it2->first;
       bool value = it2->second;
-      
     
+      
       if( ((iter).find("PFHT800")!= std::string::npos && value) 
           || ((iter).find("PFHT900")!= std::string::npos && value) 
-          || ((iter).find("PFJet450")!= std::string::npos && value)){fill_noTag+=1; if(fill_noTag==1){Hist( "HT800_noTag" )->Fill( Mjj);}}
-      if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950_noTag" )->Fill( Mjj);
-      if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900_noTag" )->Fill( Mjj);
+          || ((iter).find("PFJet450")!= std::string::npos && value)){passedHT800 = true;}
+      if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) passedHT650MJJ950 =true; 
+      if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) passedHT650MJJ900 = true; 
       if( ((iter).find("PFHT800")                       != std::string::npos && value)
           || ((iter).find("PFHT900")                    != std::string::npos && value) 
           || ((iter).find("PFJet450")                   != std::string::npos && value)
@@ -2634,14 +2669,31 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
 
       //SUBSTRUCTURE TRIGGERS
       if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim_noTag" ) ->Fill( Mjj);
-      if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim_noTag" )    ->Fill( Mjj);
+      if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) passedHT700Trim = true; 
       if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30_noTag" )->Fill( Mjj);
       if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
         || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
     }
-    if( passedHT )          Hist( "HT_noTag" )->Fill( Mjj);
-    if( passedSubstructure )Hist( "Substructure_noTag" )->Fill( Mjj);
-    if( passedALL )         Hist( "ALL_noTag" )->Fill( Mjj);
+//     if( passedHT )          Hist( "HT_noTag" )->Fill( Mjj);
+//     if( passedSubstructure )Hist( "Substructure_noTag" )->Fill( Mjj);
+//     if( passedALL )         Hist( "ALL_noTag" )->Fill( Mjj);
+//     if(passedHT800) {Hist( "HT800_noTag" )->Fill( Mjj);}
+//     if(passedHT650MJJ950) Hist( "HT650_MJJ950_noTag" )->Fill( Mjj);
+//     if(passedHT650MJJ900) Hist( "HT650_MJJ900_noTag" )->Fill( Mjj);
+
+
+      //================== test for run H to get rid of L1 inefficiency ========================================================
+      // do OR with: HLT_PFJet450 (or PFJet500) HLT_AK8PFJet450 (or AK8PFJet500) HLT_CaloJet500_NoJetID
+        
+    if( passedHT || recoverL1 )          Hist( "HT_noTag" )->Fill( Mjj);
+    if( passedSubstructure ||recoverL1 )Hist( "Substructure_noTag" )->Fill( Mjj);
+    if( passedALL || recoverL1)         Hist( "ALL_noTag" )->Fill( Mjj);
+    if(passedHT800 || recoverL1) {Hist( "HT800_noTag" )->Fill( Mjj);}
+    if(passedHT650MJJ950 || recoverL1) Hist( "HT650_MJJ950_noTag" )->Fill( Mjj);
+    if(passedHT650MJJ900 || recoverL1) Hist( "HT650_MJJ900_noTag" )->Fill( Mjj);
+    if(passedHT700Trim || recoverL1) Hist( "HT700_Trim_noTag" )    ->Fill( Mjj);
+      //=========================================================================================================================
+    
     //End no tag
 
     // Start single tag
@@ -2653,17 +2705,22 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
       bool passedHT = false;
       bool passedSubstructure = false;
       bool passedALL = false;
+      bool passedHT800 =false;
+      bool passedHT650MJJ900=false;
+      bool passedHT650MJJ950=false;
+      bool passedHT700Trim =false;
         
       for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
         std::string iter = it2->first;
         bool value = it2->second;
+        
 
         if( ((iter).find("PFHT800")                        != std::string::npos && value)
             || ((iter).find("HT900")                      != std::string::npos && value) 
             || ((iter).find("PFJet450")                   != std::string::npos && value)
-            ){fill2+=1; if(fill2==1){ Hist( "HT800" )->Fill( Mjj);}}
-        if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950" )->Fill( Mjj);
-        if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900" )->Fill( Mjj);
+            ){passedHT800 = true;}
+        if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) passedHT650MJJ950 = true;
+        if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) passedHT650MJJ900 = true;
         if( ((iter).find("PFHT800")                       != std::string::npos && value)
             || ((iter).find("PFHT900")                    != std::string::npos && value) 
           || ((iter).find("PFJet450")                     != std::string::npos && value)
@@ -2680,14 +2737,33 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
 
         //SUBSTRUCTURE TRIGGERS
         if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim" ) ->Fill( Mjj);
-        if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim" )    ->Fill( Mjj);
+        if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) passedHT700Trim = true; 
         if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30" )->Fill( Mjj);
         if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
           || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
       }
-      if( passedHT )          Hist( "HT" )->Fill( Mjj);
-      if( passedSubstructure )Hist( "Substructure" )->Fill( Mjj);
-      if( passedALL )         Hist( "ALL" )->Fill( Mjj);
+//       if( passedHT )            Hist( "HT" )->Fill( Mjj);
+//       if( passedSubstructure )  Hist( "Substructure" )->Fill( Mjj);
+//       if( passedALL )           Hist( "ALL" )->Fill( Mjj);
+//       if(passedHT800)           {Hist( "HT800" )->Fill( Mjj);}
+//       if(passedHT650MJJ950)     Hist( "HT650_MJJ950" )->Fill( Mjj);
+//       if(passedHT650MJJ900)     Hist( "HT650_MJJ900" )->Fill( Mjj);
+//       
+            //================== test for run H to get rid of L1 inefficiency ========================================================
+      // do OR with: HLT_PFJet450 (or PFJet500) HLT_AK8PFJet450 (or AK8PFJet500) HLT_CaloJet500_NoJetID
+        
+    if( passedHT || recoverL1 )       Hist( "HT" )->Fill( Mjj);
+    if( passedSubstructure || recoverL1)          Hist( "Substructure" )->Fill( Mjj);
+    if( passedALL || recoverL1)       Hist( "ALL" )->Fill( Mjj);
+    if(passedHT800 || recoverL1)      {Hist( "HT800" )->Fill( Mjj);}
+    if(passedHT650MJJ950 || recoverL1)Hist( "HT650_MJJ950" )->Fill( Mjj);
+    if(passedHT650MJJ900 || recoverL1)Hist( "HT650_MJJ900" )->Fill( Mjj);
+    if(passedHT700Trim || recoverL1)  Hist( "HT700_Trim" )    ->Fill( Mjj);
+      //=========================================================================================================================
+    
+      
+      
+      
     } //End single tag
     
     //Start double tag
@@ -2699,6 +2775,11 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
       bool passedHT = false;
       bool passedSubstructure = false;
       bool passedALL = false;
+      bool passedHT800 =false;
+      bool passedHT650MJJ900=false;
+      bool passedHT650MJJ950=false;
+      bool passedHT700Trim =false;
+
         
       for( std::map<std::string,bool>::iterator it2 = (data_.HLT_isFired)->begin(); it2 != (data_.HLT_isFired)->end(); it2++){
         std::string iter = it2->first;
@@ -2707,9 +2788,9 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
         if( ((iter).find("PFHT800")                       != std::string::npos && value) 
             || ((iter).find("PFHT900")                    != std::string::npos && value) 
             || ((iter).find("PFJet450")                   != std::string::npos && value)
-        ){fill_VV+=1; if(fill_VV==1){ Hist( "HT800_VV" )->Fill( Mjj);}}
-        if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ950_VV" )->Fill( Mjj);
-        if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) Hist( "HT650_MJJ900_VV" )->Fill( Mjj);
+        ){passedHT800 = true;}
+        if( (iter).find("PFHT650_WideJetMJJ950DEtaJJ1p5") != std::string::npos && value ) passedHT650MJJ950 = true;
+        if( (iter).find("PFHT650_WideJetMJJ900DEtaJJ1p5") != std::string::npos && value ) passedHT650MJJ900 = true;
         if( ((iter).find("PFHT800")                       != std::string::npos && value)
             || ((iter).find("PFHT900")                    != std::string::npos && value) 
           || ((iter).find("PFJet450")                     != std::string::npos && value)
@@ -2726,21 +2807,39 @@ void ExoDiBosonAnalysis::doJetTriggerEfficiency( void ){
 
         //SUBSTRUCTURE TRIGGERS
         if( (iter).find("AK8PFJet360_TrimMass30")                    != std::string::npos && value ) Hist( "PFJet360_Trim_VV" ) ->Fill( Mjj);
-        if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) Hist( "HT700_Trim_VV" )    ->Fill( Mjj);
+        if( (iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")           != std::string::npos && value ) passedHT700Trim = true;
         if( (iter).find("AK8DiPFJet280_200_TrimMass30_BTagCSV0p45")  != std::string::npos && value ) Hist( "DiPFJet280_200_TrimMass30_VV" )->Fill( Mjj);
         if( ((iter).find("AK8PFJet360_TrimMass30")                   != std::string::npos && value)
           || ((iter).find("AK8PFHT700_TrimR0p1PT0p03Mass50")         != std::string::npos && value) ) passedSubstructure = true;
       }
         
-      if( passedHT )          Hist( "HT_VV" )->Fill( Mjj);
-      if( passedSubstructure )Hist( "Substructure_VV" )->Fill( Mjj);
-      if( passedALL )         Hist( "ALL_VV" )->Fill( Mjj);
+//       if( passedHT )          Hist( "HT_VV" )->Fill( Mjj);
+//       if( passedSubstructure )Hist( "Substructure_VV" )->Fill( Mjj);
+//       if( passedALL )         Hist( "ALL_VV" )->Fill( Mjj);
+//       if(passedHT800)         {Hist( "HT800_VV" )->Fill( Mjj);}
+//       if(passedHT650MJJ950)   Hist( "HT650_MJJ950_VV" )->Fill( Mjj);
+//       if(passedHT650MJJ900)   Hist( "HT650_MJJ900_VV" )->Fill( Mjj);
+//       
+      
+                 //================== test for run H to get rid of L1 inefficiency ========================================================
+     // do OR with: HLT_PFJet450 (or PFJet500) HLT_AK8PFJet450 (or AK8PFJet500) HLT_CaloJet500_NoJetID
+       
+   if( passedHT || recoverL1 )       Hist( "HT_VV" )->Fill( Mjj);
+   if( passedSubstructure || recoverL1 )          Hist( "Substructure_VV" )->Fill( Mjj);
+   if( passedALL || recoverL1)       Hist( "ALL_VV" )->Fill( Mjj);
+   if(passedHT800 || recoverL1)      {Hist( "HT800_VV" )->Fill( Mjj);}
+   if(passedHT650MJJ950 || recoverL1)Hist( "HT650_MJJ950_VV" )->Fill( Mjj);
+   if(passedHT650MJJ900 || recoverL1)Hist( "HT650_MJJ900_VV" )->Fill( Mjj);
+   if(passedHT700Trim || recoverL1) Hist( "HT700_Trim_VV" )    ->Fill( Mjj);
+     //=========================================================================================================================
+   
         
     } //End double tag
   }
   }
   return;
 }
+
 
 //==============================================================================================
 void ExoDiBosonAnalysis::doTriggerEfficiencyvsMass( void ){
