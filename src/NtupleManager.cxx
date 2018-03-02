@@ -154,8 +154,10 @@ void NtupleManager::ConnectVariables( std::string treeName, TString sample, bool
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_phoMult"   , theData_.jetAK8_phoMult     ); //photonMultiplicity());
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_nemf"      , theData_.jetAK8_nemf     ); //neutralEmEnergyFraction());
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_cemf"      , theData_.jetAK8_cemf     ); //chargedEmEnergyFraction());
-  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_charge"    , theData_.jetAK8_charge     ); //charge());		
-  
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_charge"    , theData_.jetAK8_charge     );
+  theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_Hbbtag"    , theData_.jetAK8_Hbbtag );		
+  //theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_nbHadrons"    , theData_.jetAK8_nbHadrons );		
+
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_jec"         , theData_.jetAK8_jec          );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_jecUp"       , theData_.jetAK8_jecUp        );
   theAnalysis_->ConnectVariable( treeName.c_str(), "jetAK8_jecDown"     , theData_.jetAK8_jecDown      );

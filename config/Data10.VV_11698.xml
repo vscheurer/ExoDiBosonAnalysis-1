@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd">
+<JobConfiguration JobName="exovvJob" OutputLevel="INFO">
+<Library Name="libGoodRunsLists" />
+<Library Name="libExoDiBosonAnalysis" />
+<Library Name="libLHAPDF" />
+<Package Name="SFrameCore.par" />
+<Package Name="ExoDiBosonAnalysis.par" />
+<Cycle Name="ExoDiBosonAnalysis" OutputDirectory="" PostFix=".VV" ProofServer="lite" ProofWorkDir="" RunMode="LOCAL" TargetLumi="1.0">
+<InputData Lumi="0.0" NEventsMax="-1" NEventsSkip="0" SkipValid="False" Version="flatTuple_59" Type="Data10">
+  <In FileName="/storage/b/psi_data/JetHT/JetHT_Run2016H-PromptReco-v3JetHT_H_20170602/170602_195502/0000/flatTuple_59.root" Lumi="1.0"/>  
+<InputTree Name="ntuplizer/tree" /> 
+  <OutputTree Name="tree" /> 
+ </InputData> 
+<UserConfig>
+ <Item Name="Channel" Value="VVdijet" />
+ <Item Name="MassWindow" Value="VV" />
+ <Item Name="isSignal" Value="false" />
+ <Item Name="runOnMC" Value="false" />
+ <Item Name="Trigger" Value="true" />
+ <Item Name="applyFilters" Value="true" />
+ <Item Name="scaleUncPar" Value="" />
+ <Item Name="MjjCut" Value="1050.0" />
+ <Item Name="InputTreeName" Value="tree" />
+ <Item Name="OutputTreeName" Value="tree" />
+ <Item Name="usePuppiSD" Value="true" />
+ <Item Name="GenStudies" Value="true" />
+ <Item Name="LeptPtCut" Value="30" />
+ <Item Name="LeptEtaCut" Value="2.4" />
+ <Item Name="AleptPtCut" Value="30" />
+ <Item Name="AleptEtaCut" Value="2.4" />
+ <Item Name="METCut" Value="80" />
+ <Item Name="dEtaCut" Value="1.3" />
+ <Item Name="JetPtCutLoose" Value="30." />
+ <Item Name="JetPtCutTight" Value="200." />
+ <Item Name="JetEtaCut" Value="2.5" />
+ <Item Name="Tau21Cut" Value="true" />
+ <Item Name="Tau21HPLow" Value="0.00" />
+ <Item Name="Tau21HPHigh" Value="0.35" />
+ <Item Name="Tau21Low" Value="0.35" />
+ <Item Name="Tau21High" Value="0.75" />
+ <Item Name="mWLow" Value="65." />
+ <Item Name="mWHigh" Value="85." />
+ <Item Name="mZLow" Value="85." />
+ <Item Name="mZHigh" Value="105." />
+ <Item Name="xSec" Value="1." />
+ <Item Name="genEvents" Value="1." />
+ <Item Name="Lumi" Value="1." />
+ <Item Name="PUdata" Value="data/DataPUDistribution.root" />
+ <Item Name="JSONfile" Value="No" />
+ <Item Name="BTagEff4vetoData" Value="data/TT_CT10_TuneZ2star_8TeV-powheg-tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root" />
+ <Item Name="BTagEff4fatjetData" Value="data/BtagEfficienciesMap_fatjets_Wp.root" />
+ <Item Name="BTagEff4subjetData" Value="data/btag-efficiency-maps.root" />
+ <Item Name="PUPPIJEC" Value="data/puppiCorr.root" />
+ <Item Name="PUPPIJMR" Value="data/puppiSoftdropResol.root" />
+ <Item Name="JMS" Value="1.0" />
+ <Item Name="JMSunc" Value="0.0094" />
+ <Item Name="JMR" Value="1.0" />
+ <Item Name="JMRunc" Value="0.2" />
+</UserConfig> 
+ </Cycle> 
+ </JobConfiguration>

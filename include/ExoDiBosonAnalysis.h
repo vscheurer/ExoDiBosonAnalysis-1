@@ -99,7 +99,7 @@ public:
   float getPUPPIweight_rec(float puppipt, float puppieta );
 
   void setPredictedDistribution();
-     
+  void get_pdgId(std::string name_output_file);   
 private:
   ClassDef( ExoDiBosonAnalysis, 0 );  
        
@@ -130,7 +130,8 @@ private:
   std::vector<JetCandidate	>	HadronicJ_	;
   std::vector<std::vector<JetCandidate> > PrunedSubjetCand_;
   std::vector<std::vector<JetCandidate> > SoftdropSubjetCand_;
-  
+  std::vector<std::vector<float>> EfficiencyArray;
+  std::vector<float> JetPt;
   int jetINDX;
   
   int            ScaleMuonUpDown_  ;
@@ -229,6 +230,7 @@ private:
   float  genweight_   ;
   float		puweight_		;
   float		ptweight_		;
+  float         pdfweight_              ;
   float		hltweight_		;
   float  btagweight_  ;
   float  lumiweight_  ;
@@ -249,6 +251,8 @@ private:
   float		WMassMethod2	;
   float		jetsDeltaEta	;
   int		nBTags			;
+  float         Delta ;
+  
   
   float nSumGenWeights_;
   int    nPVs             ; 
@@ -367,7 +371,19 @@ private:
   float jet1_cemf       ;
   float jet1_charge     ;
   float jet1_area       ;
-  float jet2_rcn        ;
+  float jet1_Hbbtag     ;
+//    float jet1_singleHbbtag     ;
+//    int jet1_nbHadrons;
+// float jet1_Hbbtag_nob;
+// float jet1_Hbbtag_1b;  
+// float jet1_Hbbtag_2b;
+ float passed_pt_jet1;
+ float btagged_pt_jet1;   
+  float btagged_pt_jet1_loose;
+  float btagged_pt_jet1_medium;
+  float btagged_pt_jet1_tight;
+
+   float jet2_rcn        ;
   float jet2_cm         ;
   float jet2_nm         ;
   float jet2_muf        ;
@@ -387,12 +403,18 @@ private:
   float jet2_cemf       ;
   float jet2_charge     ;
   float jet2_area       ;
-  
-  
-  
-  
-  
-  
+  float jet2_Hbbtag     ;
+//   float jet2_singleHbbtag     ;
+//      int jet2_nbHadrons;
+// float jet2_Hbbtag_nob;
+// float jet2_Hbbtag_1b;  
+// float jet2_Hbbtag_2b;  
+  float btagged_pt_jet2;
+  float btagged_pt_jet2_loose;
+  float btagged_pt_jet2_medium;
+  float btagged_pt_jet2_tight;
+  float passed_pt_jet2;
+  float btagged_pt; 
   
   
   
@@ -461,6 +483,14 @@ private:
   float wmaxbtag_=0;
   float wmaxgen_=0;
   int numEvents_=0;
+  int nZbb =0;
+  int nZbb_tau = 0;
+  int nZbb_true =0;
+  int nZbb_true_found =0;
+  int nZbb_false = 0;
+  int nnob = 0;
+  int n1b = 0;
+  int n2b = 0;
   
 
 }; // class ExoDiBosonAnalysis

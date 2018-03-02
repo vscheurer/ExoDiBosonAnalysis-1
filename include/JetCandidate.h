@@ -19,6 +19,7 @@ public:
    float tau3;
    int   flavor;
    float rcn;
+   float Hbbtag;
    
    int cm;
    int nm;
@@ -50,6 +51,9 @@ public:
    float puppi_tau2;
    float puppi_tau3;
    float puppi_pt;
+   TLorentzVector P4;
+   int nbHadrons;
+   
       
 private:
 

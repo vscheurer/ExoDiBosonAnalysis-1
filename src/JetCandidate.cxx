@@ -40,7 +40,10 @@ JetCandidate::JetCandidate( TLorentzVector tlv )
    ,puppi_tau1(-99)   
    ,puppi_tau2(-99)   
    ,puppi_tau3(-99)   
-   ,puppi_pt(-99)   
+   ,puppi_pt(-99) 
+   ,Hbbtag(-99)
+   ,P4()
+   ,nbHadrons(-99)
 {
 
 }

@@ -207,6 +207,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "MjjAK4"  					 					 		, "M_{jj} AK4 "	   								  , 7000	, 0.	, 7000.	) );
   theAnalysis_->Book( TH1F( "DeltaEta"	 	  															, "#Delta#eta_{jj}, Mjj cut"	   				 	, 31	, 0.	, 1.5		) );
   theAnalysis_->Book( TH1F( "DeltaR"	 	  													 		, "#DeltaR_{jj}, Mjj cut"	   				 	  , 40	, 0.	, 4.		) );
+  theAnalysis_->Book( TH1F( "Delta"	 	  													 		, "test"	   				 	  , 40	, 0.	, 4.		) );
   theAnalysis_->Book( TH1F( "PrunedMass"																		, "pruned M_{j}, dEta+Mjj cut"		, 60	, 0.	, 300.	) );
   theAnalysis_->Book( TH1F( "PrunedMass_afterTau21"																		, "pruned M_{j}"		, 60	, 0.	, 300.	) );
   theAnalysis_->Book( TH1F( "Tau21_afterPrunedMass"              ,"#tau_{21}",20,0.,1. ) );
@@ -226,6 +227,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "LumiWeight", "LumiWeight", 100, 0, 5));
   theAnalysis_->Book( TH1F( "GenWeight", "GenWeight", 100, 0, 5));
   theAnalysis_->Book( TH1F( "PtWeight", "PtWeight", 100, 0, 5));
+  theAnalysis_->Book( TH1F( "PDFWeight", "PDFWeight", 100, 0, 5));
   theAnalysis_->Book( TH1F( "BtagWeight", "BtagWeight", 100, 0, 5));
   theAnalysis_->Book( TH1F( "HLTWeight", "HLTWeight", 100, 0, 5));
   
@@ -257,6 +259,8 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "tau3"  ,"(*data_.jetAK8_tau3)",20,0.,1. ) );
   theAnalysis_->Book( TH1F( "che"   ,"(*data_.jetAK8_che)",30,0.,3000. ) );
   theAnalysis_->Book( TH1F( "ne"   ,"(*data_.jetAK8_ne)",50,0.,5000. ) );
+  theAnalysis_->Book( TH1F( "Hbbtag"   ,"(*data_.jetAK8_Hbbtag)",50,-1.,1. ) );
+
   theAnalysis_->Book( TH1F( "HFHadronEnergyFraction", "HFHadronEnergyFraction" , 30, 0., 0.1 ) );
   theAnalysis_->Book( TH1F( "HFEMEnergyFraction", "HFEMEnergyFraction" , 100, 0., .1 ) );
   theAnalysis_->Book( TH1F( "hoEnergyFraction", "hoEnergyFraction" , 100, 0., .1 ) );
@@ -266,6 +270,7 @@ void HistosManager::bookHistos( std::string Channel_ ){
   theAnalysis_->Book( TH1F( "neutralEmEnergyFraction", "neutralEmEnergyFraction" , 20, 0., 1. ) );
   theAnalysis_->Book( TH1F( "chargedEmEnergyFraction", "chargedEmEnergyFraction" , 20, 0., 1. ) );
   theAnalysis_->Book( TH1F( "charge", "charge" , 21, -30., 30. ) );
+
   
   
   

@@ -140,7 +140,8 @@ public:
   std::vector<int>*		     jetAK8_phoMult; //photonMultiplicity());
   std::vector<float>*		   jetAK8_nemf; //neutralEmEnergyFraction());
   std::vector<float>*		   jetAK8_cemf ; //chargedEmEnergyFraction());
-  std::vector<float>*		   jetAK8_charge; //charge());		
+  std::vector<float>*		   jetAK8_charge; //charge());
+  std::vector<float>*		   jetAK8_Hbbtag;
   
   std::vector<float>*		   jetAK8_puppi_e;  
   std::vector<float>*		   jetAK8_puppi_eta;
@@ -166,6 +167,8 @@ public:
   std::vector<float>*		   jetAK8_jer_sf_up  ;
   std::vector<float>*		   jetAK8_jer_sf_down; 
   std::vector<float>*		   jetAK8_jer_sigma_pt;   
+   std::vector<int>*		   jetAK8_nbHadrons;
+ std::vector<int>*		   jetAK8_ncHadrons;      
   
   
   int			                    ngenJetsAK8               ;
@@ -176,6 +179,7 @@ public:
   std::vector<float>*  	      genJetAK8_e               ;
   std::vector<float>*  	      genJetAK8_prunedmass      ;
   std::vector<float>*  	      genJetAK8_softdropmass    ;
+  
   
       
   // int                             njetsAK8pruned    	 ;
